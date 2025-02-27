@@ -1,4 +1,3 @@
-# Darwin-specific configuration
 { config, pkgs, lib, ... }:
 
 {
@@ -12,17 +11,10 @@
     global = {
       brewfile = true;
     };
-    
-    # Common system-wide casks
-    casks = [
-      "1password"
-      "firefox"
-      "vlc"
-    ];
   };
 
   # Add homebrew to system PATH
-  environment.systemPath = if pkgs.stdenv.isDarwin && pkgs.stdenv.isAarch64 then [
+  environment.systemPath = if pkgs.stdenv.isAarch64 then [
     "/opt/homebrew/bin"
     "/opt/homebrew/sbin"
   ] else [
@@ -32,11 +24,7 @@
 
   # System defaults
   system.defaults = {
-    dock = {
-      tilesize = 16;
-    };
     finder = {
-      ShowPathbar = true;
       ShowStatusBar = true;
     };
     customUserPreferences = {
