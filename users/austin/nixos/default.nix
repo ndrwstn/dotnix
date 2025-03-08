@@ -1,7 +1,10 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
-    packages.nix
+    ./packages.nix
   ];
 }
+

@@ -1,8 +1,11 @@
-{ config, pkgs, ... }:
-
 {
-  imports = [
-    homebrew.nix
-    system.nix
-  ];
+  config,
+  pkgs,
+  ...
+}: {
+  # imports = [
+  #   ./homebrew.nix
+  #   ./system.nix
+  # ];
 }
+
