@@ -199,11 +199,11 @@
     machineAttrs = builtins.listToAttrs machines;
 
     # Function to filter by system type pattern
-    filterSystems = pattern: builtins.filterAttrs 
-      (name: _: builtins.match pattern (builtins.readFile 
-        (./machines + "/${name}/system.nix")) != null) 
+    filterSystems = pattern:
+      nixpkgs.lib.filterAttrs
+      (name: _: builtins.match pattern (import (./machines + "/${name}/system.nix")) != null)
       machineAttrs;
-    
+
     # Split by OS type
     nixosConfigs = filterSystems ".*-linux";
     darwinConfigs = filterSystems ".*-darwin";
