@@ -1,4 +1,4 @@
-# Common configuration shared between all machines
+# systems/common/default.nix
 
 { config, pkgs, lib, ... }:
 

@@ -1,3 +1,4 @@
+# systems/nixos/default.nix
 # NixOS-specific configuration
 {
   config,

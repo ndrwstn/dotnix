@@ -1,3 +1,4 @@
+# users/austin/nixos/default.nix
 {
   config,
   pkgs,

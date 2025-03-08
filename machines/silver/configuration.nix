@@ -1,4 +1,4 @@
-# Machine-specific configuration for Silver
+# machines/silver/configuration.nix
 {
   config,
   pkgs,

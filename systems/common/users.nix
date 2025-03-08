@@ -1,3 +1,4 @@
+# systems/common/users.nix
 # Common user configurations
 { config, pkgs, lib, ... }:
 

@@ -1,3 +1,4 @@
+# users/austin/darwin/default.nix
 {
   config,
   pkgs,

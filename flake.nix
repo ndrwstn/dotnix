@@ -1,3 +1,4 @@
+# flake.nix
 {
   description = "@astn multi-system nix configuration";
 

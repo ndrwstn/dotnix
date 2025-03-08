@@ -1,3 +1,4 @@
+# machines/plutonium/configuration.nix
 { config, pkgs, ... }:
 
 {
