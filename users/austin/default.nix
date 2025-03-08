@@ -6,9 +6,9 @@
   ...
 }:
 lib.mkMerge [
-#####################
-#####  COMMON   #####
-#####################
+  #####################
+  #####  COMMON   #####
+  #####################
   {
     home = {
       username = "austin";
@@ -175,12 +175,10 @@ lib.mkMerge [
       ## import
       (import ./texlive.nix {inherit pkgs;})
     ];
-
-
   }
-#####################
-#####  DARWIN   #####
-#####################
+  #####################
+  #####  DARWIN   #####
+  #####################
   (lib.mkIf pkgs.stdenv.isDarwin {
     homebrew = {
       casks = [
@@ -192,7 +190,7 @@ lib.mkMerge [
         # "chromium" # NOTE -- not installed in favor of 'elonston-chromium' (ungoogled version)
         "dbeaver-community"
         "discord"
-        "eloston-chromium"  # NOTE -- ungoogled version?
+        "eloston-chromium" # NOTE -- ungoogled version?
         "freecad"
         "gimp"
         "gqrx"
@@ -287,10 +285,10 @@ lib.mkMerge [
       };
     };
   })
-####################
-#####  LINUX   #####
-####################
-  (lib.mkIf !pkgs.stdenv.isDarwin {
+  ####################
+  #####  LINUX   #####
+  ####################
+  (lib.mkIf (!pkgs.stdenv.isDarwin) {
     home.packages = with pkgs; [
       blender
       dbeaver-bin
