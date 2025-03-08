@@ -7,6 +7,7 @@
 
   # Common system packages
   environment.systemPackages = with pkgs; [
+    nh
     vim
     wget
     zsh
