@@ -178,11 +178,10 @@ lib.mkMerge [
   }
 
   # Import Darwin-specific flakes
-  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin))
+  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin {inherit config pkgs;}))
 
   # Import NixOS-specific flakes
-  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos))
-
+  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos {inherit config pkgs;}))
 ]
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
