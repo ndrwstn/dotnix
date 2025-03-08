@@ -136,15 +136,11 @@
         if hasConfig
         then {
           name = user;
-          config = {...}: {
+          value = {
             imports = [
               userPath
-              # Add nvf for austin only, as an example of conditional imports
-              (
-                if user == "austin"
-                then nvf.homeManagerModules.default
-                else {}
-              )
+              # Add nvf for austin only
+              (if user == "austin" then nvf.homeManagerModules.default else {})
             ];
           };
         }
@@ -156,7 +152,7 @@
       # Create attrset of user configs
       userConfigSet = builtins.listToAttrs (map (cfg: {
           name = cfg.name;
-          value = cfg.config;
+          value = cfg.value;
         })
         userConfigs);
 
