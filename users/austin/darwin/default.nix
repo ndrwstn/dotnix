@@ -11,6 +11,5 @@ lib.mkMerge [
   }
 
   # darwin flakes
-  (import ./homebrew.nix {inherit config pkgs;})
   (import ./system.nix {inherit config pkgs;})
 ]

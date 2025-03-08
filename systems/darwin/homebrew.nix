@@ -1,10 +1,19 @@
-# users/austin/darwin/homebrew.nix
+# systems/darwin/homebrew.nix
 {
   config,
   pkgs,
   ...
 }: {
+
   homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+    };
+    global = {
+      brewfile = true;
+    };
     casks = [
       # "1password"
       "appcleaner"
@@ -66,4 +75,14 @@
       "Xcode" = 497799835;
     };
   };
+
+  # Add homebrew to system PATH
+  environment.systemPath = if pkgs.stdenv.isAarch64 then [
+    "/opt/homebrew/bin"
+    "/opt/homebrew/sbin"
+  ] else [
+    "/usr/local/bin"
+    "/usr/local/sbin"
+  ];
+
 }
