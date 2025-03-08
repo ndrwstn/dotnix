@@ -129,6 +129,11 @@
       usersDir = ./users;
       usersList = builtins.attrNames (builtins.readDir usersDir);
 
+      unstable = import nixpkgs-unstable {
+        system = systemType;
+        config.allowUnfree = true;
+      };
+
       # Function to build user imports
       buildUserConfig = user: let
         userPath = usersDir + "/${user}";
@@ -138,12 +143,12 @@
         then {
           name = user;
           value = {
-            imports = [
-              userPath
-              # Add nvf for austin only
-              (if user == "austin" then nvf.homeManagerModules.default else {})
-            ];
-          };
+            config,
+            pkgs,
+            lib,
+            ...
+          }:
+            import userPath {inherit config pkgs lib unstable;};
         }
         else null;
 
@@ -171,7 +176,7 @@
       inherit name;
       value = sysConfig.builder {
         system = systemType;
-        specialArgs = {inherit inputs;};
+        specialArgs = {inherit inputs unstable;};
         modules =
           machineModules
           ++ [
@@ -183,6 +188,8 @@
               home-manager.useUserPackages = true;
               home-manager.users = userConfigSet;
               home-manager.backupFileExtension = "hmbak";
+              home-manager.extraSpecialArgs = {inherit unstable;};
+              home-manager.sharedModules = [nvf.homeManagerModules.default];
             }
           ]
           ++ sharedModules;

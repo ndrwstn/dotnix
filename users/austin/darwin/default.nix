@@ -2,11 +2,15 @@
 {
   config,
   pkgs,
+  lib,
   ...
-}: {
-  # imports = [
-  #   ./homebrew.nix
-  #   ./system.nix
-  # ];
-}
+}:
+lib.mkMerge [
+  {
+    # darwin settings that don't deserve separate flake
+  }
 
+  # darwin flakes
+  (import ./homebrew.nix {inherit config pkgs;})
+  (import ./system.nix {inherit config pkgs;})
+]
