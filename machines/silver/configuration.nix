@@ -4,6 +4,10 @@
   pkgs,
   ...
 }: {
+  # Increase download-buffer to 1GB
+  # Rebuilds on Silver should be an exclusive activity
+  nix.settings.download-buffer-size = 1000000000;
+
   # Use the systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
