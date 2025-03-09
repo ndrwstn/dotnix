@@ -24,4 +24,3 @@
     vscodium-fhs
   ];
 }
-

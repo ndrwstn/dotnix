@@ -1,10 +1,13 @@
 # systems/common/users.nix
 # Common user configurations
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   programs.zsh.enable = true;
-  
+
   users.users = {
     austin = {
       isNormalUser = true;
@@ -16,7 +19,7 @@
     jessica = {
       isNormalUser = true;
       description = "Jessica Hirschhorn";
-      extraGroups = [ "networkmanager" ];
+      extraGroups = ["networkmanager"];
     };
   };
 }

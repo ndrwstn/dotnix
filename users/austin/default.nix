@@ -164,7 +164,6 @@ lib.mkMerge [
       talosctl
       thefuck
       tlrc
-      tldr
       tree-sitter
       ungoogled-chromium
       yed
