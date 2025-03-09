@@ -69,13 +69,17 @@
   };
 
   #
-  hardware.logitech.wireless = {
-    enable = true;
-    enableGraphical = true;
+  hardware = {
+    logitech.wireless = {
+      enable = true;
+      enableGraphical = true;
+    };
+    rtl-sdr.enable = true;
   };
 
   #
   environment.systemPackages = with pkgs; [
     solaar
+    usbutils
   ];
 }

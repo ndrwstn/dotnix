@@ -5,6 +5,7 @@
   ...
 }: {
   home.packages = with pkgs; [
+    alsa-utils
     blender
     dbeaver-bin
     freecad

@@ -12,7 +12,7 @@
     austin = {
       isNormalUser = true;
       description = "Andrew Austin";
-      extraGroups = [ "networkmanager" "wheel" "disk" ];
+      extraGroups = ["networkmanager" "wheel" "disk" "plugdev"];
       shell = pkgs.zsh;
     };
 
