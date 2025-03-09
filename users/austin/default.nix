@@ -143,6 +143,7 @@ lib.mkMerge [
       docker
       eza
       ffmpeg_7
+      fd
       firefox
       fluxcd
       gcc
