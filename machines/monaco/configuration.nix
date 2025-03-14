@@ -4,6 +4,10 @@
   pkgs,
   ...
 }: {
+
+  # Match nixblg GID
+  ids.gids.nixbld = 350;
+  
   # Define hostname
   networking.hostName = "Monaco";
 
