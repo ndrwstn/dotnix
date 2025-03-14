@@ -15,7 +15,7 @@
     finder = {
       ShowStatusBar = true;
     };
-    customUserPreferences = {
+    CustomUserPreferences = {
       "com.apple.desktopservices" = {
         DSDontWriteNetworkStores = true;
         DSDontWriteUSBStores = true;
