@@ -160,7 +160,6 @@ lib.mkMerge [
       # kubernetes-helm
       # kustomize
       # moreutils
-      neovide
       # nmap
       # nodejs_22
       # printrun

@@ -36,6 +36,7 @@
       "logi-options+"
       "monitorcontrol"
       # "mqttx"
+      "neovide"
       # "numi"
       # "obs"
       # "obsidian"

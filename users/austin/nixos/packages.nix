@@ -15,6 +15,7 @@
     kicad
     krita
     libreoffice-qt6-fresh
+    neovide
     obs-studio
     obsidian
     openscad
