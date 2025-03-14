@@ -141,44 +141,44 @@ lib.mkMerge [
     # Common packages across all systems
     home.packages = with pkgs; [
       _1password-cli
-      _1password-gui
-      age
-      ansible
-      calibre
-      cloudflared
-      docker
+      # _1password-gui
+      # age
+      # ansible
+      # calibre
+      # cloudflared
+      # docker
       eza
-      ffmpeg_7
+      # ffmpeg_7
       fd
-      firefox
-      fluxcd
-      gcc
-      go-task
-      jq
-      kubeconform
-      kubectl
-      kubernetes-helm
-      kustomize
-      moreutils
+      # firefox
+      # fluxcd
+      # gcc
+      # go-task
+      # jq
+      # kubeconform
+      # kubectl
+      # kubernetes-helm
+      # kustomize
+      # moreutils
       neovide
-      nmap
-      nodejs_22
-      printrun
-      python3
-      rsync
-      sops
-      stern
-      talosctl
+      # nmap
+      # nodejs_22
+      # printrun
+      # python3
+      # rsync
+      # sops
+      # stern
+      # talosctl
       thefuck
       tlrc
       tree-sitter
-      ungoogled-chromium
-      yed
-      yq
-      yt-dlp
-      zathura
+      # ungoogled-chromium
+      # yed
+      # yq
+      # yt-dlp
+      # zathura
       ## import
-      (import ./texlive.nix {inherit pkgs;})
+      # (import ./texlive.nix {inherit pkgs;})
     ];
   }
 

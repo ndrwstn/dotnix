@@ -18,10 +18,10 @@
 
   # Common packages across all systems
   home.packages = with pkgs; [
-    _1password-gui
-    libreoffice-qt6-fresh
-    teams-for-linux
-    vlc
+    # _1password-gui
+    # libreoffice-qt6-fresh
+    # teams-for-linux
+    # vlc
   ];
 
 }
