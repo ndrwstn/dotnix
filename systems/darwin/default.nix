@@ -1,9 +1,13 @@
 # systems/darwin/default.nix
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     ./homebrew.nix
+    ./system.nix
   ];
 
   # System defaults
