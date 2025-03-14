@@ -67,6 +67,12 @@ lib.mkMerge [
         git = true;
       };
 
+      # fd
+      fd = {
+        enable = true;
+        ignores = [".git/"];
+      };
+
       # Fzf configuration
       fzf = {
         enable = true;
