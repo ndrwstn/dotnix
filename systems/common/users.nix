@@ -8,18 +8,43 @@
 }: {
   programs.zsh.enable = true;
 
-  users.users = {
-    austin = {
-      isNormalUser = true;
-      description = "Andrew Austin";
-      extraGroups = ["networkmanager" "wheel" "disk" "plugdev"];
-      shell = pkgs.zsh;
-    };
+  users.users = lib.mkMerge [
+    # Common user configuration
+    {
+      austin = {
+        description = "Andrew Austin";
+        shell = pkgs.zsh;
+      };
 
-    jessica = {
-      isNormalUser = true;
-      description = "Jessica Hirschhorn";
-      extraGroups = ["networkmanager"];
-    };
-  };
+      jessica = {
+        description = "Jessica Hirschhorn";
+      };
+    }
+    
+    # NixOS-specific user configuration
+    (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
+      austin = {
+        isNormalUser = true;
+        extraGroups = ["networkmanager" "wheel" "disk" "plugdev"];
+        home = "/home/austin";
+      };
+      
+      jessica = {
+        isNormalUser = true;
+        extraGroups = ["networkmanager"];
+        home = "/home/jessica";
+      };
+    })
+    
+    # Darwin-specific user configuration
+    (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+      austin = {
+        home = "/Users/austin";
+      };
+      
+      jessica = {
+        home = "/Users/jessica";
+      };
+    })
+  ];
 }
