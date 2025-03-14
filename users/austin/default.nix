@@ -177,8 +177,6 @@ lib.mkMerge [
       yq
       yt-dlp
       zathura
-      ## unstable
-      unstable.ghostty
       ## import
       (import ./texlive.nix {inherit pkgs;})
     ];

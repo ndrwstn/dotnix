@@ -24,5 +24,7 @@
     vlc
     vscodium-fhs
     wl-clipboard
+    ## unstable
+    unstable.ghostty
   ];
 }

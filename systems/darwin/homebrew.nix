@@ -27,7 +27,7 @@
       "freecad"
       "gimp"
       "gqrx"
-      "inkscape"
+      "ghostty"
       "jdownloader"
       "jordanbaird-ice"
       "keka"
