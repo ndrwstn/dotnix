@@ -23,5 +23,6 @@
     rtl-sdr
     vlc
     vscodium-fhs
+    wl-clipboard
   ];
 }
