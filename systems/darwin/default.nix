@@ -9,12 +9,16 @@
   usersDir = ../../users;
   usersList = builtins.attrNames (builtins.readDir usersDir);
   
-  # Function to check if a user has a darwin/homebrew.nix file
+  # Function to check if a user has darwin config files
   hasUserHomebrew = user: 
     builtins.pathExists (usersDir + "/${user}/darwin/homebrew.nix");
   
-  # Filter to users that have homebrew configs
+  hasUserSystem = user:
+    builtins.pathExists (usersDir + "/${user}/darwin/system.nix");
+  
+  # Filter to users that have configs
   usersWithHomebrew = builtins.filter hasUserHomebrew usersList;
+  usersWithSystem = builtins.filter hasUserSystem usersList;
   
   # Import user homebrew configs if they exist and extract the homebrew attribute
   userHomebrewConfigs = map (user: 
@@ -28,7 +32,19 @@
       else lib.warn "User ${user}'s homebrew.nix doesn't contain a homebrew attribute" {}
   ) usersWithHomebrew;
   
-  # System homebrew config - extract the homebrew attribute
+  # Import user system configs if they exist and extract the system attribute
+  userSystemConfigs = map (user:
+    let
+      imported = import (usersDir + "/${user}/darwin/system.nix") {
+        inherit config pkgs lib;
+      };
+    in
+      if builtins.hasAttr "system" imported
+      then imported.system
+      else lib.warn "User ${user}'s system.nix doesn't contain a system attribute" {}
+  ) usersWithSystem;
+  
+  # System configs - extract the relevant attributes
   systemHomebrew = 
     if builtins.pathExists ./homebrew.nix
     then let 
@@ -39,36 +55,27 @@
       else lib.warn "System homebrew.nix doesn't contain a homebrew attribute" []
     else [];
   
-  # Combine all homebrew configurations
-  allHomebrewConfigs = systemHomebrew ++ userHomebrewConfigs;
+  systemDefaults = 
+    if builtins.pathExists ./system.nix
+    then let
+      imported = import ./system.nix { inherit config pkgs lib; };
+    in
+      if builtins.hasAttr "system" imported
+      then [imported.system]
+      else lib.warn "System system.nix doesn't contain a system attribute" []
+    else [];
   
-  # Merge all homebrew configurations into a single config
+  # Combine all configurations
+  allHomebrewConfigs = systemHomebrew ++ userHomebrewConfigs;
+  allSystemConfigs = systemDefaults ++ userSystemConfigs;
+  
+  # Merge all configurations into single configs
   mergedHomebrewConfig = lib.mkMerge allHomebrewConfigs;
+  mergedSystemConfig = lib.mkMerge allSystemConfigs;
 in {
-  imports = [
-    ./system.nix
-  ];
-
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
-
-  # System defaults
-  system.defaults = {
-    finder = {
-      ShowStatusBar = true;
-    };
-    CustomUserPreferences = {
-      "com.apple.desktopservices" = {
-        DSDontWriteNetworkStores = true;
-        DSDontWriteUSBStores = true;
-      };
-      "com.apple.AdLib" = {
-        allowApplePersonalizedAdvertising = false;
-      };
-      "com.apple.screensaver" = {
-        askForPassword = 1;
-        askForPasswordDelay = 0;
-      };
-    };
-  };
+  
+  # Apply the merged System config directly
+  system = mergedSystemConfig;
 }
