@@ -4,12 +4,10 @@
   pkgs,
   lib,
   ...
-}:
-lib.mkMerge [
-  {
-    # darwin settings that don't deserve separate flake
-  }
-
-  # darwin flakes
-  # (import ./system.nix {inherit config pkgs;})
-]
+}: {
+  # Environmental Variables
+  home.sessionVariables = {
+    # Disable Homebrew analytics collection
+    HOMEBREW_NO_ANALYTICS = 1;
+  };
+}
