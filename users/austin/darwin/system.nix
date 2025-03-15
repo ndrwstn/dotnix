@@ -16,6 +16,7 @@
           "/System/Applications/Reminders.app"
           "/System/Applications/Messages.app"
           "/Applications/Safari.app"
+          "/Applications/Neovide.app"
           "/System/Applications/iPhone Mirroring.app"
           "/Applications/Claude.app"
         ];
