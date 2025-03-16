@@ -16,6 +16,7 @@
     casks = [
       "1password"
       "appcleaner"
+      # "calibre"
       "claude"
       # "balenaetcher"
       # "blender"

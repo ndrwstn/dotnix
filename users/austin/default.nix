@@ -144,7 +144,6 @@ lib.mkMerge [
       # _1password-gui
       # age
       # ansible
-      # calibre
       # cloudflared
       # docker
       eza
