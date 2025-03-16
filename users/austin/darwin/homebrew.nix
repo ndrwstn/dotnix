@@ -15,7 +15,7 @@
     };
     casks = [
       "1password"
-      "appcleaner"
+      # "appcleaner" # removed in favor of 'pearcleaner'
       # "calibre"
       "claude"
       # "balenaetcher"
@@ -43,6 +43,7 @@
       # "obs"
       # "obsidian"
       # "orcaslicer"
+      "pearcleaner"
       # "plex"
       # "pycharm-ce"
       # "raycast"
