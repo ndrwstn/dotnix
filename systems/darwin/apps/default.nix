@@ -7,7 +7,5 @@
 }: {
   # Import all application modules
   imports = [
-    ./claude.nix
   ];
 }
-

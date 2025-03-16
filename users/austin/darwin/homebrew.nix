@@ -16,6 +16,7 @@
     casks = [
       "1password"
       "appcleaner"
+      "claude"
       # "balenaetcher"
       # "blender"
       # "brave-browser"

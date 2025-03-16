@@ -82,13 +82,9 @@ in {
     ./apps
   ];
 
-  # Enable Mac Apps
-  darwin.apps.claude.enable = true;
-
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
 
   # Apply the merged System config directly
   system = mergedSystemConfig;
 }
-
