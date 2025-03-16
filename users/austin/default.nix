@@ -176,7 +176,7 @@ lib.mkMerge [
       # yt-dlp
       # zathura
       ## import
-      # (import ./texlive.nix {inherit pkgs;})
+      (import ./texlive.nix {inherit pkgs;})
     ];
   }
 
