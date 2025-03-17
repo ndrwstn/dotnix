@@ -73,7 +73,7 @@
       # "soulver"
       # "skim"
       # "textual"
-      # "privatevpn"
+      # "privatevpn" # 2023-03-16 does not work - "can't communicate with helper application"
       "postgres-unofficial"
       "transmission"
       "transmission-remote-gui"
