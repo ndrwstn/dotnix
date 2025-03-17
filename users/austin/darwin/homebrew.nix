@@ -15,7 +15,6 @@
     };
     casks = [
       "1password"
-      # "appcleaner" # removed in favor of 'pearcleaner'
       # "calibre"
       # "cleanshot"
       "claude"
@@ -29,7 +28,6 @@
       # "brave-browser"
       # "carbon-copy-cloner"
       # "dbeaver-community"
-      # "chromium" # removed in favor of 'elonston-chromium'
       # "discord"
       # "freecad"
       "eloston-chromium"
