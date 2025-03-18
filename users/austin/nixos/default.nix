@@ -2,6 +2,7 @@
 {
   config,
   pkgs,
+  unstable,
   lib,
   ...
 }:
@@ -11,5 +12,5 @@ lib.mkMerge [
   }
 
   # nixos flakes
-  (import ./packages.nix {inherit config pkgs;})
+  (import ./packages.nix {inherit config pkgs unstable;})
 ]
