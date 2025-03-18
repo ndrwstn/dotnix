@@ -82,6 +82,11 @@ in {
     ./apps
   ];
 
+  # Fix NIX_PATH for darwin systems
+  nix.nixPath = [
+    "nixpkgs=flake:nixpkgs"
+  ];
+
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
 
