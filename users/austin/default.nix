@@ -45,6 +45,9 @@ lib.mkMerge [
         enable = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
+        sessionVariables = {
+          TEXMFHOME = "${config.xdg.configHome}/texlive/texmf";
+        };
       };
 
       # Bat configuration
