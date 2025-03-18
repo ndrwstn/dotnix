@@ -36,3 +36,6 @@ result-*
 # ---- Other ----
 # Created to help AI with troublshooting
 nix_directory_tree.txt
+
+# font directory
+systems/common/fonts/
