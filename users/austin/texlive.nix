@@ -10,12 +10,13 @@ pkgs.texlive.combine {
     latex-bin
     # Basic packages
     babel-english
+    extsizes
     lualatex-math
     unicode-math
     # Document elements
     hyperref
     graphics
     geometry
+    xcolor
     ;
 }
-
