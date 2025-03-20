@@ -51,6 +51,9 @@
       # splitright = true;
       # splitleft = true;
       signcolumn = "yes";
+
+      # guifont
+      guifont = "Inconsolata Nerd Font:h17";
     };
     lsp = {
       enable = true;

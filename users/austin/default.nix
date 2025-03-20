@@ -180,6 +180,8 @@ lib.mkMerge [
       # zathura
       ## import
       (import ./texlive.nix {inherit pkgs;})
+      ## fonts
+      nerd-fonts.inconsolata
     ];
   }
 
