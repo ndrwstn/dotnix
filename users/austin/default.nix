@@ -177,7 +177,7 @@ lib.mkMerge [
       # yed
       # yq
       # yt-dlp
-      # zathura
+      zathura
       ## import
       (import ./texlive.nix {inherit pkgs;})
       ## fonts
