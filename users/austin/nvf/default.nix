@@ -20,6 +20,10 @@
       enable = true;
     };
 
+    minimap.codewindow = {
+      enable = true;
+    };
+
     tabline.nvimBufferline = {
       enable = true;
     };
