@@ -5,6 +5,8 @@
 }: {
   vim = {
     keymaps = import ./keymap.nix {inherit config pkgs;};
+    useSystemClipboard = true;
+
     binds = {
       whichKey = {
         enable = true;
@@ -13,41 +15,57 @@
         enable = true;
       };
     };
+
     dashboard.alpha = {
       enable = true;
     };
+
     tabline.nvimBufferline = {
       enable = true;
     };
+
     statusline.lualine = {
       enable = true;
     };
-    useSystemClipboard = true;
+
     filetree = {
       neo-tree = {
         enable = true;
       };
     };
+
     treesitter = {
       context = {
         enable = true;
       };
     };
+
     telescope = {
       enable = true;
     };
+
     notify = {
       nvim-notify = {
         enable = true;
       };
     };
+
     options = {
+      # tabs
       tabstop = 2;
       softtabstop = 2;
       shiftwidth = 2;
       expandtab = true;
+
+      # line numbers
       number = true;
       relativenumber = true;
+
+      # line wrapping
+      wrap = true;
+      linebreak = true;
+      breakindent = true;
+      showbreak = "↪ ";
       # splitright = true;
       # splitleft = true;
       signcolumn = "yes";
@@ -55,12 +73,14 @@
       # guifont
       guifont = "Inconsolata Nerd Font:h17";
     };
+
     lsp = {
       enable = true;
       formatOnSave = true;
       lightbulb.enable = true;
       trouble.enable = true;
     };
+
     languages = {
       enableLSP = true;
       enableFormat = true;
@@ -73,6 +93,7 @@
       sql.enable = true;
       lua.enable = true;
     };
+
     extraPlugins = with pkgs.vimPlugins; {
       telescope-fzf-native = {
         package = telescope-fzf-native-nvim;
