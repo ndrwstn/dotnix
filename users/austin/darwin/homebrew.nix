@@ -93,6 +93,7 @@
       "Across" = 6444851827;
       "AdBlock Plus" = 1432731683;
       "Amphetamine" = 937984704;
+      "Banktivity" = 1480779512;
       # "GarageBand" = 682658836;
       "Goodnotes" = 1444383602;
       "Grab2Text" = 6475956137;
