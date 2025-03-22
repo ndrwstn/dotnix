@@ -7,6 +7,12 @@
     keymaps = import ./keymap.nix {inherit config pkgs;};
     useSystemClipboard = true;
 
+    autocomplete = {
+      blink-cmp = {
+        enable = true;
+      };
+    };
+
     binds = {
       whichKey = {
         enable = true;
@@ -20,31 +26,25 @@
       enable = true;
     };
 
-    minimap.codewindow = {
-      enable = true;
-    };
-
-    tabline.nvimBufferline = {
-      enable = true;
-    };
-
-    statusline.lualine = {
-      enable = true;
-    };
-
     filetree = {
       neo-tree = {
         enable = true;
       };
     };
 
-    treesitter = {
-      context = {
+    formatter = {
+      conform-nvim = {
         enable = true;
       };
     };
 
-    telescope = {
+    git = {
+      gitsigns = {
+        enable = true;
+      };
+    };
+
+    minimap.codewindow = {
       enable = true;
     };
 
@@ -54,6 +54,53 @@
       };
     };
 
+    projects = {
+      project-nvim = {
+        enable = true;
+        setupOpts = {
+          # manualMode = false;
+          detectionMethods = ["lsp" "pattern" "git"];
+          patterns = [".git" "flake.nix"];
+          # lsp_ignored = [];
+          # exclude_dirs = [];
+          # show_hidden = false;
+          # silent_chdir = true;
+          # scope_chdir = "global";
+        };
+      };
+    };
+
+    snippets = {
+      luasnip = {
+        enable = true;
+      };
+    };
+
+    statusline.lualine = {
+      enable = true;
+    };
+
+    tabline.nvimBufferline = {
+      enable = true;
+    };
+
+    telescope = {
+      enable = true;
+    };
+
+    treesitter = {
+      context = {
+        enable = true;
+      };
+    };
+
+    ui = {
+      noice = {
+        enable = true;
+      };
+    };
+
+    # vim options
     options = {
       # tabs
       tabstop = 2;
