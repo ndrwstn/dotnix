@@ -79,6 +79,7 @@
       "transmission"
       "transmission-remote-gui"
       "vlc"
+      "zen-browser"
       "zoom"
     ];
     brews = [
