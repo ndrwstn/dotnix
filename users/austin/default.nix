@@ -150,7 +150,7 @@ lib.mkMerge [
     home.packages = with pkgs; [
       _1password-cli
       # _1password-gui
-      # age
+      age
       # ansible
       # cloudflared
       # docker
@@ -162,10 +162,11 @@ lib.mkMerge [
       # gcc
       # go-task
       # jq
-      # kubeconform
-      # kubectl
-      # kubernetes-helm
-      # kustomize
+      k9s
+      kubeconform
+      kubectl
+      kubernetes-helm
+      kustomize
       lazygit
       # moreutils
       # nmap
@@ -173,7 +174,7 @@ lib.mkMerge [
       # printrun
       # python3
       # rsync
-      # sops
+      sops
       # stern
       # talosctl
       thefuck
