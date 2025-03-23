@@ -85,6 +85,7 @@
     brews = [
       "displayplacer"
       "ffmpeg"
+      "tag"
       "mas"
     ];
     masApps = {
