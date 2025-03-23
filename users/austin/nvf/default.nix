@@ -148,9 +148,7 @@
     extraPlugins = with pkgs.vimPlugins; {
       telescope-fzf-native = {
         package = telescope-fzf-native-nvim;
-        setup = ''
-          require('telescope').load_extension('fzf')
-        '';
+        setup = "require('telescope').load_extension('fzf')";
       };
       train = {
         package = train-nvim;
