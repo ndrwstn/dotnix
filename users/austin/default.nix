@@ -158,7 +158,7 @@ lib.mkMerge [
       # ffmpeg_7
       fd
       # firefox
-      # fluxcd
+      fluxcd
       # gcc
       # go-task
       # jq
@@ -170,13 +170,13 @@ lib.mkMerge [
       lazygit
       # moreutils
       # nmap
-      # nodejs_22
+      nodejs_22
       # printrun
       # python3
       # rsync
       sops
       # stern
-      # talosctl
+      talosctl
       thefuck
       tlrc
       tree-sitter
