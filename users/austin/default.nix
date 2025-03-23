@@ -166,6 +166,7 @@ lib.mkMerge [
       # kubectl
       # kubernetes-helm
       # kustomize
+      lazygit
       # moreutils
       # nmap
       # nodejs_22
