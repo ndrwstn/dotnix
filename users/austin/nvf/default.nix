@@ -54,13 +54,19 @@
       };
     };
 
+    notes = {
+      obsidian = {
+        enable = true;
+      };
+    };
+
     projects = {
       project-nvim = {
         enable = true;
         setupOpts = {
           # manualMode = false;
           detectionMethods = ["lsp" "pattern" "git"];
-          patterns = [".git" "flake.nix"];
+          patterns = [".git" "flake.nix" ".project-nvim"];
           # lsp_ignored = [];
           # exclude_dirs = [];
           # show_hidden = false;
