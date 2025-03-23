@@ -54,11 +54,11 @@
       };
     };
 
-    notes = {
-      obsidian = {
-        enable = true;
-      };
-    };
+    # notes = {
+    #   obsidian = {
+    #     enable = true;
+    #   };
+    # };
 
     projects = {
       project-nvim = {
