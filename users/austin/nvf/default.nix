@@ -152,6 +152,10 @@
     };
 
     extraPlugins = with pkgs.vimPlugins; {
+      nvim-sops = {
+        package = nvim-sops;
+        setup = "require('nvim_sops').setup {}";
+      };
       telescope-fzf-native = {
         package = telescope-fzf-native-nvim;
         setup = "require('telescope').load_extension('fzf')";
