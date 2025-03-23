@@ -111,6 +111,11 @@ lib.mkMerge [
         settings = import ./nvf {inherit config pkgs;};
       };
 
+      # oh-my-posh
+      oh-my-posh = {
+        enable = true;
+      };
+
       # ripgrep
       ripgrep = {
         enable = true;
