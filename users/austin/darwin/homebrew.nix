@@ -40,7 +40,6 @@
       # "gimp"
       "google-drive"
       # "gqrx"
-      "hazel"
       "home-assistant"
       # "iina"
       # "inkscape"
