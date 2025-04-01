@@ -2,7 +2,7 @@
 {
   config,
   pkgs,
-  unstable,
+  # unstable,
   ...
 }: {
   home.packages = with pkgs; [
@@ -12,6 +12,7 @@
     dbeaver-bin
     freecad
     gimp
+    ghostty
     gqrx
     inkscape
     kicad
@@ -28,6 +29,5 @@
     vscodium-fhs
     wl-clipboard
     ## unstable
-    unstable.ghostty
   ];
 }
