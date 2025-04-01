@@ -27,6 +27,7 @@ pkgs.texlive.combine {
     xkeyval
     pdfpages
     datetime2
+    datetime2-english
     pgfopts
     multirow
     makecell
