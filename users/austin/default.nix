@@ -152,6 +152,7 @@ lib.mkMerge [
       # _1password-gui
       age
       # ansible
+      (aspellWithDicts (dicts: with dicts; [en en-computers en-science la]))
       # cloudflared
       # docker
       eza
