@@ -174,6 +174,7 @@ lib.mkMerge [
       # printrun
       # python3
       # rsync
+      qpdf
       sops
       # stern
       talosctl
