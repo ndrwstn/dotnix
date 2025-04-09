@@ -20,7 +20,7 @@
       "balenaetcher"
       "blender"
       "brave-browser"
-      # "calibre"
+      "calibre"
       "carbon-copy-cloner"
       "claude"
       # "cleanshot"

@@ -8,7 +8,7 @@
   home.packages = with pkgs; [
     alsa-utils
     blender
-    # calibre
+    calibre
     dbeaver-bin
     freecad
     gimp
