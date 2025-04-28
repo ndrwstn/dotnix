@@ -13,6 +13,7 @@ pkgs.texlive.combine {
     lualatex-math
     unicode-math
     graphics
+    texcount
     # Document elements
     enumitem
     nth
