@@ -8,6 +8,9 @@ pkgs.texlive.combine {
     latexmk
     # Core functionality
     latex-bin
+    l3kernel
+    l3packages
+    xkeyval
     # Basic packages
     babel-english
     lualatex-math
@@ -25,7 +28,6 @@ pkgs.texlive.combine {
     xcolor
     setspace
     fancyhdr
-    xkeyval
     pdfpages
     datetime2
     datetime2-english
