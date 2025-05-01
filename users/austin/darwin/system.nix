@@ -18,7 +18,6 @@
           "/Applications/Safari.app"
           "/Applications/Neovide.app"
           "/System/Applications/iPhone Mirroring.app"
-          "/Applications/Claude.app"
         ];
         persistent-others = [
           "/Users/austin/Downloads"
