@@ -106,10 +106,8 @@ lib.mkMerge [
         enable = true;
       };
 
-      nvf = {
-        enable = true;
-        settings = import ./nvf {inherit config pkgs;};
-      };
+      # nixvim
+      nixvim = import ./nixvim {inherit pkgs;};
 
       # oh-my-posh
       oh-my-posh = {

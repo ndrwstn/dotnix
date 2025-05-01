@@ -19,10 +19,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Neovim (??/nvf )
-    nvf = {
-      url = "github:notashelf/nvf";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nixvim = {
+      url = "github:nix-community/nixvim";
     };
   };
 
