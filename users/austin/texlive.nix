@@ -40,5 +40,10 @@ pkgs.texlive.combine {
     pdflscape
     epstopdf
     epstopdf-pkg
+    # Resume
+    moderncv
+    luatexbase
+    # ragged2e
+    changepage
     ;
 }
