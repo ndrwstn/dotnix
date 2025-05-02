@@ -24,5 +24,25 @@
     telescope.extensions.fzf-native.enable = true;
     treesitter-context.enable = true;
     noice.enable = true;
+    vimtex = {
+      enable = true;
+      settings = {
+        view = {
+          method =
+            if pkgs.stdenv.isDarwin
+            then "skim"
+            else "zathura";
+        };
+        compiler = {
+          options = [
+            "-lualatex"
+            "-verbose"
+            "-file-line-error"
+            "-synctex=1"
+            "-interaction=nonstopmode"
+          ];
+        };
+      };
+    };
   };
 }

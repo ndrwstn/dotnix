@@ -5,5 +5,8 @@
     formatOnSave = true;
     lightbulb.enable = true;
     trouble.enable = true;
+    servers = {
+      texlab.enable = true;
+    };
   };
 }

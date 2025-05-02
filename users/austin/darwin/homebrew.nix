@@ -69,7 +69,7 @@
       # "privatevpn" # 2023-03-16 does not work - "can't communicate with helper application"
       # "pycharm-ce"
       "raycast"
-      # "skim"
+      "skim"
       # "soulver"
       # "soundsource"
       # "stremio"

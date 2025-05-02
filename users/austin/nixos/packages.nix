@@ -28,6 +28,8 @@
     vlc
     vscodium-fhs
     wl-clipboard
+    zathura
+    zathura-pdf-mupdf
     ## unstable
   ];
 }
