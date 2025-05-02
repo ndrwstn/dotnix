@@ -9,7 +9,6 @@
 lib.mkMerge [
   {
     # nixos settings that don't deserve separate flake
-    services.dbus.enable = true;
   }
 
   # nixos flakes
