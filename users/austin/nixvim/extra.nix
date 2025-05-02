@@ -4,7 +4,7 @@
     nvim-sops
     telescope-fzf-native-nvim
     train-nvim
-    andrewferrier-wrapping-nvim
+    wrapping-nvim
   ];
 
   extraConfigLua = ''
