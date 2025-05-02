@@ -6,7 +6,7 @@
   lib,
   ...
 }: let
-  texlivePackage = import ./texlive {inherit pkgs;};
+  texlivePackage = import ./texlive.nix {inherit pkgs;};
 in
   lib.mkMerge [
     #####################
@@ -101,11 +101,6 @@ in
               };
             };
           '';
-        };
-
-        # neovim
-        neovim = {
-          enable = true;
         };
 
         # nixvim

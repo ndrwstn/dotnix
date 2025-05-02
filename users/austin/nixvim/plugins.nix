@@ -2,28 +2,84 @@
 {pkgs}: {
   clipboard = {register = "unnamedplus";};
   plugins = {
-    cmp.enable = true;
-    cmp.mapping.confirm = "<C-y>";
-    which-key.enable = true;
-    cheatsheet.enable = true;
-    alpha.enable = true;
-    neo-tree.enable = true;
+    alpha = {
+      enable = true;
+      theme = "dashboard";
+    };
+    bufferline.enable = true;
+    cmp = {
+      enable = true;
+      settings = {
+        # mapping = {
+        #   confirm = "<C-y>";
+        # };
+        sources = [
+          { name = "nvim_lsp"; } # Completions from Language Servers
+          { name = "luasnip"; }  # Completions from Luasnip (you have this enabled)
+          { name = "buffer"; }  # Completions from the current buffer
+          { name = "path"; }    # File path completions
+        ];
+      };
+    };
     conform-nvim.enable = true;
     gitsigns.enable = true;
-    codewindow.enable = true;
-    nvim-notify.enable = true;
+    lsp = {
+      enable = true;
+      servers = {
+        # tex
+        texlab.enable = true;
+        # nix
+        nil_ls.enable = true;
+        # python
+        pyright.enable = true;
+        # lua
+        lua_ls.enable = true;
+        # markdown
+        marksman.enable = true;
+        # sql
+        sqlls = {
+          enable = true;
+          package = pkgs.sqls;
+        };
+      };
+    };
+    lualine.enable = true;
+    luasnip.enable = true;
+    neo-tree.enable = true;
+    noice.enable = true;
     project-nvim = {
       enable = true;
-      detectionMethods = ["lsp" "pattern" "git"];
-      patterns = [".git" "flake.nix" ".project-nvim"];
+      settings = {
+        detection_methods = ["lsp" "pattern" "git"];
+        patterns = [".git" "flake.nix" ".project-nvim"];
+      };
     };
-    luasnip.enable = true;
-    lualine.enable = true;
-    bufferline.enable = true;
+
     telescope.enable = true;
     telescope.extensions.fzf-native.enable = true;
+    treesitter = {
+      enable = true;
+      settings = {
+        ensure_installed = [
+          "nix"
+          "markdown"
+          "markdown_inline"
+          "python"
+          "sql"
+          "lua"
+          "latex"
+          "bash"
+          "json"
+          "yaml"
+          "diff"
+          "toml"
+        ];
+      };
+    };
     treesitter-context.enable = true;
-    noice.enable = true;
+    trouble = {
+      enable = true;
+    };
     vimtex = {
       enable = true;
       settings = {
@@ -44,5 +100,7 @@
         };
       };
     };
+    web-devicons.enable = true;
+    which-key.enable = true;
   };
 }
