@@ -30,6 +30,7 @@
     nixpkgs-unstable,
     nix-darwin,
     home-manager,
+    nixvim,
     ...
   }: let
     # System types to support
@@ -186,6 +187,7 @@
               home-manager.users = userConfigSet;
               home-manager.backupFileExtension = "hmbak";
               home-manager.extraSpecialArgs = {inherit unstable;};
+              home-manager.sharedModules = [nixvim.homeManagerModules.default];
             }
           ]
           ++ sharedModules;
