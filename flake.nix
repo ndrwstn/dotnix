@@ -30,7 +30,6 @@
     nixpkgs-unstable,
     nix-darwin,
     home-manager,
-    nvf,
     ...
   }: let
     # System types to support
@@ -187,7 +186,6 @@
               home-manager.users = userConfigSet;
               home-manager.backupFileExtension = "hmbak";
               home-manager.extraSpecialArgs = {inherit unstable;};
-              home-manager.sharedModules = [nvf.homeManagerModules.default];
             }
           ]
           ++ sharedModules;
