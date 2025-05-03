@@ -23,6 +23,11 @@
     };
     conform-nvim.enable = true;
     gitsigns.enable = true;
+    harpoon = {
+      enable = true;
+      enableTelescope = true;
+      # settings = {};
+    };
     lsp = {
       enable = true;
       servers = {
