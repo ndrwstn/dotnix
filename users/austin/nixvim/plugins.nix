@@ -55,8 +55,18 @@
       };
     };
 
-    telescope.enable = true;
-    telescope.extensions.fzf-native.enable = true;
+    telescope = {
+      enable = true;
+      extensions = {
+        fzf-native = {
+          enable = true;
+        };
+        frecency = {
+          enable = true;
+        };
+      };
+    };
+
     treesitter = {
       enable = true;
       settings = {
