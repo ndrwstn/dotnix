@@ -1,13 +1,13 @@
 # users/austin/nixvim/plugins.nix
-{pkgs}: {
-  clipboard = {register = "unnamedplus";};
+{ pkgs }: {
+  clipboard = { register = "unnamedplus"; };
   plugins = {
 
     alpha = {
       enable = true;
       theme = "dashboard";
     };
-    
+
     bufferline = {
       enable = true;
       settings = {
@@ -104,8 +104,8 @@
     project-nvim = {
       enable = true;
       settings = {
-        detection_methods = ["lsp" "pattern" "git"];
-        patterns = [".git" "flake.nix" ".project-nvim"];
+        detection_methods = [ "lsp" "pattern" "git" ];
+        patterns = [ ".git" "flake.nix" ".project-nvim" ];
       };
     };
 
