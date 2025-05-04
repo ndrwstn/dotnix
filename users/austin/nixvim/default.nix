@@ -24,7 +24,7 @@ lib.mkMerge [
       pkgs.black
       pkgs.isort
       pkgs.nixpkgs-fmt
-      pkgs.prettier
+      pkgs.nodePackages.prettier
       pkgs.shfmt
       pkgs.sqlfluff
       pkgs.stylua
