@@ -36,7 +36,6 @@
     conform-nvim = {
       enable = true;
       settings = {
-        format_on_save = true;
         formatters_by_ft = {
           lua = [ "stylua" ];
           python = [ "isort" "black" ];
