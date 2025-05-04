@@ -2,6 +2,7 @@
 {pkgs}: {
   clipboard = {register = "unnamedplus";};
   plugins = {
+
     alpha = {
       enable = true;
       theme = "dashboard";
@@ -31,10 +32,10 @@
           "<Tab>" = "cmp.mapping.select_next_item()";
         };
         sources = [
-          { name = "nvim_lsp"; } # Completions from Language Servers
-          { name = "luasnip"; }  # Completions from Luasnip (you have this enabled)
-          { name = "buffer"; }  # Completions from the current buffer
-          { name = "path"; }    # File path completions
+          { name = "nvim_lsp"; }
+          { name = "luasnip"; }
+          { name = "buffer"; }
+          { name = "path"; }
         ];
       };
     };
