@@ -148,6 +148,7 @@ in
         age
         # ansible
         (aspellWithDicts (dicts: with dicts; [en en-computers en-science la]))
+        black
         # cloudflared
         # docker
         eza
@@ -157,6 +158,7 @@ in
         fluxcd
         # gcc
         # go-task
+        isort
         # jq
         k9s
         kubeconform
@@ -164,16 +166,27 @@ in
         kubernetes-helm
         kustomize
         lazygit
+        lua-language-server
+        marksman
+        nil
+        nixpkgs-fmt
         # moreutils
         # nmap
         nodejs_22
+        nodePackages.prettier
         # printrun
         # python3
+        pyright
         # rsync
         qpdf
+        shfmt
         sops
+        sqlfluff
+        sqls
+        stylua
         # stern
         talosctl
+        taplo
         thefuck
         tlrc
         tree-sitter
