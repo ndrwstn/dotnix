@@ -36,6 +36,15 @@
     conform-nvim = {
       enable = true;
       settings = {
+        formatters = {
+          nixpkgs-fmt = {
+            command = "nixpkgs-fmt";
+          };
+          sqlfluff = {
+            command = "sqlfluff";
+            args = [ "format" "--dialect" "postgres" "-" ];
+          };
+        };
         formatters_by_ft = {
           lua = [ "stylua" ];
           python = [ "isort" "black" ];
