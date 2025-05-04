@@ -15,11 +15,11 @@
     { key = "<leader>tu"; mode = "n"; action = "<cmd>tabnew %<CR>"; options.desc = "Duplicate Tab"; }
     { key = "<leader>tx"; mode = "n"; action = "<cmd>tabclose<CR>"; options.desc = "Delete Tab"; }
 
-    # Window Management
-    { key = "<leader>s="; mode = "n"; action = "<cmd>resize<CR>"; options.desc = "Equalize Splits"; }
-    { key = "<leader>sh"; mode = "n"; action = "<cmd>split<CR>"; options.desc = "Horizontal Split"; }
-    { key = "<leader>sv"; mode = "n"; action = "<cmd>vsplit<CR>"; options.desc = "Verticle Split"; }
-    { key = "<leader>sx"; mode = "n"; action = "<cmd>close<CR>"; options.desc = "Delete Split"; }
+    # # Window Management
+    # { key = "<leader>s="; mode = "n"; action = "<cmd>resize<CR>"; options.desc = "Equalize Splits"; }
+    # { key = "<leader>sh"; mode = "n"; action = "<cmd>split<CR>"; options.desc = "Horizontal Split"; }
+    # { key = "<leader>sv"; mode = "n"; action = "<cmd>vsplit<CR>"; options.desc = "Verticle Split"; }
+    # { key = "<leader>sx"; mode = "n"; action = "<cmd>close<CR>"; options.desc = "Delete Split"; }
 
     # Harpoon
     # { key = "<leader>hh"; mode = "n"; action = "<cmd>Telescope harpoon marks<CR>"; options.desc = "Show Marks (Harpoon Telescope)"; }
