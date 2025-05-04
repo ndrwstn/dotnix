@@ -1,10 +1,25 @@
 # users/austin/nixvim/keymaps.nix
 {
   keymaps = [
+    { key = "jk"; mode = "i"; action = "<ESC>"; options.desc = "Use \"jk\" to exit (escape) insert mode."; }
+
     # Buffer Navigation
     { key = "<leader>bd"; mode = "n"; action = "<cmd>bdelete<CR>"; options.desc = "Delete Buffer"; }
     { key = "<leader>bn"; mode = "n"; action = "<cmd>bnext<CR>"; options.desc = "Next Buffer"; }
     { key = "<leader>bp"; mode = "n"; action = "<cmd>bprevious<CR>"; options.desc = "Previous Buffer"; }
+
+    # Tab Navigation
+    { key = "<leader>tc"; mode = "n"; action = "<cmd>tabnew<CR>"; options.desc = "Create Tab"; }
+    { key = "<leader>tn"; mode = "n"; action = "<cmd>tabnext<CR>"; options.desc = "Next Tab"; }
+    { key = "<leader>tp"; mode = "n"; action = "<cmd>tabprevious<CR>"; options.desc = "Previous Tab"; }
+    { key = "<leader>tr"; mode = "n"; action = "<cmd>tabclose<CR>"; options.desc = "Delete Tab"; }
+    { key = "<leader>tu"; mode = "n"; action = "<cmd>tabnew %<CR>"; options.desc = "Duplicate Tab"; }
+
+    # Window Management
+    { key = "<leader>s="; mode = "n"; action = "<cmd>resize<CR>"; options.desc = "Equalize Splits"; }
+    { key = "<leader>sh"; mode = "n"; action = "<cmd>split<CR>"; options.desc = "Horizontal Split"; }
+    { key = "<leader>sv"; mode = "n"; action = "<cmd>vsplit<CR>"; options.desc = "Verticle Split"; }
+    { key = "<leader>sx"; mode = "n"; action = "<cmd>close<CR>"; options.desc = "Delete Split"; }
 
     # Harpoon
     # { key = "<leader>hh"; mode = "n"; action = "<cmd>Telescope harpoon marks<CR>"; options.desc = "Show Marks (Harpoon Telescope)"; }
