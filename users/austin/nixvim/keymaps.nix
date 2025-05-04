@@ -4,16 +4,16 @@
     { key = "jk"; mode = "i"; action = "<ESC>"; options.desc = "Use \"jk\" to exit (escape) insert mode."; }
 
     # Buffer Navigation
-    { key = "<leader>bd"; mode = "n"; action = "<cmd>bdelete<CR>"; options.desc = "Delete Buffer"; }
     { key = "<leader>bn"; mode = "n"; action = "<cmd>bnext<CR>"; options.desc = "Next Buffer"; }
     { key = "<leader>bp"; mode = "n"; action = "<cmd>bprevious<CR>"; options.desc = "Previous Buffer"; }
+    { key = "<leader>bx"; mode = "n"; action = "<cmd>bdelete<CR>"; options.desc = "Delete Buffer"; }
 
     # Tab Navigation
     { key = "<leader>tc"; mode = "n"; action = "<cmd>tabnew<CR>"; options.desc = "Create Tab"; }
     { key = "<leader>tn"; mode = "n"; action = "<cmd>tabnext<CR>"; options.desc = "Next Tab"; }
     { key = "<leader>tp"; mode = "n"; action = "<cmd>tabprevious<CR>"; options.desc = "Previous Tab"; }
-    { key = "<leader>tr"; mode = "n"; action = "<cmd>tabclose<CR>"; options.desc = "Delete Tab"; }
     { key = "<leader>tu"; mode = "n"; action = "<cmd>tabnew %<CR>"; options.desc = "Duplicate Tab"; }
+    { key = "<leader>tx"; mode = "n"; action = "<cmd>tabclose<CR>"; options.desc = "Delete Tab"; }
 
     # Window Management
     { key = "<leader>s="; mode = "n"; action = "<cmd>resize<CR>"; options.desc = "Equalize Splits"; }
