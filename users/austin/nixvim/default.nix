@@ -11,15 +11,25 @@ lib.mkMerge [
 		globals = {
 			mapleader = " ";
 			maplocalleader = " ";
-		};
-		extraPackages = [
-			texlivePackage
-			pkgs.nil
-			pkgs.pyright
-			pkgs.lua-language-server
-			pkgs.marksman
-			pkgs.sqls
-		];
+    };
+    extraPackages = [
+      texlivePackage
+      # language servers
+      pkgs.lua-language-server
+      pkgs.marksman
+      pkgs.nil
+      pkgs.pyright
+      pkgs.sqls
+      # formatters
+      pkgs.black
+      pkgs.isort
+      pkgs.nixpkgs-fmt
+      pkgs.prettier
+      pkgs.shfmt
+      pkgs.sqlfluff
+      pkgs.stylua
+      pkgs.taplo
+    ];
 	}
   (import ./keymaps.nix)
   (import ./plugins.nix {inherit pkgs;})

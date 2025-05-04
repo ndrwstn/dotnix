@@ -32,7 +32,26 @@
         ];
       };
     };
-    conform-nvim.enable = true;
+
+    conform-nvim = {
+      enable = true;
+      settings = {
+        format_on_save = true;
+        formatters_by_ft = {
+          lua = [ "stylua" ];
+          python = [ "isort" "black" ];
+          nix = [ "nixpkgs-fmt" ];
+          markdown = [ "prettier" ];
+          sh = [ "shfmt" ];
+          bash = [ "shfmt" ];
+          json = [ "prettier" ];
+          yaml = [ "prettier" ];
+          toml = [ "taplo" ];
+          sql = [ "sqlfluff" ];
+        };
+      };
+    };
+
     gitsigns.enable = true;
     harpoon = {
       enable = true;
