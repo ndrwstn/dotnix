@@ -49,5 +49,8 @@
     { key = "<leader>fh"; mode = "n"; action = "<cmd>Telescope harpoon marks<CR>"; options.desc = "Find Marks (Telescope)"; }
     { key = "<leader>fp"; mode = "n"; action = "<cmd>Telescope projects<CR>"; options.desc = "Find Projects (Telescope)"; }
     { key = "<leader>fr"; mode = "n"; action = "<cmd>Telescope frecency<CR>"; options.desc = "Find Recent/Frequent (Telescope)"; }
+
+    # Miscellaneous
+    { key = "<leader>qf"; mode = "n"; action = "<cmd>Format<CR>"; options.desc = "Format Buffer (Conform)"; }
   ];
 }
