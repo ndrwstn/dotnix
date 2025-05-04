@@ -6,7 +6,18 @@
       enable = true;
       theme = "dashboard";
     };
-    bufferline.enable = true;
+    
+    bufferline = {
+      enable = true;
+      settings = {
+        options = {
+          diagnostics = "nvim_lsp";
+          mode = "tabs";
+          separator_style = "slant";
+        };
+      };
+    };
+
     cmp = {
       enable = true;
       settings = {
