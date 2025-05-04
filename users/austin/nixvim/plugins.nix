@@ -21,9 +21,15 @@
     cmp = {
       enable = true;
       settings = {
-        # mapping = {
-        #   confirm = "<C-y>";
-        # };
+        mapping = {
+          "<C-Space>" = "cmp.mapping.complete()";
+          "<C-e>" = "cmp.mapping.close()";
+          "<CR>" = "cmp.mapping.confirm({ select = true })";
+          "<PageDown>" = "cmp.mapping.scroll_docs(4)";
+          "<PageUp>" = "cmp.mapping.scroll_docs(-4)";
+          "<S-Tab>" = "cmp.mapping.select_prev_item()";
+          "<Tab>" = "cmp.mapping.select_next_item()";
+        };
         sources = [
           { name = "nvim_lsp"; } # Completions from Language Servers
           { name = "luasnip"; }  # Completions from Luasnip (you have this enabled)
