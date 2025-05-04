@@ -12,6 +12,7 @@
     require('nvim_sops').setup {}
     require('wrapping').setup {}
     require('codewindow').setup {}
+    require('train').setup {}
     vim.notify = require("notify")
   '';
 }
