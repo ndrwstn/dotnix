@@ -1,5 +1,5 @@
 # users/austin/nixvim/extra.nix
-{pkgs}: {
+{ pkgs }: {
   extraPlugins = with pkgs.vimPlugins; [
     codewindow-nvim
     nvim-notify
