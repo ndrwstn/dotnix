@@ -1,8 +1,6 @@
-# systems/darwin/homebrew.nix
-{
-  config,
-  pkgs,
-  ...
+{ config
+, pkgs
+, ...
 }: {
   homebrew = {
     enable = true;
@@ -86,6 +84,7 @@
       "displayplacer"
       "ffmpeg"
       "tag"
+      "m1ddc"
       "mas"
     ];
     masApps = {
