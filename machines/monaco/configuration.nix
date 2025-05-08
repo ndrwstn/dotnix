@@ -1,8 +1,7 @@
-# machines/plutonium/configuration.nix
-{
-  config,
-  pkgs,
-  ...
+# machines/monaco/configuration.nix
+{ config
+, pkgs
+, ...
 }: {
   # Increase download-buffer to 1GB
   # Monaco has 64GB shared RAM.
