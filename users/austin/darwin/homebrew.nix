@@ -1,3 +1,4 @@
+# users/austin/darwin/homebrew.nix
 { config
 , pkgs
 , ...
@@ -84,7 +85,7 @@
       "displayplacer"
       "ffmpeg"
       "tag"
-      "m1ddc"
+      # "m1ddc"
       "mas"
     ];
     masApps = {

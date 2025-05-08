@@ -17,9 +17,20 @@
   nixpkgs.config.allowUnfree = true;
 
   # System packages
-  environment.systemPackages = with pkgs; [
-    coreutils
-    gnused
+  environment = {
+    systemPath = [
+      "/opt/homebrew/bin"
+      "/opt/homebrew/sbin"
+    ];
+    systemPackages = with pkgs; [
+      coreutils
+      gnused
+    ];
+  };
+
+  # homebrew
+  homebrew.brews = [
+    "m1ddc"
   ];
 
   # Set nix-darwin state version
