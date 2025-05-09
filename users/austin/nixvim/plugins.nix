@@ -13,7 +13,7 @@
       settings = {
         options = {
           diagnostics = "nvim_lsp";
-          mode = "tabs";
+          mode = "buffers";
           separator_style = "slant";
         };
       };
