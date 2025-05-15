@@ -7,7 +7,6 @@
 		expandtab = true;
 		number = true;
 		relativenumber = true;
-		wrap = true;
 		termguicolors = true;
 		mouse = "a";	
 		linebreak = true;
@@ -16,4 +15,5 @@
 		signcolumn = "yes";
 		guifont = "Inconsolata Nerd Font:h17";
 	};
+    # wrap = true; # handled by wrapping-nvim in `./extra.nix`.
 }
