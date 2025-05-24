@@ -1,9 +1,12 @@
 # systems/darwin/system.nix
-{
-  config,
-  pkgs,
-  ...
+{ config
+, pkgs
+, ...
 }: {
+  # fix for darwin-25.05 needing 'primaryUser' for transition period
+  # - probably could just move the following settings to my user flake?
+  system.primaryUser = "austin";
+
   system.defaults = {
     finder = {
       ShowStatusBar = true;
