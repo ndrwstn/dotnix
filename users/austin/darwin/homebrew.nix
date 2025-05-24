@@ -39,6 +39,7 @@
       # "gimp"
       "google-drive"
       # "gqrx"
+      # "halloy" # 2025-05-18 doesn't connect to irchighway.net
       "home-assistant"
       # "iina"
       # "inkscape"
@@ -74,7 +75,7 @@
       # "stremio"
       "sublime-merge"
       "sublime-text"
-      # "textual"
+      "textual"
       "transmission"
       "transmission-remote-gui"
       "vlc"
