@@ -11,8 +11,9 @@
     calibre
     dbeaver-bin
     freecad
-    gimp
+    gcs
     ghostty
+    gimp
     gqrx
     inkscape
     kicad

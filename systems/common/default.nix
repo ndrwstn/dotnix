@@ -10,6 +10,7 @@
 
   # Common system packages
   environment.systemPackages = with pkgs; [
+    jdk17
     nh
     vim
     wget
