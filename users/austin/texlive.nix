@@ -1,5 +1,5 @@
 # users/austin/texlive.nix
-{pkgs}:
+{ pkgs }:
 pkgs.texlive.combine {
   inherit
     (pkgs.texlive)
@@ -45,5 +45,7 @@ pkgs.texlive.combine {
     luatexbase
     # ragged2e
     changepage
+    # Formatter
+    latexindent
     ;
 }

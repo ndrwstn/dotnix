@@ -67,6 +67,7 @@
           yaml = [ "prettier" ];
           toml = [ "taplo" ];
           sql = [ "sqlfluff" ];
+          latex = [ "latexindent" ];
         };
       };
     };
