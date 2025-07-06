@@ -16,7 +16,7 @@
           "/System/Applications/Reminders.app"
           "/System/Applications/Messages.app"
           "/Applications/Safari.app"
-          "/Applications/Neovide.app"
+          "/Applications/Nix Apps/Neovide.app"
           "/System/Applications/iPhone Mirroring.app"
         ];
         persistent-others = [

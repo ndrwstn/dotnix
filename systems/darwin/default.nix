@@ -82,6 +82,11 @@ in {
     ./apps
   ];
 
+  # any GUI apps must be added system-wide
+  environment.systemPackages = [
+    pkgs.neovide
+  ];
+
   # Fix NIX_PATH for darwin systems
   nix.nixPath = [
     "nixpkgs=flake:nixpkgs"
