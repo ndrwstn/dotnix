@@ -1,10 +1,9 @@
 # systems/common/users.nix
 # Common user configurations
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }: {
   programs.zsh.enable = true;
 
@@ -20,28 +19,28 @@
         description = "Jessica Hirschhorn";
       };
     }
-    
+
     # NixOS-specific user configuration
     (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
       austin = {
         isNormalUser = true;
-        extraGroups = ["networkmanager" "wheel" "disk" "plugdev"];
+        extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" "dialout" ];
         home = "/home/austin";
       };
-      
+
       jessica = {
         isNormalUser = true;
-        extraGroups = ["networkmanager"];
+        extraGroups = [ "networkmanager" ];
         home = "/home/jessica";
       };
     })
-    
+
     # Darwin-specific user configuration
     (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       austin = {
         home = "/Users/austin";
       };
-      
+
       jessica = {
         home = "/Users/jessica";
       };
