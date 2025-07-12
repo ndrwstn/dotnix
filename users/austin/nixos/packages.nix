@@ -1,8 +1,7 @@
 # users/austin/nixos/packages.nix
-{
-  config,
-  pkgs,
-  # unstable,
+{ config
+, pkgs
+, # unstable,
   ...
 }: {
   home.packages = with pkgs; [
@@ -19,6 +18,7 @@
     kicad
     krita
     libreoffice-qt6-fresh
+    minicom
     neovide
     obs-studio
     obsidian
