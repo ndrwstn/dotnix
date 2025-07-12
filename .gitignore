@@ -36,6 +36,7 @@ result-*
 # ---- Other ----
 # Created to help AI with troublshooting
 nix_directory_tree.txt
-
+# Rsync File used to avoid copying Carbon Copy Cloner files on other machine
+rsync-ccc-ignore
 # font directory
 systems/common/fonts/
