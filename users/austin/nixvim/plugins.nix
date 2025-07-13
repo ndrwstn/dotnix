@@ -1,5 +1,8 @@
 # users/austin/nixvim/plugins.nix
-{ pkgs }: {
+{
+  pkgs,
+  texlivePackage,
+}: {
   clipboard = { register = "unnamedplus"; };
   plugins = {
 
@@ -147,13 +150,9 @@
     };
     vimtex = {
       enable = true;
+      texlivePackage = texlivePackage;
       settings = {
-        view = {
-          method =
-            if pkgs.stdenv.isDarwin
-            then "skim"
-            else "zathura";
-        };
+        view_method = ( if pkgs.stdenv.isDarwin then "skim" else "zathura" );
         compiler = {
           options = [
             "-lualatex"

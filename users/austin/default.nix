@@ -104,7 +104,7 @@ in
         };
 
         # nixvim
-        nixvim = import ./nixvim {inherit pkgs lib texlivePackage;};
+        nixvim = import ./nixvim {inherit config pkgs lib texlivePackage;};
 
         # oh-my-posh
         oh-my-posh = {
