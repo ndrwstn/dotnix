@@ -25,6 +25,7 @@
     openscad
     orca-slicer
     plex-media-player
+    python313
     rtl-sdr
     vlc
     vscodium-fhs
