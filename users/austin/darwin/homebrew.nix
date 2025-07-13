@@ -57,7 +57,6 @@
       "moom"
       "mqttx"
       "name-mangler"
-      "neovide"
       # "numi"
       "obs"
       "obsidian"
