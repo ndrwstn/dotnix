@@ -24,7 +24,8 @@
     (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
       austin = {
         isNormalUser = true;
-        extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" "dialout" ];
+        # extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" "dialout" ];
+        extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" ];
         home = "/home/austin";
       };
 
