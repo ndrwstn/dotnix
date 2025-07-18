@@ -8,6 +8,11 @@
   # Rebuilds on Silver should be an exclusive activity
   nix.settings.download-buffer-size = 1000000000;
 
+  # Allow the insecure broadcom-sta package for WiFi
+  nixpkgs.config.permittedInsecurePackages = [
+    "broadcom-sta-6.30.223.271-57-6.12.39"
+  ];
+
   # Use the systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
