@@ -1,9 +1,8 @@
 # systems/darwin/apps/default.nix
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }: {
   # Import all application modules
   imports = [

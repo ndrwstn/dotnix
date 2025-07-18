@@ -1,9 +1,8 @@
 # users/austin/darwin/default.nix
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }: {
   # Environmental Variables
   home.sessionVariables = {

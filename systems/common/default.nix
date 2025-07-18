@@ -1,12 +1,11 @@
 # systems/common/default.nix
 
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }: {
-  imports = [./users.nix];
+  imports = [ ./users.nix ];
 
   # Common system packages
   environment.systemPackages = with pkgs; [

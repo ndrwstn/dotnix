@@ -1,10 +1,9 @@
 # users/austin/nixvim/default.nix
-{
-  config,
-  pkgs,
-  lib,
-  texlivePackage,
-  ...
+{ config
+, pkgs
+, lib
+, texlivePackage
+, ...
 }:
 lib.mkMerge [
   {

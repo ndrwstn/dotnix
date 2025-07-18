@@ -1,8 +1,7 @@
 # users/austin/darwin/system.nix
-{
-  config,
-  pkgs,
-  ...
+{ config
+, pkgs
+, ...
 }: {
   system = {
     defaults = {
@@ -29,8 +28,7 @@
       };
 
       CustomUserPreferences = {
-        "com.apple.finder" = {
-        };
+        "com.apple.finder" = { };
         "com.apple.desktopservices" = {
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;

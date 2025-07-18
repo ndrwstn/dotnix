@@ -1,8 +1,7 @@
 # machines/silver/configuration.nix
-{
-  config,
-  pkgs,
-  ...
+{ config
+, pkgs
+, ...
 }: {
   # Increase download-buffer to 1GB
   # Rebuilds on Silver should be an exclusive activity

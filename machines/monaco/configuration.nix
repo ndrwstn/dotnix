@@ -25,7 +25,7 @@
     systemPackages = with pkgs; [
       coreutils
       gnused
-#      spacenavd # <- future spacenav support?
+      #      spacenavd # <- future spacenav support?
     ];
   };
 

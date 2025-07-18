@@ -3,13 +3,14 @@
 
 {
   home.username = "jessica";
-  home.homeDirectory = if pkgs.stdenv.isDarwin 
+  home.homeDirectory =
+    if pkgs.stdenv.isDarwin
     then "/Users/jessica"
     else "/home/jessica";
-  
+
   # Basic configuration
   home.stateVersion = "24.05";
-  
+
   # Enable XDG
   xdg.enable = true;
 

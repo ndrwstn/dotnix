@@ -1,10 +1,9 @@
 # systems/nixos/default.nix
 # NixOS-specific configuration
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }: {
   # Enable the X11 windowing system by default
   services.xserver = {
