@@ -121,8 +121,9 @@
           hardwareConfig =
             let
               path = ./machines + "/${name}/hardware-configuration.nix";
+              pathExists = builtins.pathExists path;
             in
-            if builtins.pathExists path
+            if pathExists
             then path
             else null;
 
