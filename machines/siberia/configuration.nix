@@ -1,4 +1,4 @@
-# machines/silver/configuration.nix
+# machines/siberia/configuration.nix
 { config
 , pkgs
 , ...
