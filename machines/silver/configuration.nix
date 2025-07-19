@@ -12,6 +12,10 @@
     "broadcom-sta-6.30.223.271-57-6.12.39"
   ];
 
+  # Use new OpenGL renderer on old MacBook Pro
+  environment.variables = {
+    GSK_RENDERER = "ngl";
+  };
   # Use the systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
