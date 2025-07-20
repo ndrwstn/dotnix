@@ -153,7 +153,7 @@
       texlivePackage = texlivePackage;
       settings = {
         view_method = (if pkgs.stdenv.isDarwin then "skim" else "zathura");
-        compiler = {
+        compiler_latexmk = {
           options = [
             "-lualatex"
             "-verbose"
