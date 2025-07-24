@@ -162,6 +162,10 @@
             "-interaction=nonstopmode"
           ];
         };
+        quickfix_ignore_filters = [
+          "Underfull"
+          "Overfull"
+        ];
       };
     };
     web-devicons.enable = true;
