@@ -143,8 +143,6 @@ lib.mkMerge [
 
     # Common packages across all systems
     home.packages = with pkgs; [
-      _1password-cli
-      # _1password-gui
       age
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
