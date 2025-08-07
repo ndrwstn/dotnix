@@ -167,6 +167,7 @@ lib.mkMerge [
       lua-language-server
       marksman
       nil
+      nix-prefetch-scripts
       nixpkgs-fmt
       # moreutils
       # nmap
@@ -189,6 +190,7 @@ lib.mkMerge [
       tlrc
       tree-sitter
       # ungoogled-chromium
+      watch
       # yed
       # yq
       # yt-dlp
