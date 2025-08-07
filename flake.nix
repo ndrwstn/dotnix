@@ -188,6 +188,7 @@
                 ./systems/common
                 sysConfig.systemModule
                 sysConfig.hmModule
+                { nixpkgs.overlays = [ (import overlays/gcs.nix) ]; }
                 {
                   home-manager.useGlobalPkgs = true;
                   home-manager.useUserPackages = true;
