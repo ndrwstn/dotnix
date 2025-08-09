@@ -12,7 +12,6 @@
     calibre
     dbeaver-bin
     freecad
-    gcs
     ghostty
     gimp
     gqrx

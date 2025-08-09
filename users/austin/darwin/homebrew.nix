@@ -33,7 +33,6 @@
       # "firefox"
       # "forklift"
       # "freecad"
-      "gcs"
       "ghostty"
       # "gimp"
       "google-drive"

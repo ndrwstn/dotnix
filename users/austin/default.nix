@@ -156,6 +156,7 @@ lib.mkMerge [
       fluxcd
       # gcc
       # go-task
+      gcs
       isort
       # jq
       k9s
