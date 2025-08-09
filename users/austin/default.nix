@@ -194,6 +194,8 @@ lib.mkMerge [
       # yed
       # yq
       # yt-dlp
+      ## unstable
+      unstable.opencode
       ## fonts
       nerd-fonts.inconsolata
       ## defined variables
