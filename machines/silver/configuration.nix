@@ -1,4 +1,5 @@
 # machines/silver/configuration.nix
+# SYSTEM_TYPE: x86_64-linux
 { config
 , pkgs
 , ...

@@ -25,6 +25,50 @@
   ```
 */
 rec {
+  # Function to determine system type for a machine
+  extractSystemType = { 
+    # Machine name
+    name,
+    # Base path to machines directory
+    machinesPath ? ./machines,
+    # Default system type if cannot be determined
+    defaultSystemType ? "x86_64-linux",
+  }:
+    let
+      # Path to configuration.nix
+      configPath = machinesPath + "/${name}/configuration.nix";
+      hasConfig = builtins.pathExists configPath;
+      
+      # Path to system.nix (for backward compatibility)
+      systemNixPath = machinesPath + "/${name}/system.nix";
+      hasSystemNix = builtins.pathExists systemNixPath;
+      
+      # Try to extract system type from configuration.nix comment
+      systemTypeFromComment = 
+        if hasConfig then
+          let
+            # Read the file as text
+            configText = builtins.readFile configPath;
+            # Look for SYSTEM_TYPE comment pattern
+            commentMatch = builtins.match ".*#[[:space:]]*SYSTEM_TYPE:[[:space:]]*([a-zA-Z0-9_-]+).*" configText;
+          in
+            if commentMatch != null then builtins.elemAt commentMatch 0
+            else null
+        else
+          null;
+      
+      # Fall back to system.nix for backward compatibility
+      systemTypeFromSystemNix = 
+        if hasSystemNix then
+          import systemNixPath
+        else
+          null;
+    in
+      # Priority: 1. Comment, 2. system.nix, 3. default
+      if systemTypeFromComment != null then systemTypeFromComment
+      else if systemTypeFromSystemNix != null then systemTypeFromSystemNix
+      else defaultSystemType;
+
   # Directory-based discovery function
   discoverDirectories = { 
     basePath,

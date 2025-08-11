@@ -1,4 +1,5 @@
 # machines/plutonium/configuration.nix
+# SYSTEM_TYPE: aarch64-darwin
 { config, pkgs, ... }:
 
 {

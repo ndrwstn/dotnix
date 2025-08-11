@@ -97,12 +97,11 @@
       # Function to create machine configuration
       buildMachine = name:
         let
-          # Detect system type from file or default
-          systemFile = ./machines + "/${name}/system.nix";
-          systemType =
-            if builtins.pathExists systemFile
-            then import systemFile
-            else "x86_64-linux"; # Default to x86_64-linux
+          # Use the new function to determine system type
+          systemType = autoDiscovery.extractSystemType {
+            inherit name;
+            machinesPath = ./machines;
+          };
 
           # Detect OS type from system string
           osType =
@@ -192,7 +191,12 @@
       # Function to filter by system type pattern
       filterSystems = pattern:
         nixpkgs.lib.filterAttrs
-          (name: _: builtins.match pattern (import (./machines + "/${name}/system.nix")) != null)
+          (name: _: 
+            let 
+              systemType = autoDiscovery.extractSystemType { inherit name; machinesPath = ./machines; };
+            in
+            builtins.match pattern systemType != null
+          )
           machineAttrs;
 
       # Split by OS type
