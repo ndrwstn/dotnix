@@ -7,15 +7,26 @@
 }: {
   imports = [ ./users.nix ];
 
-  # Common system packages
-  environment.systemPackages = with pkgs; [
-    jdk17
-    nh
-    vim
-    wget
-    zsh
-  ];
+  options = {
+    # Define custom options for machine metadata
+    _astn = lib.mkOption {
+      type = lib.types.attrsOf lib.types.anything;
+      default = {};
+      description = "Custom namespace for machine-specific metadata";
+    };
+  };
 
-  # Allow unfree packages globally
-  nixpkgs.config.allowUnfree = true;
+  config = {
+    # Common system packages
+    environment.systemPackages = with pkgs; [
+      jdk17
+      nh
+      vim
+      wget
+      zsh
+    ];
+
+    # Allow unfree packages globally
+    nixpkgs.config.allowUnfree = true;
+  };
 }

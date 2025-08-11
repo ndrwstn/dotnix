@@ -43,16 +43,22 @@ rec {
       systemNixPath = machinesPath + "/${name}/system.nix";
       hasSystemNix = builtins.pathExists systemNixPath;
       
-      # Try to extract system type from configuration.nix comment
-      systemTypeFromComment = 
+      # Try to extract system type from configuration.nix custom namespace
+      systemTypeFromCustomNamespace = 
         if hasConfig then
           let
-            # Read the file as text
+            # Read the file as text to avoid evaluation issues
             configText = builtins.readFile configPath;
-            # Look for SYSTEM_TYPE comment pattern
+            # Look for _astn.machineSystem pattern
+            namespaceMatch = builtins.match ".*_astn[[:space:]]*=[[:space:]]*[{][[:space:]]*machineSystem[[:space:]]*=[[:space:]]*\"([^\"]+)\".*" configText;
+            namespaceMatch2 = builtins.match ".*_astn[[:space:]]*[.][[:space:]]*machineSystem[[:space:]]*=[[:space:]]*\"([^\"]+)\".*" configText;
+            
+            # For backward compatibility, also check for SYSTEM_TYPE comment
             commentMatch = builtins.match ".*#[[:space:]]*SYSTEM_TYPE:[[:space:]]*([a-zA-Z0-9_-]+).*" configText;
           in
-            if commentMatch != null then builtins.elemAt commentMatch 0
+            if namespaceMatch != null then builtins.elemAt namespaceMatch 0
+            else if namespaceMatch2 != null then builtins.elemAt namespaceMatch2 0
+            else if commentMatch != null then builtins.elemAt commentMatch 0
             else null
         else
           null;
@@ -64,8 +70,8 @@ rec {
         else
           null;
     in
-      # Priority: 1. Comment, 2. system.nix, 3. default
-      if systemTypeFromComment != null then systemTypeFromComment
+      # Priority: 1. Custom namespace, 2. system.nix, 3. default
+      if systemTypeFromCustomNamespace != null then systemTypeFromCustomNamespace
       else if systemTypeFromSystemNix != null then systemTypeFromSystemNix
       else defaultSystemType;
 

@@ -1,8 +1,9 @@
 # machines/plutonium/configuration.nix
-# SYSTEM_TYPE: aarch64-darwin
 { config, pkgs, ... }:
 
 {
+  # Machine metadata (used by flake.nix, does not affect system configuration)
+  _astn.machineSystem = "aarch64-darwin";
   # Define hostname
   networking.hostName = "Plutonium";
 
