@@ -5,83 +5,35 @@
 , ...
 }:
 let
-  # Get list of active users
+  # Import our auto-discovery library
+  autoDiscovery = import ../../lib/auto-discovery.nix { inherit lib; };
+  
+  # Get list of user directories
   usersDir = ../../users;
-  usersList = builtins.attrNames (builtins.readDir usersDir);
-
-  # Function to check if a user has darwin config files
-  hasUserHomebrew = user:
-    builtins.pathExists (usersDir + "/${user}/darwin/homebrew.nix");
-
-  hasUserSystem = user:
-    builtins.pathExists (usersDir + "/${user}/darwin/system.nix");
-
-  # Filter to users that have configs
-  usersWithHomebrew = builtins.filter hasUserHomebrew usersList;
-  usersWithSystem = builtins.filter hasUserSystem usersList;
-
-  # Import user homebrew configs if they exist and extract the homebrew attribute
-  userHomebrewConfigs =
-    map
-      (
-        user:
-        let
-          imported = import (usersDir + "/${user}/darwin/homebrew.nix") {
-            inherit config pkgs lib;
-          };
-        in
-        if builtins.hasAttr "homebrew" imported
-        then imported.homebrew
-        else lib.warn "User ${user}'s homebrew.nix doesn't contain a homebrew attribute" { }
-      )
-      usersWithHomebrew;
-
-  # Import user system configs if they exist and extract the system attribute
-  userSystemConfigs =
-    map
-      (
-        user:
-        let
-          imported = import (usersDir + "/${user}/darwin/system.nix") {
-            inherit config pkgs lib;
-          };
-        in
-        if builtins.hasAttr "system" imported
-        then imported.system
-        else lib.warn "User ${user}'s system.nix doesn't contain a system attribute" { }
-      )
-      usersWithSystem;
-
-  # System configs - extract the relevant attributes
-  systemHomebrew =
-    if builtins.pathExists ./homebrew.nix
-    then
-      let
-        imported = import ./homebrew.nix { inherit config pkgs lib; };
-      in
-      if builtins.hasAttr "homebrew" imported
-      then [ imported.homebrew ]
-      else lib.warn "System homebrew.nix doesn't contain a homebrew attribute" [ ]
-    else [ ];
-
-  systemDefaults =
-    if builtins.pathExists ./system.nix
-    then
-      let
-        imported = import ./system.nix { inherit config pkgs lib; };
-      in
-      if builtins.hasAttr "system" imported
-      then [ imported.system ]
-      else lib.warn "System system.nix doesn't contain a system attribute" [ ]
-    else [ ];
-
-  # Combine all configurations
-  allHomebrewConfigs = systemHomebrew ++ userHomebrewConfigs;
-  allSystemConfigs = systemDefaults ++ userSystemConfigs;
-
-  # Merge all configurations into single configs
-  mergedHomebrewConfig = lib.mkMerge allHomebrewConfigs;
-  mergedSystemConfig = lib.mkMerge allSystemConfigs;
+  
+  # Get all user directories
+  userDirs = map (user: usersDir + "/${user}") 
+    (autoDiscovery.discoverDirectories { 
+      basePath = usersDir;
+    });
+  
+  # Discover and merge homebrew configurations
+  mergedHomebrewConfig = autoDiscovery.discoverAndMergeConfigs {
+    directories = [ ./. ] ++ userDirs;
+    filePath = "darwin/homebrew.nix";
+    attributeName = "homebrew";
+    importArgs = { inherit config pkgs lib; };
+  };
+  
+  # Discover and merge system configurations
+  mergedSystemDefaults = autoDiscovery.discoverAndMergeConfigs {
+    directories = [ ./. ] ++ userDirs;
+    filePath = "darwin/system.nix";
+    attributeName = "system";
+    importArgs = { inherit config pkgs lib; };
+    warnOnMissingAttr = true;
+    debug = true;
+  };
 in
 {
   # Import the apps modules
@@ -102,6 +54,9 @@ in
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
 
-  # Apply the merged System config directly
-  system = mergedSystemConfig;
+  # Apply the merged System defaults with primaryUser
+  system = lib.mkMerge [
+    mergedSystemDefaults
+    { primaryUser = "austin"; }
+  ];
 }

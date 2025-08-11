@@ -34,6 +34,9 @@
     , ...
     }:
     let
+      # Import our auto-discovery library
+      autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
+      
       # System types to support
       supportedSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
@@ -69,19 +72,12 @@
           })
       ];
 
-      # Get all directory names in machines/
-      machineNames = builtins.attrNames (builtins.readDir ./machines);
-
-      # Filter to only directories that have configuration.nix
-      validMachines =
-        builtins.filter
-          (
-            name:
-            name
-            != "common"
-            && builtins.pathExists (./machines + "/${name}/configuration.nix")
-          )
-          machineNames;
+      # Discover valid machine directories using our abstraction
+      validMachines = autoDiscovery.discoverDirectories {
+        basePath = ./machines;
+        excludeNames = [ "common" ];
+        filterPredicate = dir: builtins.pathExists (dir + "/configuration.nix");
+      };
 
       # Common system configuration based on OS type
       systemConfig = type:
@@ -127,44 +123,29 @@
             then path
             else null;
 
-          # User configuration - reads directory for users
+          # User configuration using auto-discovery
           usersDir = ./users;
-          usersList = builtins.attrNames (builtins.readDir usersDir);
-
+          
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
           };
 
+          # Discover valid user directories
+          validUsers = autoDiscovery.discoverDirectories {
+            basePath = usersDir;
+            filterPredicate = dir: builtins.pathExists (dir + "/default.nix");
+          };
+          
           # Function to build user imports
-          buildUserConfig = user:
-            let
-              userPath = usersDir + "/${user}";
-              hasConfig = builtins.pathExists (userPath + "/default.nix");
-            in
-            if hasConfig
-            then {
-              name = user;
-              value =
-                { config
-                , pkgs
-                , lib
-                , ...
-                }:
-                import userPath { inherit config pkgs lib unstable; };
-            }
-            else null;
-
-          # Generate user configurations, filter out nulls
-          userConfigs = builtins.filter (x: x != null) (map buildUserConfig usersList);
+          buildUserConfig = user: {
+            name = user;
+            value = { config, pkgs, lib, ... }:
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable; };
+          };
 
           # Create attrset of user configs
-          userConfigSet = builtins.listToAttrs (map
-            (cfg: {
-              name = cfg.name;
-              value = cfg.value;
-            })
-            userConfigs);
+          userConfigSet = builtins.listToAttrs (map buildUserConfig validUsers);
 
           # Machine modules - with hardware if it exists
           machineModules =
@@ -219,6 +200,12 @@
       darwinConfigs = filterSystems ".*-darwin";
     in
     {
+      # Expose our library for other flakes to use
+      lib = {
+        autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
+      };
+      
+      # System configurations
       nixosConfigurations = nixosConfigs;
       darwinConfigurations = darwinConfigs;
     };
