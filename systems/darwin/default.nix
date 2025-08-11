@@ -26,11 +26,13 @@ let
   };
   
   # Discover and merge system configurations
-  mergedSystemConfig = autoDiscovery.discoverAndMergeConfigs {
+  mergedSystemDefaults = autoDiscovery.discoverAndMergeConfigs {
     directories = [ ./. ] ++ userDirs;
     filePath = "darwin/system.nix";
     attributeName = "system";
     importArgs = { inherit config pkgs lib; };
+    warnOnMissingAttr = true;
+    debug = true;
   };
 in
 {
@@ -52,6 +54,9 @@ in
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
 
-  # Apply the merged System config directly
-  system = mergedSystemConfig;
+  # Apply the merged System defaults with primaryUser
+  system = lib.mkMerge [
+    mergedSystemDefaults
+    { primaryUser = "austin"; }
+  ];
 }

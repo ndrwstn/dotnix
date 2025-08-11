@@ -59,6 +59,8 @@ rec {
     warnOnMissingAttr ? true,
     # Default value to use if attribute is missing
     defaultValue ? {},
+    # Debug mode
+    debug ? false,
   }:
     let
       # Function to check if a file exists
@@ -67,13 +69,21 @@ rec {
       # Filter directories to those that have the file
       dirsWithFile = builtins.filter fileExists directories;
       
+      # Debug output
+      _ = if debug then builtins.trace "Directories with ${filePath}: ${builtins.toJSON dirsWithFile}" null else null;
+      
       # Import each file and extract the attribute
       importedConfigs = map 
         (dir: 
           let
-            imported = import (dir + "/${filePath}") importArgs;
+            fullPath = dir + "/${filePath}";
+            imported = import fullPath importArgs;
+            hasAttr = builtins.hasAttr attributeName imported;
+            
+            # Debug output
+            _ = if debug then builtins.trace "Importing ${fullPath}, has ${attributeName}: ${builtins.toJSON hasAttr}" null else null;
           in
-          if builtins.hasAttr attributeName imported
+          if hasAttr
           then imported.${attributeName}
           else 
             if warnOnMissingAttr 
