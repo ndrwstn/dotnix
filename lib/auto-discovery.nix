@@ -33,14 +33,22 @@ rec {
     machinesPath ? ./machines,
     # Default system type if cannot be determined
     defaultSystemType ? "x86_64-linux",
+    # Whether to use case-insensitive matching
+    caseInsensitive ? true,
   }:
     let
+      # Find the actual directory name (case-insensitive if enabled)
+      actualName = 
+        if caseInsensitive
+        then findDirectoryCaseInsensitive { name = name; basePath = machinesPath; }
+        else name;
+      
       # Path to configuration.nix
-      configPath = machinesPath + "/${name}/configuration.nix";
+      configPath = machinesPath + "/${actualName}/configuration.nix";
       hasConfig = builtins.pathExists configPath;
       
       # Path to system.nix (for backward compatibility)
-      systemNixPath = machinesPath + "/${name}/system.nix";
+      systemNixPath = machinesPath + "/${actualName}/system.nix";
       hasSystemNix = builtins.pathExists systemNixPath;
       
       # Try to extract system type from configuration.nix custom namespace
@@ -74,6 +82,33 @@ rec {
       if systemTypeFromCustomNamespace != null then systemTypeFromCustomNamespace
       else if systemTypeFromSystemNix != null then systemTypeFromSystemNix
       else defaultSystemType;
+
+  # Function to find a directory case-insensitively
+  findDirectoryCaseInsensitive = {
+    # Base path to search in
+    basePath,
+    # Name to find (case-insensitive)
+    name,
+  }:
+    let
+      # Get all directory names
+      allDirs = builtins.attrNames (builtins.readDir basePath);
+      
+      # Convert name to lowercase for comparison
+      lowerName = lib.strings.toLower name;
+      
+      # Find matching directory (case-insensitive)
+      matchingDirs = builtins.filter 
+        (dir: lib.strings.toLower dir == lowerName) 
+        allDirs;
+      
+      # Return the first match or the original name if no match
+      result = 
+        if builtins.length matchingDirs > 0
+        then builtins.elemAt matchingDirs 0
+        else name;
+    in
+    result;
 
   # Directory-based discovery function
   discoverDirectories = { 

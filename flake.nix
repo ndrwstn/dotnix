@@ -193,7 +193,11 @@
         nixpkgs.lib.filterAttrs
           (name: _: 
             let 
-              systemType = autoDiscovery.extractSystemType { inherit name; machinesPath = ./machines; };
+              systemType = autoDiscovery.extractSystemType { 
+                inherit name; 
+                machinesPath = ./machines;
+                caseInsensitive = true;
+              };
             in
             builtins.match pattern systemType != null
           )
@@ -203,15 +207,54 @@
       nixosConfigs = filterSystems ".*-linux";
       darwinConfigs = filterSystems ".*-darwin";
     in
+    let
+      # Function to create case-insensitive aliases for configurations
+      createCaseInsensitiveAliases = configs:
+        let
+          # Original configurations
+          original = configs;
+          
+          # Create aliases with different case variations
+          createAliases = name: value:
+            let
+              # Convert to lowercase and uppercase
+              lowerName = nixpkgs.lib.strings.toLower name;
+              upperName = nixpkgs.lib.strings.toUpper name;
+              capitalizedName = nixpkgs.lib.strings.toUpper (builtins.substring 0 1 lowerName) + builtins.substring 1 (builtins.stringLength lowerName) lowerName;
+              
+              # Create aliases if they're different from the original name
+              aliases = builtins.listToAttrs (
+                builtins.filter (x: x.name != name) [
+                  { inherit name; inherit value; }
+                  { name = lowerName; inherit value; }
+                  { name = upperName; inherit value; }
+                  { name = capitalizedName; inherit value; }
+                ]
+              );
+            in
+            aliases;
+          
+          # Create aliases for all configurations
+          allAliases = builtins.mapAttrs createAliases original;
+          
+          # Merge all aliases
+          merged = builtins.foldl' (acc: aliases: acc // aliases) {} (builtins.attrValues allAliases);
+        in
+        original // merged;
+      
+      # Apply case-insensitive aliases
+      nixosConfigsWithAliases = createCaseInsensitiveAliases nixosConfigs;
+      darwinConfigsWithAliases = createCaseInsensitiveAliases darwinConfigs;
+    in
     {
       # Expose our library for other flakes to use
       lib = {
         autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
       };
       
-      # System configurations
-      nixosConfigurations = nixosConfigs;
-      darwinConfigurations = darwinConfigs;
+      # System configurations with case-insensitive aliases
+      nixosConfigurations = nixosConfigsWithAliases;
+      darwinConfigurations = darwinConfigsWithAliases;
     };
 }
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
