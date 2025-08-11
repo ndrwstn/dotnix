@@ -39,6 +39,7 @@ in
   # Import the apps modules
   imports = [
     ./apps
+    ./sops.nix
   ];
 
   # any GUI apps must be added system-wide

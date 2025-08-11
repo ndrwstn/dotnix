@@ -44,3 +44,17 @@ nix_directory_tree.txt
 rsync-ccc-ignore
 # font directory
 systems/common/fonts/
+
+# ---- Secrets ----
+# Unencrypted secrets
+secrets/**/*.yaml
+secrets/**/*.json
+secrets/**/*.env
+secrets/**/*.ini
+# But allow encrypted files
+!secrets/**/*.yaml.enc
+!secrets/**/*.json.enc
+!secrets/**/*.env.enc
+!secrets/**/*.ini.enc
+# And allow README
+!secrets/README.md

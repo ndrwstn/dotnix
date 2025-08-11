@@ -170,5 +170,11 @@
     };
     web-devicons.enable = true;
     which-key.enable = true;
+    
+    # Sops integration for Neovim (uncomment when fully set up)
+    # nvim-sops = {
+    #   enable = true;
+    #   package = pkgs.vimPlugins.nvim-sops;
+    # };
   };
 }

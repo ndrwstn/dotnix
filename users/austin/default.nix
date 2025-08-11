@@ -204,6 +204,10 @@ lib.mkMerge [
     ];
   }
 
+  # Import sops and secrets configuration (uncomment when fully set up)
+  # (import ./sops.nix { inherit config pkgs lib; })
+  # (import ./secrets.nix { inherit config pkgs lib; })
+
   # Import Darwin-specific flakes
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
 

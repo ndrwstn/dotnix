@@ -19,8 +19,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Neovim configuration
     nixvim = {
       url = "github:nix-community/nixvim";
+    };
+
+    # Secrets management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -31,6 +38,7 @@
     , nix-darwin
     , home-manager
     , nixvim
+    , sops-nix
     , ...
     }:
     let
@@ -163,6 +171,7 @@
             system = systemType;
             specialArgs = { inherit inputs unstable; };
             modules =
+              let lib = nixpkgs.lib; in
               machineModules
               ++ [
                 ./systems/common
@@ -175,8 +184,13 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = { inherit unstable; };
-                  home-manager.sharedModules = [ nixvim.homeManagerModules.default ];
+                  home-manager.sharedModules = [ 
+                    nixvim.homeModules.default
+                    sops-nix.homeManagerModules.sops
+                  ];
                 }
+                # Add sops-nix module for NixOS
+                sops-nix.nixosModules.sops
               ]
               ++ sharedModules;
           };

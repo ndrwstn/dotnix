@@ -5,6 +5,9 @@
 , lib
 , ...
 }: {
+  imports = [
+    # ./sops.nix  # Uncomment after sops is fully set up
+  ];
   # Enable the X11 windowing system by default
   services.xserver = {
     enable = true;

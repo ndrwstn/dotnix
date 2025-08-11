@@ -5,7 +5,10 @@
 , lib
 , ...
 }: {
-  imports = [ ./users.nix ];
+  imports = [ 
+    ./users.nix
+    # ./sops.nix  # Uncomment after sops is fully set up
+  ];
 
   options = {
     # Define custom options for machine metadata
