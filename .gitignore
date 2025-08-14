@@ -45,16 +45,18 @@ rsync-ccc-ignore
 # font directory
 systems/common/fonts/
 
-# ---- Secrets ----
-# Unencrypted secrets
-secrets/**/*.yaml
-secrets/**/*.json
-secrets/**/*.env
-secrets/**/*.ini
-# But allow encrypted files
-!secrets/**/*.yaml.enc
-!secrets/**/*.json.enc
-!secrets/**/*.env.enc
-!secrets/**/*.ini.enc
-# And allow README
-!secrets/README.md
+# ---- Security ----
+# Secrets and credentials
+*.key
+*.pem
+*.env
+*id_rsa*
+*id_ed25519*
+*.secret
+*.password
+*.token
+*.credentials
+
+# SOPS-related files that might contain unencrypted secrets
+.decrypted~*
+*.unencrypted
