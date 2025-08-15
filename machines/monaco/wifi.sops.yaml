@@ -1,0 +1,6 @@
+wifi:
+  networks:
+    - ssid: "Home_Network"
+      psk: "home_network_password"
+    - ssid: "Work_Network"
+      psk: "work_network_password"

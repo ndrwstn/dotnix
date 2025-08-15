@@ -6,11 +6,11 @@
   sops.secrets = {
     # Wi-Fi configuration
     "wifi/home_network_psk" = {
-      sopsFile = ../../secrets/machines/monaco/wifi.yaml;
+      sopsFile = ./wifi.sops.yaml;
       key = "wifi.networks.0.psk";
     };
     "wifi/work_network_psk" = {
-      sopsFile = ../../secrets/machines/monaco/wifi.yaml;
+      sopsFile = ./wifi.sops.yaml;
       key = "wifi.networks.1.psk";
     };
   };

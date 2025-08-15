@@ -17,46 +17,46 @@ keys:
 
 # Creation rules for different paths
 creation_rules:
-  # Default rule for all secrets
-  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+  # Common secrets
+  - path_regex: systems/common/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
       # Add more users as needed
 
   # Machine-specific secrets
-  - path_regex: secrets/machines/monaco/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: machines/monaco/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
       - *machine_monaco
 
-  - path_regex: secrets/machines/plutonium/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: machines/plutonium/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
       - *machine_plutonium
 
-  - path_regex: secrets/machines/siberia/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: machines/siberia/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
       - *machine_siberia
 
-  - path_regex: secrets/machines/silver/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: machines/silver/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
       - *machine_silver
 
   # User-specific secrets
-  - path_regex: secrets/users/austin/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: users/austin/.*sops\.yaml$
     key_groups:
     - age:
       - *user_austin
 
   # Add more user-specific paths as needed
-  # - path_regex: secrets/users/jessica/[^/]+\.(yaml|json|env|ini)$
+  # - path_regex: users/jessica/.*sops\.yaml$
   #   key_groups:
   #   - age:
   #     - *user_jessica
