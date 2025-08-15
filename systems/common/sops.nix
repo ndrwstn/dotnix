@@ -30,11 +30,11 @@
   };
 
   # WiFi configuration using the secrets
-  networking.wireless = {
+  # Only enable if NetworkManager is not enabled to avoid conflicts
+  networking.wireless = lib.mkIf (!config.networking.networkmanager.enable) {
     enable = lib.mkDefault true;
     networks = {
-      "Home_Network".passwordFile = config.sops.secrets."wifi/home_network_psk".path;
-      "Work_Network".passwordFile = config.sops.secrets."wifi/work_network_psk".path;
+      "Pretty Fly for a Wi-Fi".passwordFile = config.sops.secrets."wifi/home_network_psk".path;
     };
   };
 }
