@@ -5,15 +5,15 @@
 # Define key groups for different environments
 keys:
   # Users
-  - &user_austin age1yubikey1...
+  - &user_austin age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
   # Add more users as needed
   # - &user_jessica age1...
 
-  # Machines
-  - &machine_monaco age1...
-  - &machine_plutonium age1...
-  - &machine_siberia age1...
-  - &machine_silver age1...
+  # Machines (replace with actual machine keys when generated)
+  - &machine_monaco age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
+  - &machine_plutonium age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
+  - &machine_siberia age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
+  - &machine_silver age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
 
 # Creation rules for different paths
 creation_rules:

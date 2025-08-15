@@ -1,6 +1,19 @@
 wifi:
-  networks:
-    - ssid: "Home_Network"
-      psk: "home_network_password"
-    - ssid: "Work_Network"
-      psk: "work_network_password"
+    networks:
+        - ssid: ENC[AES256_GCM,data:mS6GHDuwAQo+Je+Xud6Bw3LJwgzVhw==,iv:6zYvGDH2etlJq+isQpa331TEPXRbD6e4n331ib7EP6M=,tag:fmYWAtBndhy5dTNVwyBrUA==,type:str]
+          psk: ENC[AES256_GCM,data:EVn8eN7Y267fByVf5fq0pZCX,iv:5l4uR23Q2qzWzhhqXDxpm1O5WVYn0e6wZVBwtETSLK8=,tag:L/+FUasdLPKsPAvbz+JdKQ==,type:str]
+sops:
+    age:
+        - recipient: age18efa20ge7d3z68hn7h67dd0y5qq9tsukm5crcw0cm06c49d22u2qejm83j
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBTaDVQU0tHQmZvZXIrN0I1
+            M0M0eVhQeHAvMUkvUWltNjZaUzlJUGlTL1ZvCitYRnIvY3R0UXJoNE56QVgrcndQ
+            dXR1TDVHbFRjTkN0eklnZnZzTENCZmsKLS0tIG8vOXpPd295NGZWTDFUamZKWUlk
+            SzdBeU1RYlJLc0QvN0d6VDBtRzNSVUkKCeGI0vqpuewOv1jIdnK+n2LHkJTx1rnJ
+            jicml97lZgPM/kd+SFsm8HwgW3kEBPqlMHGPOawkbSgWqKnLkcMgng==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-08-15T19:56:28Z"
+    mac: ENC[AES256_GCM,data:Iko1ORli4tTe7heCnFFpRXEmdeGSyh9KlFjHDXf8rw8YhOzrivhEvJVKsosdWtFtuhRYQrMN6GgMdY89yHcJdVin9aye8sxoIKmHGnLKxe+4cl0RRbFxYLu/6azpIdUkGN0nYFYFGUt8V0soG4Lbcer0X5re9orTaVr28vD9cBk=,iv:ccZ466CJhjRbpxGQiWO7a0fKeRujfkRN/Ubw3zFKkIU=,tag:N1QPIkoBJH4z3D9Id5p53w==,type:str]
+    unencrypted_suffix: _unencrypted
+    version: 3.10.2
