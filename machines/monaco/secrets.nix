@@ -4,13 +4,13 @@
 {
   # Define the secrets
   sops.secrets = {
-    # Wi-Fi configuration
+    # Wi-Fi configuration (from common)
     "wifi/home_network_psk" = {
-      sopsFile = ./wifi.sops.yaml;
+      sopsFile = ../../systems/common/wifi.sops.yaml;
       key = "wifi.networks.0.psk";
     };
     "wifi/work_network_psk" = {
-      sopsFile = ./wifi.sops.yaml;
+      sopsFile = ../../systems/common/wifi.sops.yaml;
       key = "wifi.networks.1.psk";
     };
   };
