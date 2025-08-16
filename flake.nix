@@ -189,13 +189,12 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = { inherit unstable; };
-                  home-manager.sharedModules = [ 
+                  home-manager.sharedModules = [
                     nixvim.homeModules.default
-                    sops-nix.homeManagerModules.sops
-                  ];
+                  ] ++ (if osType == "nixos" then [ sops-nix.homeManagerModules.sops ] else [ ]);
                 }
-                # Add sops-nix module for NixOS
-                sops-nix.nixosModules.sops
+                # Add sops-nix module for NixOS only
+                (lib.mkIf (osType == "nixos") sops-nix.nixosModules.sops)
               ]
               ++ sharedModules;
           };
