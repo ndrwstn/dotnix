@@ -44,7 +44,7 @@
     let
       # Import our auto-discovery library
       autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
-      
+
       # System types to support
       supportedSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
@@ -132,7 +132,7 @@
 
           # User configuration using auto-discovery
           usersDir = ./users;
-          
+
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
@@ -143,7 +143,7 @@
             basePath = usersDir;
             filterPredicate = dir: builtins.pathExists (dir + "/default.nix");
           };
-          
+
           # Function to build user imports
           buildUserConfig = user: {
             name = user;
@@ -177,7 +177,12 @@
                 ./systems/common
                 sysConfig.systemModule
                 sysConfig.hmModule
-                { nixpkgs.overlays = [ (import overlays/gcs.nix) ]; }
+                {
+                  nixpkgs.overlays = [
+                    (import overlays/gcs.nix)
+                    (import overlays/opencode.nix)
+                  ];
+                }
                 {
                   home-manager.useGlobalPkgs = true;
                   home-manager.useUserPackages = true;
@@ -205,10 +210,10 @@
       # Function to filter by system type pattern
       filterSystems = pattern:
         nixpkgs.lib.filterAttrs
-          (name: _: 
-            let 
-              systemType = autoDiscovery.extractSystemType { 
-                inherit name; 
+          (name: _:
+            let
+              systemType = autoDiscovery.extractSystemType {
+                inherit name;
                 machinesPath = ./machines;
                 caseInsensitive = true;
               };
@@ -227,7 +232,7 @@
         let
           # Original configurations
           original = configs;
-          
+
           # Create aliases with different case variations
           createAliases = name: value:
             let
@@ -235,7 +240,7 @@
               lowerName = nixpkgs.lib.strings.toLower name;
               upperName = nixpkgs.lib.strings.toUpper name;
               capitalizedName = nixpkgs.lib.strings.toUpper (builtins.substring 0 1 lowerName) + builtins.substring 1 (builtins.stringLength lowerName) lowerName;
-              
+
               # Create aliases if they're different from the original name
               aliases = builtins.listToAttrs (
                 builtins.filter (x: x.name != name) [
@@ -247,15 +252,15 @@
               );
             in
             aliases;
-          
+
           # Create aliases for all configurations
           allAliases = builtins.mapAttrs createAliases original;
-          
+
           # Merge all aliases
-          merged = builtins.foldl' (acc: aliases: acc // aliases) {} (builtins.attrValues allAliases);
+          merged = builtins.foldl' (acc: aliases: acc // aliases) { } (builtins.attrValues allAliases);
         in
         original // merged;
-      
+
       # Apply case-insensitive aliases
       nixosConfigsWithAliases = createCaseInsensitiveAliases nixosConfigs;
       darwinConfigsWithAliases = createCaseInsensitiveAliases darwinConfigs;
@@ -265,7 +270,7 @@
       lib = {
         autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
       };
-      
+
       # System configurations with case-insensitive aliases
       nixosConfigurations = nixosConfigsWithAliases;
       darwinConfigurations = darwinConfigsWithAliases;
