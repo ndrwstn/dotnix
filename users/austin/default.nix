@@ -156,7 +156,6 @@ lib.mkMerge [
       fluxcd
       # gcc
       # go-task
-      gcs
       isort
       # jq
       k9s
@@ -195,8 +194,9 @@ lib.mkMerge [
       # yed
       # yq
       # yt-dlp
-      ## unstable
-      unstable.opencode
+      ## overlays
+      gcs
+      opencode
       ## fonts
       nerd-fonts.inconsolata
       ## defined variables
