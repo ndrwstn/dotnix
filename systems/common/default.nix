@@ -5,7 +5,7 @@
 , lib
 , ...
 }: {
-  imports = [ 
+  imports = [
     ./users.nix
     # ./sops.nix  # Uncomment after sops is fully set up
   ];
@@ -14,7 +14,7 @@
     # Define custom options for machine metadata
     _astn = lib.mkOption {
       type = lib.types.attrsOf lib.types.anything;
-      default = {};
+      default = { };
       description = "Custom namespace for machine-specific metadata";
     };
   };
@@ -22,11 +22,16 @@
   config = {
     # Common system packages
     environment.systemPackages = with pkgs; [
+      # Core utilities
       jdk17
       nh
       vim
       wget
       zsh
+
+      # Sops-related packages
+      sops
+      age
     ];
 
     # Allow unfree packages globally

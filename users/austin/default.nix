@@ -143,7 +143,6 @@ lib.mkMerge [
 
     # Common packages across all systems
     home.packages = with pkgs; [
-      age
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       black
@@ -179,7 +178,6 @@ lib.mkMerge [
       # rsync
       qpdf
       shfmt
-      sops
       sqlfluff
       sqls
       stylua
