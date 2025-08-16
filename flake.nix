@@ -191,10 +191,12 @@
                   home-manager.extraSpecialArgs = { inherit unstable; };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default
-                  ] ++ (if osType == "nixos" then [ sops-nix.homeManagerModules.sops ] else [ ]);
+                  ];
+                  # Commented out for now until sops is fully set up
+                  # ++ (if osType == "nixos" then [ sops-nix.homeManagerModules.sops ] else [ ]);
                 }
-                # Add sops-nix module for NixOS only
-                (lib.mkIf (osType == "nixos") sops-nix.nixosModules.sops)
+                # Add sops-nix module for NixOS only (commented out for now)
+                # (lib.mkIf (osType == "nixos") sops-nix.nixosModules.sops)
               ]
               ++ sharedModules;
           };
