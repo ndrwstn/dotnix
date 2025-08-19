@@ -29,6 +29,12 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # OpenCode flake
+    opencode-nix = {
+      url = "github:ndrwstn/opencode-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -39,6 +45,7 @@
     , home-manager
     , nixvim
     , sops-nix
+    , opencode-nix
     , ...
     }:
     let
@@ -180,7 +187,7 @@
                 {
                   nixpkgs.overlays = [
                     (import overlays/gcs.nix)
-                    (import overlays/opencode.nix)
+                    (import overlays/opencode.nix inputs)
                   ];
                 }
                 {
