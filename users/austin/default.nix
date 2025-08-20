@@ -2,7 +2,7 @@
 { config
 , pkgs
 , unstable
-, ndrwstn
+, autopkgs
 , lib
 , ...
 }:
@@ -194,8 +194,8 @@ lib.mkMerge [
       # yq
       # yt-dlp
       ## overlays
-      ndrwstn.gcs
-      ndrwstn.opencode
+      autopkgs.gcs
+      autopkgs.opencode
       ## fonts
       nerd-fonts.inconsolata
       ## defined variables

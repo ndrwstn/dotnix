@@ -30,9 +30,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nixoverlays flake
-    nixoverlays = {
-      url = "github:ndrwstn/nixoverlays";
+    # nixautopkgs flake
+    nixautopkgs = {
+      url = "github:ndrwstn/nixautopkgs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -45,7 +45,7 @@
     , home-manager
     , nixvim
     , sops-nix
-    , nixoverlays
+    , nixautopkgs
     , ...
     }:
     let
@@ -81,10 +81,10 @@
               system = pkgs.system;
               config.allowUnfree = true;
             };
-            ndrwstn = nixoverlays.packages.${pkgs.system};
+            autopkgs = nixautopkgs.packages.${pkgs.system};
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable ndrwstn; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs; };
           })
       ];
 
@@ -146,7 +146,7 @@
             config.allowUnfree = true;
           };
 
-          ndrwstn = nixoverlays.packages.${systemType};
+          autopkgs = nixautopkgs.packages.${systemType};
 
           # Discover valid user directories
           validUsers = autoDiscovery.discoverDirectories {
@@ -158,7 +158,7 @@
           buildUserConfig = user: {
             name = user;
             value = { config, pkgs, lib, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib unstable ndrwstn; };
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs; };
           };
 
           # Create attrset of user configs
@@ -179,7 +179,7 @@
           inherit name;
           value = sysConfig.builder {
             system = systemType;
-            specialArgs = { inherit inputs unstable ndrwstn; };
+            specialArgs = { inherit inputs unstable autopkgs; };
             modules =
               let lib = nixpkgs.lib; in
               machineModules
@@ -196,7 +196,7 @@
                   home-manager.useUserPackages = true;
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
-                  home-manager.extraSpecialArgs = { inherit unstable ndrwstn; };
+                  home-manager.extraSpecialArgs = { inherit unstable autopkgs; };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default
                   ];

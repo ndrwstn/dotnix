@@ -127,7 +127,7 @@
         "type": "github"
       }
     },
-    "nixoverlays": {
+    "nixautopkgs": {
       "inputs": {
         "flake-parts": "flake-parts",
         "nixpkgs": [
@@ -135,11 +135,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1755691978,
-        "narHash": "sha256-hL/UorrTLYTRnNBDWYT0MQcFKkiDImLyIOZxiTZuspY=",
+        "lastModified": 1755706540,
+        "narHash": "sha256-WbZQVXvfnxFfsBCNLnnMhrdLnwQyOY/EYfiXrbaZ/fM=",
         "owner": "ndrwstn",
         "repo": "nixoverlays",
-        "rev": "d88be53de23a74a757ed892393bd2d2cb4d3c49d",
+        "rev": "3ceaa50abd16ce33cc39fe978436fb5b2de36fb2",
         "type": "github"
       },
       "original": {
@@ -259,7 +259,7 @@
       "inputs": {
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
-        "nixoverlays": "nixoverlays",
+        "nixautopkgs": "nixautopkgs",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixvim": "nixvim",
