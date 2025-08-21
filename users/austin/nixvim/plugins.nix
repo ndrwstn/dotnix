@@ -61,7 +61,7 @@
         };
         formatters_by_ft = {
           lua = [ "stylua" ];
-          python = [ "isort" "black" ];
+          python = [ "ruff" ];
           nix = [ "nixpkgs-fmt" ];
           markdown = [ "prettier" ];
           sh = [ "shfmt" ];
@@ -170,7 +170,7 @@
     };
     web-devicons.enable = true;
     which-key.enable = true;
-    
+
     # Sops integration for Neovim (uncomment when fully set up)
     # nvim-sops = {
     #   enable = true;

@@ -144,43 +144,67 @@ lib.mkMerge [
 
     # Common packages across all systems
     home.packages = with pkgs; [
+      act # Run GitHub Actions locally
+      actionlint # GitHub Actions linter
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
-      black
+      bats # Bash testing framework
+      clippy # Rust linter
       # cloudflared
+      curlie # Modern curl alternative
+      deadnix # Dead Nix code scanner
       # docker
+      eslint # JavaScript/TypeScript linter
       eza
       # ffmpeg_7
       fd
       # firefox
       fluxcd
       # gcc
+      gh # GitHub CLI
+      gitleaks # Git secrets scanner
+      gitlint # Git commit message linter
+
+      golangci-lint # Go linter
+      gopls # Go language server
       # go-task
-      isort
-      # jq
+      hyperfine # Command-line benchmarking
+      jq # JSON processor
       k9s
       kubeconform
       kubectl
       kubernetes-helm
+      kubeval # Kubernetes YAML validator
       kustomize
+
       lazygit
       lua-language-server
       marksman
+      moreutils # Additional Unix utilities
+      mypy # Python type checker
       nil
+      nix-diff # Nix derivation diff tool
       nix-prefetch-scripts
+      nix-tree # Nix dependency tree viewer
       nixpkgs-fmt
-      # moreutils
       # nmap
       nodejs_22
       nodePackages.prettier
+      nvd # Nix version diff tool
+      pluto # Kubernetes deprecated API detector
       # printrun
       # python3
       pyright
       # rsync
       qpdf
+      ruff # Python linter and formatter
+      rust-analyzer # Rust language server
+      rustfmt # Rust formatter
+      shellcheck # Shell script linter
       shfmt
       sqlfluff
       sqls
+      statix # Nix linter
       stylua
       # stern
       talosctl
@@ -188,10 +212,14 @@ lib.mkMerge [
       thefuck
       tlrc
       tree-sitter
+      typescript-language-server # TypeScript language server
+      typos # Source code spell checker
       # ungoogled-chromium
       watch
+      watchexec # Execute commands on file changes
       # yed
-      # yq
+      yamllint # YAML linter
+      yq # YAML processor
       # yt-dlp
       ## overlays
       autopkgs.gcs
