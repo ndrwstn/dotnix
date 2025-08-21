@@ -60,3 +60,6 @@ systems/common/fonts/
 # SOPS-related files that might contain unencrypted secrets
 .decrypted~*
 *.unencrypted
+
+# Age keys directory (contains private keys)
+/keys/

@@ -7,7 +7,7 @@
 }: {
   imports = [
     ./users.nix
-    # ./sops.nix  # Uncomment after sops is fully set up
+    ./sops.nix # Enable sops configuration
   ];
 
   options = {

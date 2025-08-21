@@ -199,13 +199,13 @@
                   home-manager.extraSpecialArgs = { inherit unstable autopkgs; };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default
-                  ];
-                  # Commented out for now until sops is fully set up
-                  # ++ (if osType == "nixos" then [ sops-nix.homeManagerModules.sops ] else [ ]);
+                  ]
+                  # Enable sops-nix home-manager module
+                  ++ (if osType == "nixos" then [ inputs.sops-nix.homeManagerModules.sops ] else [ ]);
                 }
-                # Add sops-nix module for NixOS only (commented out for now)
-                # (lib.mkIf (osType == "nixos") sops-nix.nixosModules.sops)
               ]
+              # Add sops-nix module for NixOS only
+              ++ (if osType == "nixos" then [ inputs.sops-nix.nixosModules.sops ] else [ ])
               ++ sharedModules;
           };
         };

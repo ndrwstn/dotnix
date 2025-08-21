@@ -3,25 +3,27 @@
 
 {
   # Darwin-specific sops configuration
-  options.sops = lib.mkOption {
-    type = lib.types.attrsOf lib.types.anything;
-    default = { };
-    description = "Placeholder for sops options on Darwin";
-  };
+  # Since sops-nix doesn't have native Darwin support at the system level,
+  # we rely on home-manager's sops module for user secrets
 
   config = {
-    # Set up the age key directory and create a custom activation script
-    system.activationScripts.postActivation.text = lib.mkAfter ''
-      # Create sops-nix directories
-      echo "Setting up sops-nix directories..."
-      mkdir -p /var/lib/sops-nix
-      chmod 700 /var/lib/sops-nix
-      
-      # Create a symlink to the user's age key if it exists
-      if [ -f "$HOME/.config/sops/age/keys.txt" ]; then
-        echo "Linking user age key to system location..."
-        ln -sf "$HOME/.config/sops/age/keys.txt" /var/lib/sops-nix/key.txt
-      fi
-    '';
+    # Add sops-related packages
+    environment.systemPackages = with pkgs; [
+      sops
+      age
+    ];
+
+    # Create necessary directories via launchd
+    launchd.daemons.sops-nix-setup = {
+      command = ''
+        mkdir -p /var/lib/sops-nix
+        chmod 700 /var/lib/sops-nix
+      '';
+      serviceConfig = {
+        RunAtLoad = true;
+        StandardOutPath = "/var/log/sops-nix-setup.log";
+        StandardErrorPath = "/var/log/sops-nix-setup.err";
+      };
+    };
   };
 }
