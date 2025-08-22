@@ -24,7 +24,7 @@ lib.mkMerge [
         # WiFi network password
         "wifi/home_network_psk" = {
           sopsFile = ./wifi.sops.yaml;
-          key = "wifi.networks.0.psk";
+          # key = "wifi.networks.0.psk";
         };
       };
     };
