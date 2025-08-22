@@ -16,10 +16,12 @@ lib.mkMerge [
 
       # Define secrets unconditionally - sops-nix handles missing keys at runtime
       secrets = {
-        # WiFi network password
-        "wifi/home_network_psk" = {
+        # WiFi network credentials
+        "wifi/home/psk" = {
           sopsFile = ./wifi.sops.yaml;
-          # key = "wifi.networks.0.psk";
+        };
+        "wifi/home/ssid" = {
+          sopsFile = ./wifi.sops.yaml;
         };
       };
     };
