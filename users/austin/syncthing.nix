@@ -5,10 +5,6 @@
   services.syncthing = {
     enable = true;
 
-    # Use XDG directories for configuration and data
-    configDir = "${config.xdg.configHome}/syncthing";
-    dataDir = "${config.xdg.dataHome}/syncthing";
-
     # GUI settings
     guiAddress = "127.0.0.1:8384"; # Local-only access
 

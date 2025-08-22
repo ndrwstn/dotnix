@@ -14,10 +14,10 @@ lib.mkMerge [
       # Only define secrets if the age key file exists
       # This prevents failures on fresh installations that don't have age keys yet
       secrets = lib.mkIf (builtins.pathExists config.sops.age.keyFile) {
-        "common/example" = {
-          sopsFile = ./common.sops.yaml;
-          key = "common.example_secret";
-        };
+        # "common/example" = {
+        #   sopsFile = ./common.sops.yaml;
+        #   key = "common.example_secret";
+        # };
 
         # WiFi network password
         "wifi/home_network_psk" = {
