@@ -1,5 +1,5 @@
 # users/austin/syncthing.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, systemSecrets ? { }, ... }:
 
 {
   services.syncthing = {
@@ -8,14 +8,13 @@
     # GUI settings
     guiAddress = "127.0.0.1:8384"; # Local-only access
 
-    # Platform-specific certificate and key configuration
-    # For NixOS: secrets are managed at system level and passed through
-    # For Darwin: secrets should be configured at machine level via home-manager sops
-    cert = lib.mkIf (config.sops.secrets ? "syncthing/cert")
-      config.sops.secrets."syncthing/cert".path;
+    # Use system secrets when available (NixOS)
+    # On Darwin, systemSecrets will be empty {}
+    cert = lib.mkIf (systemSecrets ? "syncthing/cert")
+      systemSecrets."syncthing/cert".path;
 
-    key = lib.mkIf (config.sops.secrets ? "syncthing/key")
-      config.sops.secrets."syncthing/key".path;
+    key = lib.mkIf (systemSecrets ? "syncthing/key")
+      systemSecrets."syncthing/key".path;
   };
 }
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab

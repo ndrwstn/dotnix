@@ -191,18 +191,22 @@
                   nixpkgs.overlays = [
                   ];
                 }
-                {
+                ({ config, ... }: {
                   home-manager.useGlobalPkgs = true;
                   home-manager.useUserPackages = true;
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
-                  home-manager.extraSpecialArgs = { inherit unstable autopkgs; };
+                  home-manager.extraSpecialArgs = {
+                    inherit unstable autopkgs;
+                    # Pass only system secrets to home-manager
+                    systemSecrets = config.sops.secrets or { };
+                  };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default
                   ]
                   # Enable sops-nix home-manager module
                   ++ (if osType == "nixos" then [ inputs.sops-nix.homeManagerModules.sops ] else [ ]);
-                }
+                })
               ]
               # Add sops-nix module for NixOS only
               ++ (if osType == "nixos" then [ inputs.sops-nix.nixosModules.sops ] else [ ])
