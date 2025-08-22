@@ -17,11 +17,15 @@ keys:
 
 # Creation rules for different paths
 creation_rules:
-  # Common secrets
+  # Common secrets - accessible by all users and machines
   - path_regex: systems/common/.*sops\.yaml$
     key_groups:
       - age:
           - *user_austin
+          - *machine_monaco
+          - *machine_plutonium
+          - *machine_siberia
+          - *machine_silver
         # Add more users as needed
 
   # Machine-specific secrets
