@@ -18,12 +18,9 @@
   ];
 
   # Declarative NetworkManager WiFi configuration (NixOS only)
-  # Only configure WiFi if the age key exists and the WiFi secret is available
+  # Only configure WiFi if the WiFi secret is available
   networking.networkmanager.ensureProfiles = lib.mkIf
-    (
-      (config ? sops.secrets."wifi/home_network_psk") &&
-      (builtins.pathExists config.sops.age.keyFile)
-    )
+    (config ? sops.secrets."wifi/home_network_psk")
     {
       profiles = {
         "Pretty Fly for a Wi-Fi" = {
