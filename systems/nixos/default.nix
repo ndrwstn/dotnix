@@ -41,8 +41,7 @@
     # Enable printing support
     printing.enable = true;
 
-    # Enable Syncthing
-    syncthing.enable = true;
+    # Syncthing is configured per-user via home-manager
 
     # Enable iSCSI support
     openiscsi = {

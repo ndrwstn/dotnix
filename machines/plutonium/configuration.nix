@@ -2,8 +2,12 @@
 { config, pkgs, ... }:
 
 {
+  # Import secrets configuration
+  imports = [
+    ./secrets.nix
+  ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
-  _astn.machineSystem = "aarch64-darwin";
+  _astn.machineSystem = "x86_64-darwin";
   # Define hostname
   networking.hostName = "Plutonium";
 

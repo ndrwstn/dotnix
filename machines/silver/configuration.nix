@@ -3,6 +3,9 @@
 , pkgs
 , ...
 }: {
+  imports = [
+    ./secrets.nix
+  ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
   # Increase download-buffer to 1GB

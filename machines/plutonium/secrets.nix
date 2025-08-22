@@ -1,4 +1,4 @@
-# machines/monaco/secrets.nix
+# machines/plutonium/secrets.nix
 { config, lib, pkgs, ... }:
 
 {

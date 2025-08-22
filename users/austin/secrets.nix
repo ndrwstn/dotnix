@@ -31,6 +31,10 @@
       path = "${config.home.homeDirectory}/.ssh/id_gitlab";
       mode = "0600";
     };
+
+    # Syncthing secrets - conditionally defined based on platform
+    # Note: For Darwin systems, these secrets should be defined at the system level
+    # in the machine's configuration, not at the user level
   };
 
   # Example of using the secrets in environment variables
