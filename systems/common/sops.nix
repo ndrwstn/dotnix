@@ -11,8 +11,9 @@ lib.mkMerge [
       # Default sops format
       defaultSopsFormat = "yaml";
 
-      # Common secrets
-      secrets = {
+      # Only define secrets if the age key file exists
+      # This prevents failures on fresh installations that don't have age keys yet
+      secrets = lib.mkIf (builtins.pathExists config.sops.age.keyFile) {
         "common/example" = {
           sopsFile = ./common.sops.yaml;
           key = "common.example_secret";
