@@ -65,6 +65,6 @@ systems/common/fonts/
 *.unencrypted
 
 # Age keys directory (contains private keys)
-  /keys/
-  # Temporary directory with sensitive files
-  tmp/
+keys/
+# Temporary directory with sensitive files
+tmp/
