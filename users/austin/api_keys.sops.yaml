@@ -1,4 +1,0 @@
-api_keys:
-  github: "your_github_token"
-  aws: "your_aws_key"
-  gcp: "your_gcp_key"

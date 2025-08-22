@@ -16,11 +16,6 @@ lib.mkMerge [
 
       # Define secrets unconditionally - sops-nix handles missing keys at runtime
       secrets = {
-        # "common/example" = {
-        #   sopsFile = ./common.sops.yaml;
-        #   key = "common.example_secret";
-        # };
-
         # WiFi network password
         "wifi/home_network_psk" = {
           sopsFile = ./wifi.sops.yaml;
