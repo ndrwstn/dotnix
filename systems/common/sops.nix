@@ -11,6 +11,9 @@ lib.mkMerge [
       # Default sops format
       defaultSopsFormat = "yaml";
 
+      # Don't validate sops files during build - validation happens at runtime
+      validateSopsFiles = false;
+
       # Define secrets unconditionally - sops-nix handles missing keys at runtime
       secrets = {
         # "common/example" = {
