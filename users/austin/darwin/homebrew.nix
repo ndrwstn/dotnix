@@ -86,6 +86,7 @@
       "tag"
       # "m1ddc"
       "mas"
+      "ollama"
     ];
     masApps = {
       # NOTE - homebrew.masApps does not remove apps
