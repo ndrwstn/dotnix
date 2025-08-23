@@ -146,6 +146,8 @@ lib.mkMerge [
     home.packages = with pkgs; [
       act # Run GitHub Actions locally
       actionlint # GitHub Actions linter
+      age # Modern encryption tool
+      agenix # Age-encrypted secrets for NixOS
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       bats # Bash testing framework
@@ -197,11 +199,13 @@ lib.mkMerge [
       pyright
       # rsync
       qpdf
+      rage # Rust implementation of age encryption
       ruff # Python linter and formatter
       rust-analyzer # Rust language server
       rustfmt # Rust formatter
       shellcheck # Shell script linter
       shfmt
+      ssh-to-age # Convert SSH keys to age keys
       sqlfluff
       sqls
       statix # Nix linter
