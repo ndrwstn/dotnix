@@ -41,6 +41,15 @@
     # Enable printing support
     printing.enable = true;
 
+    # Enable SSH daemon for agenix host key generation
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+      };
+    };
+
     # Syncthing is configured per-user via home-manager
 
     # Enable iSCSI support
