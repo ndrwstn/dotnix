@@ -37,15 +37,15 @@ let
   };
 in
 {
-  # Import the apps modules
+  # Import the apps modules and agenix configuration
   imports = [
     ./apps
+    ./agenix.nix
   ];
 
   # any GUI apps must be added system-wide
   environment.systemPackages = [
     pkgs.neovide
-    inputs.agenix.packages.${pkgs.system}.default
   ];
 
   # Fix NIX_PATH for darwin systems

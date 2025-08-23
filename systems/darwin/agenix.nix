@@ -2,11 +2,19 @@
 { inputs, pkgs, ... }:
 
 {
-  # Add agenix package to system packages
+  # Import agenix Darwin module for native secret management
+  imports = [
+    inputs.agenix.darwinModules.default
+  ];
+
+  # Add agenix package to system packages for CLI tools
   environment.systemPackages = [
     inputs.agenix.packages.${pkgs.system}.default
   ];
 
-  # For Darwin, we'll handle secrets manually since agenix doesn't have native Darwin support
-  # The secrets will be available in /var/lib/age/ and managed by the agenix CLI
+  # Configure agenix identity paths for Darwin
+  age.identityPaths = [
+    "/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/ssh_host_rsa_key"
+  ];
 }

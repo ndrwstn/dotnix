@@ -1,26 +1,13 @@
 # machines/siberia/secrets.nix
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
-  # Import syncthing secrets
-  sops.secrets = {
-    "syncthing/device_id" = {
-      sopsFile = ./syncthing.sops.yaml;
-      owner = "austin";
-      group = "users";
-      mode = "0400";
-    };
-    "syncthing/cert" = {
-      sopsFile = ./syncthing.sops.yaml;
-      owner = "austin";
-      group = "users";
-      mode = "0400";
-    };
-    "syncthing/key" = {
-      sopsFile = ./syncthing.sops.yaml;
-      owner = "austin";
-      group = "users";
-      mode = "0400";
-    };
-  };
+  # Siberia-specific agenix secrets configuration
+  # TODO: Create age secrets for Siberia and configure them here
+  # For now, this is a placeholder to allow the system to build
+
+  # Configure agenix identity paths
+  age.identityPaths = [
+    "/etc/ssh/ssh_host_ed25519_key"
+  ];
 }
