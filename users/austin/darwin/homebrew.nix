@@ -58,6 +58,7 @@
       # "numi"
       "obs"
       "obsidian"
+      "ollamac"
       "orcaslicer"
       # "pdf-expert"
       "pearcleaner"
