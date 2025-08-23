@@ -147,7 +147,6 @@ lib.mkMerge [
       act # Run GitHub Actions locally
       actionlint # GitHub Actions linter
       age # Modern encryption tool
-      agenix # Age-encrypted secrets for NixOS
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       bats # Bash testing framework

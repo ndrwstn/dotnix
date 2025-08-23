@@ -30,6 +30,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # nixautopkgs flake
     nixautopkgs = {
       url = "github:ndrwstn/nixautopkgs";
@@ -45,6 +50,7 @@
     , home-manager
     , nixvim
     , sops-nix
+    , agenix
     , nixautopkgs
     , ...
     }:
