@@ -2,21 +2,22 @@
 { config
 , pkgs
 , lib
+, inputs
 , ...
 }:
 let
   # Import our auto-discovery library
   autoDiscovery = import ../../lib/auto-discovery.nix { inherit lib; };
-  
+
   # Get list of user directories
   usersDir = ../../users;
-  
+
   # Get all user directories
-  userDirs = map (user: usersDir + "/${user}") 
-    (autoDiscovery.discoverDirectories { 
+  userDirs = map (user: usersDir + "/${user}")
+    (autoDiscovery.discoverDirectories {
       basePath = usersDir;
     });
-  
+
   # Discover and merge homebrew configurations
   mergedHomebrewConfig = autoDiscovery.discoverAndMergeConfigs {
     directories = [ ./. ] ++ userDirs;
@@ -24,7 +25,7 @@ let
     attributeName = "homebrew";
     importArgs = { inherit config pkgs lib; };
   };
-  
+
   # Discover and merge system configurations
   mergedSystemDefaults = autoDiscovery.discoverAndMergeConfigs {
     directories = [ ./. ] ++ userDirs;
@@ -39,12 +40,12 @@ in
   # Import the apps modules
   imports = [
     ./apps
-    ./sops.nix
   ];
 
   # any GUI apps must be added system-wide
   environment.systemPackages = [
     pkgs.neovide
+    inputs.agenix.packages.${pkgs.system}.default
   ];
 
   # Fix NIX_PATH for darwin systems

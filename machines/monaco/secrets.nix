@@ -1,8 +1,8 @@
 # machines/monaco/secrets.nix
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
-  # Darwin-specific secrets configuration
-  # Syncthing secrets are handled via home-manager for Darwin systems
-  # This file exists to maintain consistency with NixOS machines
+  # Monaco-specific secrets configuration
+  # On Darwin, agenix secrets are managed manually via the CLI
+  # Secrets will be decrypted to /var/lib/age/ when needed
 }

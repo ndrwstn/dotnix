@@ -25,11 +25,6 @@
     };
 
     # Secrets management
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -49,7 +44,6 @@
     , nix-darwin
     , home-manager
     , nixvim
-    , sops-nix
     , agenix
     , nixautopkgs
     , ...
@@ -204,18 +198,12 @@
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
                     inherit unstable autopkgs;
-                    # Pass only system secrets to home-manager
-                    systemSecrets = config.sops.secrets or { };
                   };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default
-                  ]
-                  # Enable sops-nix home-manager module
-                  ++ (if osType == "nixos" then [ inputs.sops-nix.homeManagerModules.sops ] else [ ]);
+                  ];
                 })
               ]
-              # Add sops-nix module for NixOS only
-              ++ (if osType == "nixos" then [ inputs.sops-nix.nixosModules.sops ] else [ ])
               ++ sharedModules;
           };
         };

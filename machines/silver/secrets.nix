@@ -1,26 +1,32 @@
 # machines/silver/secrets.nix
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
-  # Import syncthing secrets
-  sops.secrets = {
-    "syncthing/device_id" = {
-      sopsFile = ./syncthing.sops.yaml;
+  # Silver-specific agenix secrets configuration
+  age.secrets = {
+    # Syncthing secrets for Silver
+    syncthing-silver-device-id = {
+      file = ../../secrets/syncthing-silver-device-id.age;
+      mode = "0400";
       owner = "austin";
       group = "users";
-      mode = "0400";
     };
-    "syncthing/cert" = {
-      sopsFile = ./syncthing.sops.yaml;
+    syncthing-silver-cert = {
+      file = ../../secrets/syncthing-silver-cert.age;
+      mode = "0400";
       owner = "austin";
       group = "users";
-      mode = "0400";
     };
-    "syncthing/key" = {
-      sopsFile = ./syncthing.sops.yaml;
+    syncthing-silver-key = {
+      file = ../../secrets/syncthing-silver-key.age;
+      mode = "0400";
       owner = "austin";
       group = "users";
-      mode = "0400";
     };
   };
+
+  # Configure agenix identity paths
+  age.identityPaths = [
+    "/etc/ssh/ssh_host_ed25519_key"
+  ];
 }

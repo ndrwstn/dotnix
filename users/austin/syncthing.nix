@@ -1,5 +1,5 @@
 # users/austin/syncthing.nix
-{ config, pkgs, lib, systemSecrets ? { }, ... }:
+{ pkgs, ... }:
 
 {
   services.syncthing = {
@@ -8,10 +8,10 @@
     # GUI settings
     guiAddress = "127.0.0.1:8384"; # Local-only access
 
-    # Use system secrets when available (NixOS)
-    # On Darwin, systemSecrets will be empty {} so these evaluate to null
-    cert = systemSecrets."syncthing/cert".path or null;
-    key = systemSecrets."syncthing/key".path or null;
+    # For now, disable cert/key on Darwin until we set up manual secret management
+    # On NixOS, these will be provided by the agenix module
+    cert = if pkgs.stdenv.isLinux then "/run/agenix/syncthing-silver-cert" else null;
+    key = if pkgs.stdenv.isLinux then "/run/agenix/syncthing-silver-key" else null;
   };
 }
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab

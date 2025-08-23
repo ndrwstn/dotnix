@@ -3,10 +3,11 @@
 { config
 , pkgs
 , lib
+, inputs
 , ...
 }: {
   imports = [
-    ./sops.nix # NixOS-specific sops configuration
+    inputs.agenix.nixosModules.default
   ];
   # Enable the X11 windowing system by default
   services.xserver = {
@@ -94,5 +95,6 @@
   environment.systemPackages = with pkgs; [
     solaar
     usbutils
+    inputs.agenix.packages.${pkgs.system}.default
   ];
 }
