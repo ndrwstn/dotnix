@@ -231,10 +231,6 @@ lib.mkMerge [
     ];
   }
 
-  # Import sops and secrets configuration
-  (import ./sops.nix { inherit config pkgs lib; })
-  (import ./secrets.nix { inherit config pkgs lib; })
-
   # Import syncthing configuration
   (import ./syncthing.nix { inherit config pkgs lib; })
 

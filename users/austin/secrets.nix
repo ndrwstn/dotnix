@@ -2,11 +2,13 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Define the secrets
-  sops.secrets = {
-    # Syncthing secrets - conditionally defined based on platform
-    # Note: For Darwin systems, these secrets should be defined at the system level
-    # in the machine's configuration, not at the user level
+  # Define the secrets (NixOS only)
+  sops = lib.mkIf (!pkgs.stdenv.isDarwin) {
+    secrets = {
+      # Syncthing secrets - conditionally defined based on platform
+      # Note: For Darwin systems, these secrets should be defined at the system level
+      # in the machine's configuration, not at the user level
+    };
   };
 
   # Example of using the secrets in environment variables
