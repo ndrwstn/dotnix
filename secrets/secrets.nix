@@ -11,11 +11,17 @@ let
   # Key groups for active machines
   allUsers = [ austin ];
   activeMachines = [ monaco silver ];
+
+  # Machines with setup-key capability (can receive the universal setup private key)
+  setupKeyMachines = [ monaco silver ]; # plutonium and molybdenum will be added when activated
 in
 {
   # WiFi secrets - accessible by all active machines and users
   "wifi-home-ssid.age".publicKeys = allUsers ++ activeMachines;
   "wifi-home-psk.age".publicKeys = allUsers ++ activeMachines;
+
+  # SSH setup key - deployed only to machines with setup-key capability
+  "ssh-setup.age".publicKeys = allUsers ++ setupKeyMachines;
 
   # Syncthing secrets - per active machine
   "syncthing-monaco-device-id.age".publicKeys = allUsers ++ [ monaco ];

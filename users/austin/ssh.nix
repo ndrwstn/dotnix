@@ -1,28 +1,67 @@
-# SSH configuration for austin user
-{ lib, pkgs, hostName ? "", ... }:
+# SSH configuration for austin user - Data-driven dynamic configuration
+{ lib, pkgs, hostName ? "", config, ... }:
 let
-  # All SSH keys managed here
-  sshKeys = {
-    # Common key for all machines
-    nix-remote = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICqZ3Bd80DpUyzZTBul09t9CKRim161zQ2c/uueCS+oZ";
+  # Import SSH configuration data
+  sshData = import ./ssh-data.nix;
 
-    # Device-specific keys
-    bradley = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHoANHywPMoqstT5RNJ/s1rd43C47Iw4gO6RRjLK7FLR";
-    halsey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIm56by8poUWuitW20966Mjw+MiVowwtZQR39rbYASm1";
-    nimitz = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL5iqDoFpbUH1RmiCGLqfmXzjo1RBZePpZDXaF9bKF1Q";
-    mckinley = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzAvkC7u31iGU33SxdvhytEf+T3uqhxqFsK/9qZ0qt0";
-  };
+  # Helper function to check if a machine has a specific capability
+  hasCapability = capability: machine:
+    lib.elem capability (machine.capabilities or [ ]);
 
-  # Determine which keys to deploy based on hostname
+  # Helper function to get current machine data
+  getCurrentMachine = hostName:
+    lib.findFirst (machine: machine.hostname == "${lib.toLower hostName}.local") null
+      (lib.attrValues sshData.machines);
+
+  # Get current machine configuration
+  currentMachine = getCurrentMachine hostName;
+
+  # Generate authorized keys based on machine capabilities
+  generateAuthorizedKeys = machine:
+    let
+      # Always include machine keys (for inter-machine communication)
+      machineKeys = lib.mapAttrsToList (name: machineData: machineData.key) sshData.machines;
+
+      # Add device keys if machine has ios-devices capability
+      deviceKeys =
+        if hasCapability "ios-devices" machine
+        then lib.mapAttrsToList (name: deviceData: deviceData.key) sshData.devices
+        else [ ];
+    in
+    machineKeys ++ deviceKeys;
+
+  # Generate SSH client configuration from match rules
+  generateSSHMatches = matches:
+    lib.concatStringsSep "\n" (map
+      (match: ''
+        ${match.condition}
+          ${lib.concatStringsSep "\n  " (lib.mapAttrsToList (key: value: "${key} ${toString value}") match.config)}
+      '')
+      matches);
+
+  # Generate known_hosts content
+  generateKnownHosts = hosts:
+    lib.concatStringsSep "\n" (lib.mapAttrsToList
+      (hostname: hostData:
+        "${hostname} ${hostData.keyType} ${hostData.key}"
+      )
+      hosts);
+
+  # Determine authorized keys for this machine
   authorizedKeys =
-    if hostName == "Monaco" then
-    # Monaco gets all keys
-      [ sshKeys.nix-remote sshKeys.bradley sshKeys.halsey sshKeys.nimitz sshKeys.mckinley ]
-    else
-    # All other machines get just nix-remote
-      [ sshKeys.nix-remote ];
+    if currentMachine != null
+    then generateAuthorizedKeys currentMachine
+    else lib.mapAttrsToList (name: machineData: machineData.key) sshData.machines; # fallback to machine keys only
+
+  # Check if current machine should receive setup key
+  shouldDeploySetupKey = currentMachine != null && hasCapability "setup-key" currentMachine;
 in
 {
+  # Import agenix secrets if this machine has setup-key capability
+  imports = lib.optionals shouldDeploySetupKey [
+    ../../secrets/secrets.nix
+  ];
+
   programs.ssh = {
     enable = true;
 
@@ -34,6 +73,8 @@ in
           then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
           else "~/.1password/agent.sock"
         }
+      
+      ${generateSSHMatches sshData.sshMatches}
     '';
   };
 
@@ -44,9 +85,16 @@ in
 
   # Populate known_hosts with machine host keys
   home.file.".ssh/known_hosts" = {
-    text = ''
-      monaco.local ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSystV+gQ3/tiYxrk/Cmvr0WQBrz6UjA2cVwL8vxtgX
-      silver.local ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEasqUb7EN/yKS02tfVNvz8nYzgOhw0DDLz/rTR86Nw
-    '';
+    text = generateKnownHosts sshData.knownHosts;
+  };
+
+  # Deploy setup private key via agenix if machine has setup-key capability
+  age.secrets = lib.mkIf shouldDeploySetupKey {
+    ssh-setup = {
+      file = ../../secrets/ssh-setup.age;
+      path = "${config.home.homeDirectory}/.ssh/setup";
+      mode = "600";
+      owner = config.home.username;
+    };
   };
 }
