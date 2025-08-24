@@ -237,6 +237,9 @@ lib.mkMerge [
   # Import syncthing configuration
   (import ./syncthing.nix { inherit config pkgs lib; })
 
+  # Import SSH configuration
+  (import ./ssh.nix { inherit config pkgs lib; })
+
   # Import Darwin-specific flakes
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
 

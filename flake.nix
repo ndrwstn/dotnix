@@ -198,6 +198,7 @@
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
                     inherit unstable autopkgs;
+                    hostName = name;
                   };
                   home-manager.sharedModules = [
                     nixvim.homeModules.default

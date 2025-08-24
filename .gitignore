@@ -55,6 +55,7 @@ systems/common/fonts/
 *.env
 *id_rsa*
 *id_ed25519*
+*.pub
 *.secret
 *.password
 *.token
