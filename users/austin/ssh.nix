@@ -39,13 +39,7 @@ let
       '')
       matches);
 
-  # Generate known_hosts content
-  generateKnownHosts = hosts:
-    lib.concatStringsSep "\n" (lib.mapAttrsToList
-      (hostname: hostData:
-        "${hostname} ${hostData.keyType} ${hostData.key}"
-      )
-      hosts);
+  # Note: known_hosts generation moved to programs.ssh.knownHosts
 
   # Determine authorized keys for this machine
   authorizedKeys =
@@ -61,6 +55,14 @@ in
   programs.ssh = {
     enable = true;
 
+    # Use Nix's built-in known hosts management
+    knownHosts = lib.mapAttrs
+      (hostname: hostData: {
+        hostNames = [ hostname ];
+        publicKey = "${hostData.keyType} ${hostData.key}";
+      })
+      sshData.knownHosts;
+
     # Configure 1Password SSH agent for all platforms
     extraConfig = ''
       Host *
@@ -70,6 +72,7 @@ in
           else "~/.1password/agent.sock"
         }
         SetEnv TERM=xterm-256color
+        UpdateHostKeys no
       
       ${generateSSHMatches sshData.sshMatches}
     '';
@@ -80,10 +83,7 @@ in
     text = lib.concatStringsSep "\n" authorizedKeys;
   };
 
-  # Populate known_hosts with machine host keys
-  home.file.".ssh/known_hosts" = {
-    text = generateKnownHosts sshData.knownHosts;
-  };
+  # Note: known_hosts is now managed via programs.ssh.knownHosts above
 
   # Note: SSH setup key is deployed via machine-specific secrets.nix files
   # for machines with setup-key capability (monaco, silver, etc.)
