@@ -69,3 +69,5 @@ systems/common/fonts/
 keys/
 # Temporary directory with sensitive files
 tmp/
+# Test secrets directory
+test-secrets/
