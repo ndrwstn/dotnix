@@ -3,8 +3,23 @@
 
 {
   # Siberia-specific agenix secrets configuration
-  # TODO: Create age secrets for Siberia and configure them here
-  # For now, this is a placeholder to allow the system to build
+  age.secrets = {
+    # SSH setup key for remote access
+    ssh-setup = {
+      file = ../../secrets/ssh-setup.age;
+      mode = "0400";
+      owner = "austin";
+      group = "users";
+    };
+
+    # Syncthing secrets for Siberia (consolidated JSON)
+    syncthing-siberia = {
+      file = ../../secrets/syncthing-siberia.age;
+      mode = "0400";
+      owner = "austin";
+      group = "users";
+    };
+  };
 
   # Configure agenix identity paths
   age.identityPaths = [

@@ -1,8 +1,29 @@
 # machines/plutonium/secrets.nix
-{ config, lib, pkgs, ... }:
+{ ... }:
 
 {
-  # Darwin-specific secrets configuration
-  # Syncthing secrets are handled via home-manager for Darwin systems
-  # This file exists to maintain consistency with NixOS machines
+  # Plutonium-specific agenix secrets configuration
+  age.secrets = {
+    # SSH setup key for remote access
+    ssh-setup = {
+      file = ../../secrets/ssh-setup.age;
+      mode = "0400";
+      owner = "austin";
+      group = "staff";
+    };
+
+    # Syncthing secrets for Plutonium (consolidated JSON)
+    syncthing-plutonium = {
+      file = ../../secrets/syncthing-plutonium.age;
+      mode = "0400";
+      owner = "austin";
+      group = "staff";
+    };
+  };
+
+  # Configure agenix identity paths for Plutonium
+  age.identityPaths = [
+    "/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/ssh_host_rsa_key"
+  ];
 }
