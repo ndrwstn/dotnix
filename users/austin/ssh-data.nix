@@ -5,7 +5,7 @@
   machines = {
     monaco = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEi5vWCZakanx3my3yk8XrGItqffYec/XKtLW+kbrlJ2";
-      hostname = "monaco.local";
+      hostname = "monaco.impetuo.us";
       user = "austin";
       port = 22;
       capabilities = [ "setup-key" "ios-devices" ];
@@ -13,7 +13,7 @@
 
     silver = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPltIgPNj7bpMDFuKQUmx+ZzwDBHOHFqLFokTTEeoOsb";
-      hostname = "silver.local";
+      hostname = "silver.impetuo.us";
       user = "austin";
       port = 22;
       capabilities = [ "setup-key" ];
@@ -21,7 +21,7 @@
 
     plutonium = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlZp70fv8pxvVtTTTx9juvvce/X1Ls3cUWR6l31WWQs";
-      hostname = "plutonium.local";
+      hostname = "plutonium.impetuo.us";
       user = "austin";
       port = 22;
       capabilities = [ "setup-key" ];
@@ -29,7 +29,7 @@
 
     molybdenum = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINmELnQH/n96+5+eK3JPsDHG4QCY0BhtBalTVg0MPYG4";
-      hostname = "molybdenum.local";
+      hostname = "molybdenum.impetuo.us";
       user = "austin";
       port = 22;
       capabilities = [ "setup-key" ];
@@ -67,12 +67,12 @@
 
   # Known hosts data (host keys for SSH client)
   knownHosts = {
-    "monaco.local" = {
+    "monaco.impetuo.us" = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSystV+gQ3/tiYxrk/Cmvr0WQBrz6UjA2cVwL8vxtgX";
       keyType = "ssh-ed25519";
     };
 
-    "silver.local" = {
+    "silver.impetuo.us" = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEasqUb7EN/yKS02tfVNvz8nYzgOhw0DDLz/rTR86Nw";
       keyType = "ssh-ed25519";
     };
@@ -109,33 +109,33 @@
   # SSH client match configurations
   sshMatches = [
     {
-      condition = "Host monaco.local";
+      condition = "Host monaco.impetuo.us";
       config = {
-        HostName = "monaco.local";
+        HostName = "monaco.impetuo.us";
         User = "austin";
         Port = 22;
       };
     }
     {
-      condition = "Host silver.local";
+      condition = "Host silver.impetuo.us";
       config = {
-        HostName = "silver.local";
+        HostName = "silver.impetuo.us";
         User = "austin";
         Port = 22;
       };
     }
     {
-      condition = "Host plutonium.local";
+      condition = "Host plutonium.impetuo.us";
       config = {
-        HostName = "plutonium.local";
+        HostName = "plutonium.impetuo.us";
         User = "austin";
         Port = 22;
       };
     }
     {
-      condition = "Host molybdenum.local";
+      condition = "Host molybdenum.impetuo.us";
       config = {
-        HostName = "molybdenum.local";
+        HostName = "molybdenum.impetuo.us";
         User = "austin";
         Port = 22;
       };
