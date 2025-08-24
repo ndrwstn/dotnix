@@ -15,8 +15,9 @@
           "/System/Applications/Reminders.app"
           "/System/Applications/Messages.app"
           "/Applications/Safari.app"
+          "/Applications/Ghostty.app"
           "/Applications/Nix Apps/Neovide.app"
-          "/System/Applications/iPhone Mirroring.app"
+          # "/System/Applications/iPhone Mirroring.app"
         ];
         persistent-others = [
           "/Users/austin/Downloads"
