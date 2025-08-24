@@ -26,15 +26,27 @@ in
   programs.ssh = {
     enable = true;
 
-    # Configure 1Password SSH agent
-    extraConfig = lib.mkIf pkgs.stdenv.isDarwin ''
+    # Configure 1Password SSH agent for all platforms
+    extraConfig = ''
       Host *
-        IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+        IdentityAgent ${
+          if pkgs.stdenv.isDarwin 
+          then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+          else "~/.1password/agent.sock"
+        }
     '';
   };
 
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
   home.file.".ssh/authorized_keys" = {
     text = lib.concatStringsSep "\n" authorizedKeys;
+  };
+
+  # Populate known_hosts with machine host keys
+  home.file.".ssh/known_hosts" = {
+    text = ''
+      monaco.local ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSystV+gQ3/tiYxrk/Cmvr0WQBrz6UjA2cVwL8vxtgX
+      silver.local ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEasqUb7EN/yKS02tfVNvz8nYzgOhw0DDLz/rTR86Nw
+    '';
   };
 }
