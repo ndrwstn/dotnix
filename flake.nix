@@ -157,8 +157,8 @@
           # Function to build user imports
           buildUserConfig = user: {
             name = user;
-            value = { config, pkgs, lib, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs; };
+            value = { config, pkgs, lib, hostName, ... }:
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs hostName; };
           };
 
           # Create attrset of user configs

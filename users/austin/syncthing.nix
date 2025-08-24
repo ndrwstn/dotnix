@@ -1,17 +1,9 @@
 # users/austin/syncthing.nix - Consolidated Syncthing management with JSON secrets
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, hostName ? "unknown", ... }:
 
 let
-  # Determine the machine name from hostname or provide a way to override
-  machineName =
-    if pkgs.stdenv.isDarwin then
-      if builtins.pathExists /etc/hostname then
-        lib.removeSuffix "\n" (builtins.readFile /etc/hostname)
-      else "monaco" # Default for Darwin systems
-    else
-      if builtins.pathExists /etc/hostname then
-        lib.removeSuffix "\n" (builtins.readFile /etc/hostname)
-      else "unknown";
+  # Use the hostName parameter passed from flake, normalize to lowercase
+  machineName = lib.toLower hostName;
 
   # Path to the JSON secret file (provided by agenix)
   secretPath = "/run/agenix/syncthing-${machineName}";
@@ -39,8 +31,11 @@ let
     };
   };
 
-  # Get configuration for current machine
-  currentConfig = machineConfig.${machineName} or machineConfig.monaco;
+  # Check if current machine is configured
+  isMachineConfigured = machineConfig ? ${machineName};
+
+  # Get configuration for current machine (only if configured)
+  currentConfig = if isMachineConfigured then machineConfig.${machineName} else null;
 
   # Script to extract JSON secrets to individual files
   extractSecretsScript = pkgs.writeShellScript "extract-syncthing-secrets" ''
@@ -70,15 +65,40 @@ let
     echo "Syncthing secrets extracted to ${extractDir}"
   '';
 
-in
-{
-  # Extract secrets during home activation
-  home.activation.extractSyncthingSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${extractSecretsScript}
+  # Script to set GUI username using syncthing generate
+  setGuiUserScript = pkgs.writeShellScript "set-syncthing-gui-user" ''
+    set -euo pipefail
+    
+    # Check if gui-user file exists
+    if [[ ! -f "${extractDir}/gui-user" ]]; then
+      echo "Warning: GUI user file not found at ${extractDir}/gui-user"
+      exit 0
+    fi
+    
+    # Read the username
+    GUI_USER=$(cat "${extractDir}/gui-user")
+    
+    # Set the GUI user using syncthing generate
+    ${pkgs.syncthing}/bin/syncthing generate --gui-user="$GUI_USER"
+    
+    echo "Set Syncthing GUI user to: $GUI_USER"
   '';
 
+in
+{
+  # Only configure Syncthing if machine is in the configured list
+  # Extract secrets during home activation
+  home.activation.extractSyncthingSecrets = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${extractSecretsScript}
+  '');
+
+  # Set GUI username during home activation
+  home.activation.setSyncthingGuiUser = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+    $DRY_RUN_CMD ${setGuiUserScript}
+  '');
+
   # Configure Syncthing service
-  services.syncthing = {
+  services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
 
     # GUI settings with machine-specific configuration
@@ -87,18 +107,21 @@ in
     # Certificate and key files (extracted from JSON)
     cert = "${extractDir}/cert.pem";
     key = "${extractDir}/key.pem";
+
+    # GUI authentication using passwordFile
+    passwordFile = "${extractDir}/gui-password";
   };
 
   # Create a systemd user service override for NixOS to handle GUI authentication
-  systemd.user.services.syncthing = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.syncthing = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) {
     Service = {
       # Ensure secrets are available before starting
-      ExecStartPre = "${extractSecretsScript}";
+      ExecStartPre = lib.mkForce "${extractSecretsScript}";
     };
   };
 
   # Create a helper script for manual secret extraction (useful for debugging)
-  home.packages = [
+  home.packages = lib.mkIf isMachineConfigured [
     (pkgs.writeShellScriptBin "syncthing-extract-secrets" ''
       echo "Extracting Syncthing secrets for ${machineName}..."
       ${extractSecretsScript}
@@ -108,12 +131,16 @@ in
   ];
 
   # Ensure the extraction directory exists and has correct permissions
-  home.file.".config/syncthing-secrets/.keep" = {
+  home.file.".config/syncthing-secrets/.keep" = lib.mkIf isMachineConfigured {
     text = "# This directory contains extracted Syncthing secrets\n";
     onChange = ''
       chmod 700 "${config.home.homeDirectory}/.config/syncthing-secrets"
     '';
   };
+
+  # Warning message for unknown machines
+  warnings = lib.optional (!isMachineConfigured)
+    "Syncthing is disabled for machine '${machineName}' - not found in configured machines: ${lib.concatStringsSep ", " (lib.attrNames machineConfig)}";
 }
 
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
