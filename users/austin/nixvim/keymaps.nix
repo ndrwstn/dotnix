@@ -37,9 +37,7 @@
     { key = "<leader>er"; mode = "n"; action = "<cmd>Neotree action=focus source=filesystem reveal=true position=left<CR>"; options.desc = "Reveal File (Neotree)"; }
     { key = "<leader>ex"; mode = "n"; action = "<cmd>Neotree action=close source=filesystem position=left<CR>"; options.desc = "Close Files (Neotree)"; }
 
-    # sops-nvim
-    { key = "<leader>usd"; mode = "n"; action = "<cmd>SopsDecrypt<CR>"; options.desc = "Decrypt File (Sops)"; }
-    { key = "<leader>use"; mode = "n"; action = "<cmd>SopsEncrypt<CR>"; options.desc = "Encrypt File (Sops)"; }
+
 
     # Telescope
     { key = "<leader>f?"; mode = "n"; action = "<cmd>Telescope help_tags<CR>"; options.desc = "Find Help (Telescope)"; }

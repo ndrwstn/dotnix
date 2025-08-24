@@ -1,6 +1,6 @@
 # Nix Flake
 
-NixOS and nix-darwin configurations using SOPS.
+NixOS and nix-darwin configurations using agenix for secret management.
 
 ## Setup
 
@@ -16,7 +16,7 @@ mkdir -p machines/<hostname>
 cp machines/siberia/configuration.nix machines/<hostname>/
 # Edit configuration.nix as needed
 
-# Build (works without secrets, WiFi etc disabled until keys added)
+# Build and switch
 nixos-rebuild switch --flake .#<hostname>
 # Hostname is automatically set from flake after first build
 ```
@@ -38,26 +38,27 @@ cd nx-nix
 darwin-rebuild switch --flake .#<hostname>
 ```
 
-## Generate Keys
+## Secret Management with agenix
+
+This flake uses [agenix](https://github.com/ryantm/agenix) for secret management. Secrets are encrypted using SSH host keys.
+
+### Adding Secrets
 
 ```bash
-# Install tools
-nix-shell -p sops age
+# Install agenix
+nix-shell -p agenix
 
-# Generate personal age key (one-time)
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-age-keygen -y ~/.config/sops/age/keys.txt  # Get public key
+# Edit secrets (agenix automatically handles encryption/decryption)
+agenix -e <secret-name>
 
-# For NixOS: Extract machine key (auto-generated after first build)
-sudo age-keygen -y /var/lib/sops-nix/key.txt  # Copy this output
-
-# Add keys to .sops.yaml and update secrets
-# Edit .sops.yaml to add new keys under "keys:" section
-# Re-encrypt secrets for new machine access:
-sops updatekeys systems/common/wifi.sops.yaml
-sops updatekeys machines/<hostname>/syncthing.sops.yaml
-
-# Rebuild to enable secrets
-nixos-rebuild switch --flake .  # or darwin-rebuild
+# Secrets are defined in secrets/secrets.nix and encrypted to SSH host keys
+# No manual key generation needed - agenix uses existing SSH host keys
 ```
+
+### SSH Host Keys
+
+agenix uses SSH host keys from `/etc/ssh/ssh_host_*` for encryption/decryption. These are automatically generated when SSH is enabled on the system.
+
+## Legacy SOPS Files
+
+Previous SOPS configuration files have been moved to `sops_old/` directory for reference. The system now exclusively uses agenix for secret management.

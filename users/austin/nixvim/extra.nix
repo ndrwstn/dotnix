@@ -3,13 +3,11 @@
   extraPlugins = with pkgs.vimPlugins; [
     codewindow-nvim
     nvim-notify
-    nvim-sops
     train-nvim
     wrapping-nvim
   ];
 
   extraConfigLua = ''
-    require('nvim_sops').setup {}
     require('wrapping').setup {
       softener = {
         tex = true;
