@@ -1,5 +1,5 @@
 # SSH configuration for austin user - Data-driven dynamic configuration
-{ lib, pkgs, hostName ? "", config, ... }:
+{ lib, pkgs, hostName ? "", ... }:
 let
   # Import SSH configuration data
   sshData = import ./ssh-data.nix;
@@ -53,14 +53,10 @@ let
     then generateAuthorizedKeys currentMachine
     else lib.mapAttrsToList (name: machineData: machineData.key) sshData.machines; # fallback to machine keys only
 
-  # Check if current machine should receive setup key
-  shouldDeploySetupKey = currentMachine != null && hasCapability "setup-key" currentMachine;
+  # Note: Setup key deployment is handled at machine level via secrets.nix files
 in
 {
-  # Import agenix secrets if this machine has setup-key capability
-  imports = lib.optionals shouldDeploySetupKey [
-    ../../secrets/secrets.nix
-  ];
+  # Note: agenix secrets are configured via age.secrets below, not via imports
 
   programs.ssh = {
     enable = true;
@@ -88,13 +84,6 @@ in
     text = generateKnownHosts sshData.knownHosts;
   };
 
-  # Deploy setup private key via agenix if machine has setup-key capability
-  age.secrets = lib.mkIf shouldDeploySetupKey {
-    ssh-setup = {
-      file = ../../secrets/ssh-setup.age;
-      path = "${config.home.homeDirectory}/.ssh/setup";
-      mode = "600";
-      owner = config.home.username;
-    };
-  };
+  # Note: SSH setup key is deployed via machine-specific secrets.nix files
+  # for machines with setup-key capability (monaco, silver, etc.)
 }

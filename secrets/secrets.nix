@@ -16,19 +16,13 @@ let
   setupKeyMachines = [ monaco silver ]; # plutonium and molybdenum will be added when activated
 in
 {
-  # WiFi secrets - accessible by all active machines and users
-  "wifi-home-ssid.age".publicKeys = allUsers ++ activeMachines;
-  "wifi-home-psk.age".publicKeys = allUsers ++ activeMachines;
+  # Consolidated secrets with same access control as before
+  "wifi-home.age".publicKeys = allUsers ++ activeMachines;
 
-  # SSH setup key - deployed only to machines with setup-key capability
+  # Individual SSH key files
   "ssh-setup.age".publicKeys = allUsers ++ setupKeyMachines;
 
-  # Syncthing secrets - per active machine
-  "syncthing-monaco-device-id.age".publicKeys = allUsers ++ [ monaco ];
-  "syncthing-monaco-cert.age".publicKeys = allUsers ++ [ monaco ];
-  "syncthing-monaco-key.age".publicKeys = allUsers ++ [ monaco ];
-
-  "syncthing-silver-device-id.age".publicKeys = allUsers ++ [ silver ];
-  "syncthing-silver-cert.age".publicKeys = allUsers ++ [ silver ];
-  "syncthing-silver-key.age".publicKeys = allUsers ++ [ silver ];
+  # Syncthing secrets (consolidated)
+  "syncthing-monaco.age".publicKeys = allUsers ++ [ monaco ];
+  "syncthing-silver.age".publicKeys = allUsers ++ [ silver ];
 }

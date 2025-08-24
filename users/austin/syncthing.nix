@@ -10,6 +10,7 @@
 
     # For now, disable cert/key on Darwin until we set up manual secret management
     # On NixOS, these will be provided by the agenix module
+    # Note: With consolidated JSON secrets, we'll need to extract cert/key from JSON
     cert = if pkgs.stdenv.isLinux then "/run/agenix/syncthing-silver-cert" else null;
     key = if pkgs.stdenv.isLinux then "/run/agenix/syncthing-silver-key" else null;
   };

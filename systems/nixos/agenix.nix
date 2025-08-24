@@ -16,15 +16,9 @@
   age = {
     # Secrets directory
     secrets = {
-      # WiFi secrets
-      wifi-home-ssid = {
-        file = ../../secrets/wifi-home-ssid.age;
-        mode = "0400";
-        owner = "austin";
-        group = "users";
-      };
-      wifi-home-psk = {
-        file = ../../secrets/wifi-home-psk.age;
+      # WiFi secrets (consolidated JSON)
+      wifi-home = {
+        file = ../../secrets/wifi-home.age;
         mode = "0400";
         owner = "austin";
         group = "users";

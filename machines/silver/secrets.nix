@@ -4,21 +4,17 @@
 {
   # Silver-specific agenix secrets configuration
   age.secrets = {
-    # Syncthing secrets for Silver
-    syncthing-silver-device-id = {
-      file = ../../secrets/syncthing-silver-device-id.age;
+    # SSH setup key for remote access
+    ssh-setup = {
+      file = ../../secrets/ssh-setup.age;
       mode = "0400";
       owner = "austin";
       group = "users";
     };
-    syncthing-silver-cert = {
-      file = ../../secrets/syncthing-silver-cert.age;
-      mode = "0400";
-      owner = "austin";
-      group = "users";
-    };
-    syncthing-silver-key = {
-      file = ../../secrets/syncthing-silver-key.age;
+
+    # Syncthing secrets for Silver (consolidated JSON)
+    syncthing-silver = {
+      file = ../../secrets/syncthing-silver.age;
       mode = "0400";
       owner = "austin";
       group = "users";

@@ -4,21 +4,17 @@
 {
   # Monaco-specific agenix secrets configuration
   age.secrets = {
-    # Syncthing secrets for Monaco
-    syncthing-monaco-device-id = {
-      file = ../../secrets/syncthing-monaco-device-id.age;
+    # SSH setup key for remote access
+    ssh-setup = {
+      file = ../../secrets/ssh-setup.age;
       mode = "0400";
       owner = "austin";
       group = "staff";
     };
-    syncthing-monaco-cert = {
-      file = ../../secrets/syncthing-monaco-cert.age;
-      mode = "0400";
-      owner = "austin";
-      group = "staff";
-    };
-    syncthing-monaco-key = {
-      file = ../../secrets/syncthing-monaco-key.age;
+
+    # Syncthing secrets for Monaco (consolidated JSON)
+    syncthing-monaco = {
+      file = ../../secrets/syncthing-monaco.age;
       mode = "0400";
       owner = "austin";
       group = "staff";
