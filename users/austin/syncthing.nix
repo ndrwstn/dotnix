@@ -93,14 +93,14 @@ let
     echo "Checking certificates..."
     NEEDS_CERT_UPDATE=0
     
-    if [[ -f "$CONFIG_DIR/cert.pem" ]] && cmp -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
+    if [[ -f "$CONFIG_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
       echo "Certificate is up-to-date"
     else
       echo "Certificate needs updating"
       NEEDS_CERT_UPDATE=1
     fi
     
-    if [[ -f "$CONFIG_DIR/key.pem" ]] && cmp -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
+    if [[ -f "$CONFIG_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
       echo "Private key is up-to-date"
     else
       echo "Private key needs updating"
@@ -449,7 +449,7 @@ in
 
   # Darwin activation script to detect config changes and restart service when needed
   home.activation.restartSyncthingOnConfigChange = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
-    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
+    lib.hm.dag.entryAfter [ "createSyncthingTestFiles" ] ''
       $DRY_RUN_CMD ${pkgs.writeShellScript "restart-syncthing-on-config-change" ''
         set -euo pipefail
         
