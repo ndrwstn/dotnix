@@ -104,9 +104,9 @@ in
     # GUI settings with machine-specific configuration
     guiAddress = currentConfig.guiAddress;
 
-    # Certificate and key files (extracted from JSON)
-    cert = "${extractDir}/cert.pem";
-    key = "${extractDir}/key.pem";
+    # Certificate and key files (only works on NixOS)
+    cert = if pkgs.stdenv.isLinux then "${extractDir}/cert.pem" else null;
+    key = if pkgs.stdenv.isLinux then "${extractDir}/key.pem" else null;
 
     # GUI authentication using passwordFile
     passwordFile = "${extractDir}/gui-password";
@@ -137,6 +137,67 @@ in
       chmod 700 "${config.home.homeDirectory}/.config/syncthing-secrets"
     '';
   };
+
+  # Smart certificate deployment for Darwin using activation scripts
+  home.activation.deploySyncthingCertificates = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
+    lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+      $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates" ''
+        set -euo pipefail
+        
+        SYNCTHING_DIR="$HOME/Library/Application Support/Syncthing"
+        
+        # Check if certificates need updating
+        NEEDS_UPDATE=0
+        
+        if [[ -f "$SYNCTHING_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"; then
+          echo "Certificate is up-to-date"
+        else
+          echo "Certificate needs updating"
+          NEEDS_UPDATE=1
+        fi
+        
+        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
+          echo "Private key is up-to-date"
+        else
+          echo "Private key needs updating"
+          NEEDS_UPDATE=1
+        fi
+        
+        # Only restart if certificates actually changed
+        if [[ $NEEDS_UPDATE -eq 1 ]]; then
+          echo "Deploying new Syncthing certificates..."
+          
+          # Check if syncthing is running
+          SYNCTHING_WAS_RUNNING=0
+          if /bin/launchctl list | grep -q org.nix-community.home.syncthing; then
+            SYNCTHING_WAS_RUNNING=1
+            echo "Stopping Syncthing service..."
+            /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
+            sleep 2
+          fi
+          
+          # Deploy certificates (remove existing files first to avoid permission issues)
+          mkdir -p "$SYNCTHING_DIR"
+          rm -f "$SYNCTHING_DIR/cert.pem" "$SYNCTHING_DIR/key.pem"
+          cp "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"
+          cp "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"
+          chmod 400 "$SYNCTHING_DIR/cert.pem"
+          chmod 400 "$SYNCTHING_DIR/key.pem"
+          
+          # Restart syncthing if it was running
+          if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]]; then
+            echo "Starting Syncthing service..."
+            /bin/launchctl start org.nix-community.home.syncthing 2>/dev/null || true
+            echo "Syncthing restarted with new certificates"
+          else
+            echo "Syncthing was not running, certificates will be used on next start"
+          fi
+        else
+          echo "Syncthing certificates are up-to-date, no restart needed"
+        fi
+      ''}
+    ''
+  );
 
   # Warning message for unknown machines
   warnings = lib.optional (!isMachineConfigured)

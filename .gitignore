@@ -61,13 +61,8 @@ systems/common/fonts/
 *.token
 *.credentials
 
-# SOPS-related files that might contain unencrypted secrets
-.decrypted~*
-*.unencrypted
-
-# Age keys directory (contains private keys)
-keys/
 # Temporary directory with sensitive files
 tmp/
-# Test secrets directory
-test-secrets/
+
+# Unencrypted jsons used to make .age keys
+secrets/*.json
