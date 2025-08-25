@@ -169,6 +169,9 @@ let
       fi
     done <<< "$FOLDER_DEVICE_IDS"
 
+    # Ensure clean config generation
+    rm -f "$CONFIG_FILE"
+    
     # Generate complete config.xml
     cat > "$CONFIG_FILE" << EOF
     <configuration version="37">
@@ -214,7 +217,7 @@ let
         ' | while IFS=: read -r DEVICE_NAME DEVICE_ID; do
           if [[ -n "$DEVICE_ID" ]]; then
             # Capitalize first letter for display name
-            DISPLAY_NAME="''${DEVICE_NAME^}"
+            DISPLAY_NAME="\$${DEVICE_NAME^}"
             
             cat >> "$CONFIG_FILE" << EOF
         <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
