@@ -76,23 +76,64 @@ let
     echo "Syncthing secrets extracted to ${extractDir}"
   '';
 
-  # Script to set GUI username using syncthing generate
-  setGuiUserScript = pkgs.writeShellScript "set-syncthing-gui-user" ''
+  # Custom Darwin syncthing wrapper that handles certificates and config generation
+  darwinSyncthingWrapper = pkgs.writeShellScript "syncthing-darwin-wrapper" ''
     set -euo pipefail
     
-    # Check if gui-user file exists
-    if [[ ! -f "${extractDir}/gui-user" ]]; then
-      echo "Warning: GUI user file not found at ${extractDir}/gui-user"
-      exit 0
+    # Determine config directory
+    CONFIG_DIR="$HOME/Library/Application Support/Syncthing"
+    
+    echo "Starting Syncthing Darwin wrapper..."
+    
+    # Step 1: Extract secrets
+    echo "Extracting secrets..."
+    ${extractSecretsScript}
+    
+    # Step 2: Deploy certificates with change detection
+    echo "Checking certificates..."
+    NEEDS_CERT_UPDATE=0
+    
+    if [[ -f "$CONFIG_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
+      echo "Certificate is up-to-date"
+    else
+      echo "Certificate needs updating"
+      NEEDS_CERT_UPDATE=1
     fi
     
-    # Read the username
-    GUI_USER=$(cat "${extractDir}/gui-user")
+    if [[ -f "$CONFIG_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
+      echo "Private key is up-to-date"
+    else
+      echo "Private key needs updating"
+      NEEDS_CERT_UPDATE=1
+    fi
     
-    # Set the GUI user using syncthing generate
-    ${pkgs.syncthing}/bin/syncthing generate --gui-user="$GUI_USER"
+    # Deploy certificates if needed
+    if [[ $NEEDS_CERT_UPDATE -eq 1 ]]; then
+      echo "Deploying new certificates..."
+      mkdir -p "$CONFIG_DIR"
+      rm -f "$CONFIG_DIR/cert.pem" "$CONFIG_DIR/key.pem"
+      cp "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"
+      cp "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"
+      chmod 400 "$CONFIG_DIR/cert.pem"
+      chmod 400 "$CONFIG_DIR/key.pem"
+      echo "Certificates deployed"
+    fi
     
-    echo "Set Syncthing GUI user to: $GUI_USER"
+    # Step 3: Generate config.xml
+    echo "Generating configuration..."
+    ${generateSyncthingConfigScript}
+    
+    # Step 4: Create touch file for syncthing-init coordination
+    touch "$CONFIG_DIR/.launchd_update_config"
+    
+    # Step 5: Exec syncthing with proper arguments
+    echo "Starting Syncthing..."
+    exec ${pkgs.syncthing}/bin/syncthing "$@"
+  '';
+
+  # Custom syncthing package for Darwin that uses our wrapper
+  darwinSyncthingPackage = pkgs.writeShellScriptBin "syncthing" ''
+    exec ${darwinSyncthingWrapper} "$@"
   '';
 
   # Script to generate complete Syncthing config.xml at service start
@@ -388,10 +429,7 @@ in
     $DRY_RUN_CMD ${extractSecretsScript}
   '');
 
-  # Set GUI username during home activation
-  home.activation.setSyncthingGuiUser = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
-    $DRY_RUN_CMD ${setGuiUserScript}
-  '');
+
 
   # Create test files during home activation
   home.activation.createSyncthingTestFiles = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -403,11 +441,72 @@ in
     $DRY_RUN_CMD ${generateSyncthingConfigScript}
   '');
 
+  # Darwin activation script to detect config changes and restart service when needed
+  home.activation.restartSyncthingOnConfigChange = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
+    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
+      $DRY_RUN_CMD ${pkgs.writeShellScript "restart-syncthing-on-config-change" ''
+        set -euo pipefail
+        
+        # Check if secrets have changed by comparing modification times
+        NEEDS_RESTART=0
+        RESTART_REASON=""
+        
+        # Check machine-specific secret
+        if [[ -f "${secretPath}" ]]; then
+          MACHINE_SECRET_TIME=$(stat -f "%m" "${secretPath}" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.launchd_update_config" 2>/dev/null || echo "0")
+          
+          if [[ $MACHINE_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
+            NEEDS_RESTART=1
+            RESTART_REASON="machine-specific secret changed"
+          fi
+        fi
+        
+        # Check shared secret
+        if [[ -f "${sharedSecretPath}" ]]; then
+          SHARED_SECRET_TIME=$(stat -f "%m" "${sharedSecretPath}" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.launchd_update_config" 2>/dev/null || echo "0")
+          
+          if [[ $SHARED_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
+            NEEDS_RESTART=1
+            RESTART_REASON="shared secret changed"
+          fi
+        fi
+        
+        # Restart service if needed
+        if [[ $NEEDS_RESTART -eq 1 ]]; then
+          echo "Restarting Syncthing service: $RESTART_REASON"
+          
+          # Stop service if running
+          if /bin/launchctl list | grep -q org.nix-community.home.syncthing; then
+            echo "Stopping Syncthing service..."
+            /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
+            sleep 2
+          fi
+          
+          # Start service
+          echo "Starting Syncthing service..."
+          /bin/launchctl start org.nix-community.home.syncthing 2>/dev/null || true
+          
+          # Update touch file timestamp
+          touch "$HOME/Library/Application Support/Syncthing/.launchd_update_config"
+          
+          echo "Syncthing service restarted successfully"
+        else
+          echo "No configuration changes detected, service restart not needed"
+        fi
+      ''}
+    ''
+  );
+
   # Configure Syncthing service (devices/folders managed via generated config.xml)
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
     guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
     passwordFile = "${extractDir}/gui-password";
+
+    # Use custom wrapper on Darwin, regular package on Linux
+    package = if pkgs.stdenv.isDarwin then darwinSyncthingPackage else pkgs.syncthing;
 
     # Don't override devices/folders - managed via generated config.xml
     overrideDevices = false;
@@ -456,66 +555,7 @@ in
     '';
   };
 
-  # Smart certificate deployment for Darwin using activation scripts
-  home.activation.deploySyncthingCertificates = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
-    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
-      $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates" ''
-        set -euo pipefail
-        
-        SYNCTHING_DIR="$HOME/Library/Application Support/Syncthing"
-        
-        # Check if certificates need updating
-        NEEDS_UPDATE=0
-        
-        if [[ -f "$SYNCTHING_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"; then
-          echo "Certificate is up-to-date"
-        else
-          echo "Certificate needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
-          echo "Private key is up-to-date"
-        else
-          echo "Private key needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        # Only restart if certificates actually changed
-        if [[ $NEEDS_UPDATE -eq 1 ]]; then
-          echo "Deploying new Syncthing certificates..."
-          
-          # Check if syncthing is running
-          SYNCTHING_WAS_RUNNING=0
-          if /bin/launchctl list | grep -q org.nix-community.home.syncthing; then
-            SYNCTHING_WAS_RUNNING=1
-            echo "Stopping Syncthing service..."
-            /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
-            sleep 2
-          fi
-          
-          # Deploy certificates (remove existing files first to avoid permission issues)
-          mkdir -p "$SYNCTHING_DIR"
-          rm -f "$SYNCTHING_DIR/cert.pem" "$SYNCTHING_DIR/key.pem"
-          cp "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"
-          cp "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"
-          chmod 400 "$SYNCTHING_DIR/cert.pem"
-          chmod 400 "$SYNCTHING_DIR/key.pem"
-          
-          # Restart syncthing if it was running
-          if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]]; then
-            echo "Starting Syncthing service..."
-            /bin/launchctl start org.nix-community.home.syncthing 2>/dev/null || true
-            echo "Syncthing restarted with new certificates"
-          else
-            echo "Syncthing was not running, certificates will be used on next start"
-          fi
-        else
-          echo "Syncthing certificates are up-to-date, no restart needed"
-        fi
-      ''}
-    ''
-  );
+
 
   # Smart certificate deployment for NixOS using activation scripts
   home.activation.deploySyncthingCertificatesLinux = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (
