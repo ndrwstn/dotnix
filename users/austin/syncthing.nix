@@ -93,14 +93,14 @@ let
     echo "Checking certificates..."
     NEEDS_CERT_UPDATE=0
     
-    if [[ -f "$CONFIG_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
+    if [[ -f "$CONFIG_DIR/cert.pem" ]] && cmp -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
       echo "Certificate is up-to-date"
     else
       echo "Certificate needs updating"
       NEEDS_CERT_UPDATE=1
     fi
     
-    if [[ -f "$CONFIG_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
+    if [[ -f "$CONFIG_DIR/key.pem" ]] && cmp -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
       echo "Private key is up-to-date"
     else
       echo "Private key needs updating"
@@ -123,8 +123,8 @@ let
     echo "Generating configuration..."
     ${generateSyncthingConfigScript}
     
-    # Step 4: Create touch file for syncthing-init coordination
-    touch "$CONFIG_DIR/.launchd_update_config"
+    # Step 4: Create timestamp file for restart detection
+    touch "$CONFIG_DIR/.syncthing_config_timestamp"
     
     # Step 5: Exec syncthing with proper arguments
     echo "Starting Syncthing..."
@@ -276,10 +276,16 @@ let
           fi
         done
 
+        # Extract GUI credentials from secrets
+        GUI_USER=$(cat "${extractDir}/gui-user" 2>/dev/null || echo "")
+        GUI_PASSWORD=$(cat "${extractDir}/gui-password" 2>/dev/null || echo "")
+        
         # Add GUI and options configuration
         cat >> "$CONFIG_FILE" << EOF
         <gui enabled="true" tls="false" debugging="false">
             <address>127.0.0.1:${toString currentConfig.guiPort}</address>
+            <user>$GUI_USER</user>
+            <password>$GUI_PASSWORD</password>
             <apikey>$API_KEY</apikey>
             <theme>default</theme>
         </gui>
@@ -424,8 +430,8 @@ let
 in
 {
   # Only configure Syncthing if machine is in the configured list
-  # Extract secrets during home activation
-  home.activation.extractSyncthingSecrets = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Extract secrets during home activation (Linux only - Darwin wrapper handles this)
+  home.activation.extractSyncthingSecrets = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${extractSecretsScript}
   '');
 
@@ -436,8 +442,8 @@ in
     $DRY_RUN_CMD ${createTestFilesScript}
   '');
 
-  # Generate syncthing configuration before service starts
-  home.activation.generateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+  # Generate syncthing configuration before service starts (Linux only - Darwin wrapper handles this)
+  home.activation.generateSyncthingConfig = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
     $DRY_RUN_CMD ${generateSyncthingConfigScript}
   '');
 
@@ -454,7 +460,7 @@ in
         # Check machine-specific secret
         if [[ -f "${secretPath}" ]]; then
           MACHINE_SECRET_TIME=$(stat -f "%m" "${secretPath}" 2>/dev/null || echo "0")
-          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.launchd_update_config" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
           
           if [[ $MACHINE_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
             NEEDS_RESTART=1
@@ -465,7 +471,7 @@ in
         # Check shared secret
         if [[ -f "${sharedSecretPath}" ]]; then
           SHARED_SECRET_TIME=$(stat -f "%m" "${sharedSecretPath}" 2>/dev/null || echo "0")
-          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.launchd_update_config" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
           
           if [[ $SHARED_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
             NEEDS_RESTART=1
@@ -488,8 +494,8 @@ in
           echo "Starting Syncthing service..."
           /bin/launchctl start org.nix-community.home.syncthing 2>/dev/null || true
           
-          # Update touch file timestamp
-          touch "$HOME/Library/Application Support/Syncthing/.launchd_update_config"
+          # Update timestamp file
+          touch "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp"
           
           echo "Syncthing service restarted successfully"
         else
@@ -500,22 +506,29 @@ in
   );
 
   # Configure Syncthing service (devices/folders managed via generated config.xml)
-  services.syncthing = lib.mkIf isMachineConfigured {
-    enable = true;
-    guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
-    passwordFile = "${extractDir}/gui-password";
+  services.syncthing = lib.mkIf isMachineConfigured (lib.mkMerge [
+    {
+      enable = true;
+      guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
+      passwordFile = "${extractDir}/gui-password";
 
-    # Use custom wrapper on Darwin, regular package on Linux
-    package = if pkgs.stdenv.isDarwin then darwinSyncthingPackage else pkgs.syncthing;
+      # Don't override devices/folders - managed via generated config.xml
+      overrideDevices = false;
+      overrideFolders = false;
 
-    # Don't override devices/folders - managed via generated config.xml
-    overrideDevices = false;
-    overrideFolders = false;
-
-    settings = {
-      options = syncthingGlobalOptions;
-    };
-  };
+      settings = {
+        options = syncthingGlobalOptions;
+      };
+    }
+    (lib.optionalAttrs pkgs.stdenv.isDarwin {
+      # Use custom wrapper on Darwin
+      package = darwinSyncthingPackage;
+    })
+    (lib.optionalAttrs pkgs.stdenv.isLinux {
+      # Use regular package on Linux
+      package = pkgs.syncthing;
+    })
+  ]);
 
   # Create a systemd user service override for NixOS to handle GUI authentication
   systemd.user.services.syncthing = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) {
@@ -575,7 +588,9 @@ in
           NEEDS_UPDATE=1
         fi
         
-        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ! ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
+        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
+          echo "Private key is up-to-date"
+        else
           echo "Private key needs updating"
           NEEDS_UPDATE=1
         fi
