@@ -102,7 +102,7 @@ let
     # Function to stop Syncthing on error
     stop_syncthing() {
       echo "Stopping Syncthing to prevent inconsistent state"
-      if [[ "${toString pkgs.stdenv.isLinux}" == "1" ]]; then
+      if [[ "${toString pkgs.stdenv.isLinux}" == "true" ]]; then
         ${pkgs.systemd}/bin/systemctl --user stop syncthing.service || true
       else
         /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
@@ -116,9 +116,10 @@ let
       local method=$1
       local endpoint=$2
       local data=$3
+      local api_key=$4
       
       RESPONSE=$(${pkgs.curl}/bin/curl -s -w '\n%{http_code}' -X "$method" \
-        -H "X-API-Key: $API_KEY" \
+        -H "X-API-Key: $api_key" \
         -H "Content-Type: application/json" \
         ''${data:+-d "$data"} \
         "127.0.0.1:${toString currentConfig.guiPort}$endpoint")
@@ -184,7 +185,11 @@ let
     done
     
     # Read and validate shared configuration
-    SHARED_CONFIG=$(cat "${sharedSecretPath}")
+    if ! SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null); then
+      echo "ERROR: Failed to read shared secret file at ${sharedSecretPath}"
+      stop_syncthing
+      exit 1
+    fi
     
     # Validate JSON structure
     if ! echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -e '.devices' >/dev/null 2>&1; then
@@ -203,24 +208,24 @@ let
     
     # Get current configuration to override everything
     echo "Retrieving current Syncthing configuration..."
-    CURRENT_DEVICES=$(call_api GET "/rest/config/devices" "")
-    CURRENT_FOLDERS=$(call_api GET "/rest/config/folders" "")
+    CURRENT_DEVICES=$(call_api GET "/rest/config/devices" "" "$API_KEY")
+    CURRENT_FOLDERS=$(call_api GET "/rest/config/folders" "" "$API_KEY")
     
     # DELETE all existing devices (except self)
     echo "Removing all existing devices..."
-    echo "$CURRENT_DEVICES" | ${pkgs.jq}/bin/jq -r '.[] | select(.deviceID != "self") | .deviceID' | while read -r DEVICE_ID; do
+    for DEVICE_ID in $(echo "$CURRENT_DEVICES" | ${pkgs.jq}/bin/jq -r '.[] | select(.deviceID != "self") | .deviceID'); do
       if [[ -n "$DEVICE_ID" ]]; then
         echo "Removing existing device: $DEVICE_ID"
-        call_api DELETE "/rest/config/devices/$DEVICE_ID" "" >/dev/null
+        call_api DELETE "/rest/config/devices/$DEVICE_ID" "" "$API_KEY" >/dev/null
       fi
     done
     
     # DELETE all existing folders (except default)
     echo "Removing all existing folders..."
-    echo "$CURRENT_FOLDERS" | ${pkgs.jq}/bin/jq -r '.[] | select(.id != "default") | .id' | while read -r FOLDER_ID; do
+    for FOLDER_ID in $(echo "$CURRENT_FOLDERS" | ${pkgs.jq}/bin/jq -r '.[] | select(.id != "default") | .id'); do
       if [[ -n "$FOLDER_ID" ]]; then
         echo "Removing existing folder: $FOLDER_ID"
-        call_api DELETE "/rest/config/folders/$FOLDER_ID" "" >/dev/null
+        call_api DELETE "/rest/config/folders/$FOLDER_ID" "" "$API_KEY" >/dev/null
       fi
     done
     
@@ -228,13 +233,13 @@ let
     if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
       echo "Adding Monaco device: $MONACO_ID"
       call_api POST "/rest/config/devices" \
-        "{\"deviceID\":\"$MONACO_ID\",\"name\":\"Monaco\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" >/dev/null
+        "{\"deviceID\":\"$MONACO_ID\",\"name\":\"Monaco\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" "$API_KEY" >/dev/null
     fi
     
     if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
       echo "Adding Silver device: $SILVER_ID"
       call_api POST "/rest/config/devices" \
-        "{\"deviceID\":\"$SILVER_ID\",\"name\":\"Silver\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" >/dev/null
+        "{\"deviceID\":\"$SILVER_ID\",\"name\":\"Silver\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" "$API_KEY" >/dev/null
     fi
     
     # Add test folder if both devices are available
@@ -249,12 +254,12 @@ let
       fi
       
       call_api POST "/rest/config/folders" \
-        "{\"id\":\"nix-sync-test\",\"path\":\"${config.home.homeDirectory}/nix-syncthing\",\"devices\":$FOLDER_DEVICES,\"type\":\"sendreceive\",\"fsWatcherEnabled\":true,\"fsWatcherDelayS\":10,\"rescanIntervalS\":180,\"ignorePerms\":true}" >/dev/null
+        "{\"id\":\"nix-sync-test\",\"path\":\"${config.home.homeDirectory}/nix-syncthing\",\"devices\":$FOLDER_DEVICES,\"type\":\"sendreceive\",\"fsWatcherEnabled\":true,\"fsWatcherDelayS\":10,\"rescanIntervalS\":180,\"ignorePerms\":true}" "$API_KEY" >/dev/null
     fi
     
     # Restart Syncthing to apply configuration
     echo "Configuration complete, restarting Syncthing to apply changes..."
-    call_api POST "/rest/system/restart" "" >/dev/null
+    call_api POST "/rest/system/restart" "" "$API_KEY" >/dev/null
     
     echo "Syncthing configuration successfully updated and applied"
   '';
@@ -374,7 +379,7 @@ in
       fi
     else
       # Run in background to avoid blocking activation
-      (${updateSyncthingConfigScript} &) || true
+      (${updateSyncthingConfigScript} &)
     fi
   '');
 
