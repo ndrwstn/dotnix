@@ -19,6 +19,14 @@
       owner = "austin";
       group = "users";
     };
+
+    # NEW: Shared syncthing configuration (all machines can decrypt)
+    syncthing = {
+      file = ../../secrets/syncthing.age;
+      mode = "0400";
+      owner = "austin";
+      group = "users";
+    };
   };
 
   # Configure agenix identity paths

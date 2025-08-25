@@ -1,18 +1,19 @@
-# users/austin/syncthing.nix - Consolidated Syncthing management with JSON secrets
+# users/austin/syncthing.nix - Declarative Syncthing configuration with shared secrets
 { config, lib, pkgs, hostName ? "unknown", ... }:
 
 let
   # Use the hostName parameter passed from flake, normalize to lowercase
   machineName = lib.toLower hostName;
 
-  # Path to the JSON secret file (provided by agenix)
+  # Path to the JSON secret files (provided by agenix)
   secretPath = "/run/agenix/syncthing-${machineName}";
+  sharedSecretPath = "/run/agenix/syncthing";
 
   # Directory for extracted secrets
   extractDir = "${config.home.homeDirectory}/.config/syncthing-secrets";
 
   # Machine-specific configuration
-  machineConfig = {
+  devices = {
     monaco = {
       guiAddress = "127.0.0.1:8384";
       guiPort = 8384;
@@ -32,10 +33,19 @@ let
   };
 
   # Check if current machine is configured
-  isMachineConfigured = machineConfig ? ${machineName};
+  isMachineConfigured = devices ? ${machineName};
 
   # Get configuration for current machine (only if configured)
-  currentConfig = if isMachineConfigured then machineConfig.${machineName} else null;
+  currentConfig = if isMachineConfigured then devices.${machineName} else null;
+
+  # Fallback device IDs (will be replaced by actual IDs from shared secret at runtime)
+  fallbackDeviceIds = {
+    monaco = "DEVICE-ID-PLACEHOLDER-MONACO";
+    silver = "DEVICE-ID-PLACEHOLDER-SILVER";
+  };
+
+  # Generate timestamp for test files
+  timestamp = "$(date +%Y%m%d-%H%M%S)";
 
   # Script to extract JSON secrets to individual files
   extractSecretsScript = pkgs.writeShellScript "extract-syncthing-secrets" ''
@@ -84,6 +94,65 @@ let
     echo "Set Syncthing GUI user to: $GUI_USER"
   '';
 
+  # Script to create test files and .stignore
+  createTestFilesScript = pkgs.writeShellScript "create-syncthing-test-files" ''
+    set -euo pipefail
+    
+    # Create test directory
+    TEST_DIR="${config.home.homeDirectory}/nix-syncthing"
+    mkdir -p "$TEST_DIR"
+    
+    # Create test file with machine info
+    TEST_FILE="$TEST_DIR/test-${machineName}-${timestamp}.txt"
+    cat > "$TEST_FILE" << EOF
+    # Syncthing Test File
+    Machine: ${machineName}
+    Hostname: $(hostname)
+    User: $(whoami)
+    Timestamp: $(date)
+    UUID: $(${pkgs.util-linux}/bin/uuidgen 2>/dev/null || echo "N/A")
+    
+    This file was created automatically during home-manager activation
+    to test the syncthing configuration on ${machineName}.
+    EOF
+    
+    # Create .stignore file with macOS hidden file patterns
+    cat > "$TEST_DIR/.stignore" << 'EOF'
+    # macOS hidden files and metadata
+    .DS_Store
+    ._*
+    .Spotlight-V100
+    .Trashes
+    .fseventsd
+    .TemporaryItems
+    .VolumeIcon.icns
+    
+    # Temporary files
+    *.tmp
+    *.temp
+    *~
+    .#*
+    
+    # Version control
+    .git
+    .svn
+    .hg
+    
+    # IDE files
+    .vscode
+    .idea
+    *.swp
+    *.swo
+    
+    # OS generated files
+    Thumbs.db
+    desktop.ini
+    EOF
+    
+    echo "Created test file: $TEST_FILE"
+    echo "Created .stignore file: $TEST_DIR/.stignore"
+  '';
+
 in
 {
   # Only configure Syncthing if machine is in the configured list
@@ -97,19 +166,61 @@ in
     $DRY_RUN_CMD ${setGuiUserScript}
   '');
 
-  # Configure Syncthing service
+  # Create test files during home activation
+  home.activation.createSyncthingTestFiles = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${createTestFilesScript}
+  '');
+
+  # Configure Syncthing service with declarative configuration
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
 
     # GUI settings with machine-specific configuration
     guiAddress = currentConfig.guiAddress;
 
-    # Certificate and key files - these don't work as Syncthing command-line arguments
-    # cert = if pkgs.stdenv.isLinux then "${extractDir}/cert.pem" else null;
-    # key = if pkgs.stdenv.isLinux then "${extractDir}/key.pem" else null;
-
     # GUI authentication using passwordFile
     passwordFile = "${extractDir}/gui-password";
+
+    # Declarative configuration - override existing devices and folders
+    overrideDevices = true;
+    overrideFolders = true;
+
+    # Global Syncthing settings
+    settings = {
+      # Global options
+      options = {
+        urAccepted = -1; # Disable usage reporting
+        relaysEnabled = false; # Local only
+        localAnnounceEnabled = true;
+        globalAnnounceEnabled = false;
+        natEnabled = false;
+      };
+
+      # Device configuration (will be updated with actual IDs at runtime)
+      devices = {
+        monaco = {
+          id = fallbackDeviceIds.monaco;
+          compression = "metadata";
+        };
+        silver = {
+          id = fallbackDeviceIds.silver;
+          compression = "metadata";
+        };
+      };
+
+      # Folder configuration
+      folders = {
+        "nix-sync-test" = {
+          path = "${config.home.homeDirectory}/nix-syncthing";
+          devices = [ "monaco" "silver" ];
+          type = "sendreceive";
+          fsWatcherEnabled = true;
+          fsWatcherDelayS = 10;
+          rescanIntervalS = 180; # 3 minutes for testing
+          ignorePerms = true; # macOS/Linux compatibility
+        };
+      };
+    };
   };
 
   # Create a systemd user service override for NixOS to handle GUI authentication
@@ -127,6 +238,11 @@ in
       ${extractSecretsScript}
       echo "Secrets extracted. Files available in ${extractDir}:"
       ls -la "${extractDir}" 2>/dev/null || echo "No secrets found"
+    '')
+    (pkgs.writeShellScriptBin "syncthing-create-test-files" ''
+      echo "Creating Syncthing test files for ${machineName}..."
+      ${createTestFilesScript}
+      echo "Test files created in ${config.home.homeDirectory}/nix-syncthing"
     '')
   ];
 
@@ -218,8 +334,6 @@ in
         fi
         
         if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
-          echo "Private key is up-to-date"
-        else
           echo "Private key needs updating"
           NEEDS_UPDATE=1
         fi
@@ -262,7 +376,7 @@ in
 
   # Warning message for unknown machines
   warnings = lib.optional (!isMachineConfigured)
-    "Syncthing is disabled for machine '${machineName}' - not found in configured machines: ${lib.concatStringsSep ", " (lib.attrNames machineConfig)}";
+    "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames devices)}";
 }
 
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
