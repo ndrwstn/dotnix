@@ -130,10 +130,13 @@ let
     SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null || echo '{}')
     MACHINE_CONFIG=$(cat "${secretPath}" 2>/dev/null || echo '{}')
     
-    # Extract device IDs
-    MONACO_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.monaco // empty' 2>/dev/null || echo "")
-    SILVER_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.silver // empty' 2>/dev/null || echo "")
+    # Extract own device ID
     OWN_DEVICE_ID=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.deviceId // empty' 2>/dev/null || echo "")
+    
+    # Count available devices for logging
+    DEVICE_COUNT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+      .devices | to_entries[] | select(.key != $self) | .key
+    ' 2>/dev/null | wc -l || echo "0")
     
     # Preserve existing API key if config exists
     EXISTING_API_KEY=""
@@ -150,16 +153,27 @@ let
     
     echo "Generating config for machine: ${machineName}"
     echo "Own device ID: $OWN_DEVICE_ID"
-    echo "Monaco ID: $MONACO_ID"
-    echo "Silver ID: $SILVER_ID"
+    echo "Available peer devices: $DEVICE_COUNT"
     
+    # Get all device IDs except our own for folder configuration
+    FOLDER_DEVICE_IDS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+      .devices | to_entries[] | select(.key != $self) | .value
+    ' 2>/dev/null || echo "")
+
+    # Build XML device entries for folder
+    FOLDER_DEVICES=""
+    while IFS= read -r DEVICE_ID; do
+      if [[ -n "$DEVICE_ID" ]]; then
+        FOLDER_DEVICES="$FOLDER_DEVICES
+            <device id=\"$DEVICE_ID\" introducedBy=\"\"></device>"
+      fi
+    done <<< "$FOLDER_DEVICE_IDS"
+
     # Generate complete config.xml
     cat > "$CONFIG_FILE" << EOF
     <configuration version="37">
         <folder id="nix-sync-test" label="Nix Sync Test" path="${config.home.homeDirectory}/nix-syncthing" type="sendreceive" rescanIntervalS="180" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="true" autoNormalize="true">
-            <filesystemType>basic</filesystemType>
-            <device id="$MONACO_ID" introducedBy=""></device>
-            <device id="$SILVER_ID" introducedBy=""></device>
+            <filesystemType>basic</filesystemType>$FOLDER_DEVICES
             <minDiskFree unit="%">1</minDiskFree>
             <versioning></versioning>
             <copiers>0</copiers>
@@ -194,10 +208,16 @@ let
         </folder>
     EOF
 
-        # Add devices (excluding current machine)
-        if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
-          cat >> "$CONFIG_FILE" << EOF
-        <device id="$MONACO_ID" name="Monaco" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
+        # Add devices dynamically (excluding current machine)
+        echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+          .devices | to_entries[] | select(.key != $self) | .key + ":" + .value
+        ' | while IFS=: read -r DEVICE_NAME DEVICE_ID; do
+          if [[ -n "$DEVICE_ID" ]]; then
+            # Capitalize first letter for display name
+            DISPLAY_NAME="''${DEVICE_NAME^}"
+            
+            cat >> "$CONFIG_FILE" << EOF
+        <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
             <address>dynamic</address>
             <paused>false</paused>
             <autoAcceptFolders>false</autoAcceptFolders>
@@ -209,23 +229,8 @@ let
             <numConnections>0</numConnections>
         </device>
     EOF
-        fi
-    
-        if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
-          cat >> "$CONFIG_FILE" << EOF
-        <device id="$SILVER_ID" name="Silver" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
-            <address>dynamic</address>
-            <paused>false</paused>
-            <autoAcceptFolders>false</autoAcceptFolders>
-            <maxSendKbps>0</maxSendKbps>
-            <maxRecvKbps>0</maxRecvKbps>
-            <maxRequestKiB>0</maxRequestKiB>
-            <untrusted>false</untrusted>
-            <remoteGUIPort>0</remoteGUIPort>
-            <numConnections>0</numConnections>
-        </device>
-    EOF
-        fi
+          fi
+        done
 
         # Add GUI and options configuration
         cat >> "$CONFIG_FILE" << EOF
@@ -527,7 +532,7 @@ in
           NEEDS_UPDATE=1
         fi
         
-        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
+        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ! ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
           echo "Private key needs updating"
           NEEDS_UPDATE=1
         fi
