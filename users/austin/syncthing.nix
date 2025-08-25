@@ -12,15 +12,9 @@ let
   # Directory for extracted secrets
   extractDir = "${config.home.homeDirectory}/.config/syncthing-secrets";
 
-  # Read shared configuration (device IDs)
-  sharedConfig =
-    let
-      secretFile = sharedSecretPath;
-    in
-    if builtins.pathExists secretFile then
-      builtins.fromJSON (builtins.readFile secretFile)
-    else
-      { devices = { }; };
+  # Note: Shared configuration will be read at runtime via activation script
+  # Cannot use builtins.pathExists/readFile as they evaluate at build time
+  # when /run/agenix/syncthing doesn't exist yet
 
   # Machine-specific configuration
   machineConfigs = {
@@ -46,20 +40,7 @@ let
     };
   };
 
-  # Device definitions with IDs from shared secret
-  devices =
-    if sharedConfig ? devices && sharedConfig.devices ? monaco && sharedConfig.devices ? silver then {
-      monaco = {
-        id = sharedConfig.devices.monaco;
-        guiPort = 8384;
-        compression = "metadata";
-      };
-      silver = {
-        id = sharedConfig.devices.silver;
-        guiPort = 8387;
-        compression = "metadata";
-      };
-    } else { };
+
 
   # Check if current machine is configured
   isMachineConfigured = machineConfigs ? ${machineName};
@@ -114,36 +95,91 @@ let
     echo "Set Syncthing GUI user to: $GUI_USER"
   '';
 
-  # Generate device configuration for home-manager (excluding self)
-  syncthingDevices =
-    if isMachineConfigured then
-      lib.filterAttrs (name: _: name != machineName)
-        (lib.mapAttrs
-          (name: device: {
-            inherit (device) id;
-            name = lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
-            addresses = [ "dynamic" ];
-            compression = device.compression or "metadata";
-            autoAcceptFolders = false;
-          })
-          devices)
-    else { };
+  # Script to update syncthing configuration from shared secret at runtime
+  updateSyncthingConfigScript = pkgs.writeShellScript "update-syncthing-config" ''
+    set -euo pipefail
+    
+    # Check if shared secret exists
+    if [[ ! -f "${sharedSecretPath}" ]]; then
+      echo "Shared syncthing secret not found at ${sharedSecretPath}"
+      echo "Syncthing will run with certificate-based identity only"
+      exit 0
+    fi
+    
+    # Wait for syncthing to be available (up to 30 seconds)
+    echo "Waiting for Syncthing API to be available..."
+    for i in {1..30}; do
+      if ${pkgs.curl}/bin/curl -s "127.0.0.1:${toString currentConfig.guiPort}/rest/system/ping" >/dev/null 2>&1; then
+        echo "Syncthing API is available"
+        break
+      fi
+      if [[ $i -eq 30 ]]; then
+        echo "Timeout waiting for Syncthing API"
+        exit 1
+      fi
+      sleep 1
+    done
+    
+    # Read shared configuration
+    SHARED_CONFIG=$(cat "${sharedSecretPath}")
+    
+    # Extract device IDs
+    MONACO_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.monaco // empty')
+    SILVER_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.silver // empty')
+    
+    # Get API key
+    API_KEY=$(${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' \
+      "${config.home.homeDirectory}/.local/state/syncthing/config.xml" 2>/dev/null || \
+      ${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' \
+      "${config.home.homeDirectory}/Library/Application Support/Syncthing/config.xml" 2>/dev/null || \
+      echo "")
+    
+    if [[ -z "$API_KEY" ]]; then
+      echo "Could not retrieve Syncthing API key"
+      exit 1
+    fi
+    
+    # Update devices via REST API (only add devices for other machines)
+    if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
+      echo "Adding Monaco device: $MONACO_ID"
+      ${pkgs.curl}/bin/curl -X POST \
+        -H "X-API-Key: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"deviceID\":\"$MONACO_ID\",\"name\":\"Monaco\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" \
+        "127.0.0.1:${toString currentConfig.guiPort}/rest/config/devices"
+    fi
+    
+    if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
+      echo "Adding Silver device: $SILVER_ID"
+      ${pkgs.curl}/bin/curl -X POST \
+        -H "X-API-Key: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"deviceID\":\"$SILVER_ID\",\"name\":\"Silver\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" \
+        "127.0.0.1:${toString currentConfig.guiPort}/rest/config/devices"
+    fi
+    
+    # Add test folder if both devices are available
+    if [[ -n "$MONACO_ID" && -n "$SILVER_ID" ]]; then
+      echo "Adding test folder configuration"
+      FOLDER_DEVICES="[]"
+      if [[ "${machineName}" != "monaco" ]]; then
+        FOLDER_DEVICES=$(echo "$FOLDER_DEVICES" | ${pkgs.jq}/bin/jq ". + [{\"deviceID\":\"$MONACO_ID\"}]")
+      fi
+      if [[ "${machineName}" != "silver" ]]; then
+        FOLDER_DEVICES=$(echo "$FOLDER_DEVICES" | ${pkgs.jq}/bin/jq ". + [{\"deviceID\":\"$SILVER_ID\"}]")
+      fi
+      
+      ${pkgs.curl}/bin/curl -X POST \
+        -H "X-API-Key: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"id\":\"nix-sync-test\",\"path\":\"${config.home.homeDirectory}/nix-syncthing\",\"devices\":$FOLDER_DEVICES,\"type\":\"sendreceive\",\"fsWatcherEnabled\":true,\"fsWatcherDelayS\":10,\"rescanIntervalS\":180,\"ignorePerms\":true}" \
+        "127.0.0.1:${toString currentConfig.guiPort}/rest/config/folders"
+    fi
+    
+    echo "Syncthing configuration updated from shared secret"
+  '';
 
-  # Only configure folders if we have valid devices
-  syncthingFolders =
-    if isMachineConfigured && (builtins.length (builtins.attrNames devices) > 0) then
-      {
-        "nix-sync-test" = {
-          path = "${config.home.homeDirectory}/nix-syncthing";
-          devices = lib.remove machineName [ "monaco" "silver" ];
-          type = "sendreceive";
-          fsWatcherEnabled = true;
-          fsWatcherDelayS = 10;
-          rescanIntervalS = 180;
-          ignorePerms = true;
-        };
-      }
-    else { };
+  # Device and folder configuration now handled at runtime via REST API
 
   # Global Syncthing options
   syncthingGlobalOptions = {
@@ -234,19 +270,23 @@ in
     $DRY_RUN_CMD ${createTestFilesScript}
   '');
 
-  # Configure Syncthing service with declarative configuration
+  # Update syncthing configuration from shared secret after service starts
+  home.activation.updateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
+    # Run in background to avoid blocking activation
+    (${updateSyncthingConfigScript} &)
+  '');
+
+  # Configure Syncthing service (devices/folders managed via runtime REST API)
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
     guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
     passwordFile = "${extractDir}/gui-password";
 
-    # Only override if we have valid configuration
-    overrideDevices = (builtins.length (builtins.attrNames syncthingDevices) > 0);
-    overrideFolders = (builtins.length (builtins.attrNames syncthingFolders) > 0);
+    # Don't override devices/folders - managed via REST API at runtime
+    overrideDevices = false;
+    overrideFolders = false;
 
     settings = {
-      devices = syncthingDevices;
-      folders = syncthingFolders;
       options = syncthingGlobalOptions;
     };
   };
@@ -403,12 +443,8 @@ in
   );
 
   # Warning messages
-  warnings =
-    (lib.optional (!isMachineConfigured)
-      "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames machineConfigs)}")
-    ++
-    (lib.optional (isMachineConfigured && !builtins.pathExists sharedSecretPath)
-      "Syncthing shared secret not found at ${sharedSecretPath} - running without declarative device/folder configuration");
+  warnings = lib.optional (!isMachineConfigured)
+    "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames machineConfigs)}";
 }
 
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
