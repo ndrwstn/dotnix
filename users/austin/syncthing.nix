@@ -1,4 +1,4 @@
-# users/austin/syncthing.nix - Declarative Syncthing configuration with shared secrets
+# users/austin/syncthing.nix - Simplified Syncthing configuration with direct config.xml generation
 { config, lib, pkgs, hostName ? "unknown", ... }:
 
 let
@@ -12,9 +12,9 @@ let
   # Directory for extracted secrets
   extractDir = "${config.home.homeDirectory}/.config/syncthing-secrets";
 
-  # Note: Shared configuration will be read at runtime via activation script
-  # Cannot use builtins.pathExists/readFile as they evaluate at build time
-  # when /run/agenix/syncthing doesn't exist yet
+  # Note: Configuration is generated directly as config.xml at service start
+  # This replaces the complex REST API approach with a simpler, more reliable method
+  # Secrets are read at runtime when agenix has decrypted them
 
   # Machine-specific configuration
   machineConfigs = {
@@ -95,176 +95,211 @@ let
     echo "Set Syncthing GUI user to: $GUI_USER"
   '';
 
-  # Script to update syncthing configuration from shared secret at runtime
-  updateSyncthingConfigScript = pkgs.writeShellScript "update-syncthing-config" ''
+  # Script to generate complete Syncthing config.xml at service start
+  generateSyncthingConfigScript = pkgs.writeShellScript "generate-syncthing-config" ''
     set -euo pipefail
     
-    # Function to stop Syncthing on error
-    stop_syncthing() {
-      echo "Stopping Syncthing to prevent inconsistent state"
-      if [[ "${toString pkgs.stdenv.isLinux}" == "true" ]]; then
-        ${pkgs.systemd}/bin/systemctl --user stop syncthing.service || true
-      else
-        /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
-      fi
-      echo "WARNING: Syncthing has been stopped due to configuration error"
-      echo "Please check the logs and rebuild to retry"
-    }
+    # Determine config directory based on platform
+    if [[ "${toString pkgs.stdenv.isLinux}" == "true" ]]; then
+      CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
+    else
+      CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
+    fi
+    CONFIG_FILE="$CONFIG_DIR/config.xml"
     
-    # Function to make API calls with error handling
-    call_api() {
-      local method=$1
-      local endpoint=$2
-      local data=$3
-      local api_key=$4
-      
-      RESPONSE=$(${pkgs.curl}/bin/curl -s -w '\n%{http_code}' -X "$method" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        ''${data:+-d "$data"} \
-        "127.0.0.1:${toString currentConfig.guiPort}$endpoint")
-      
-      HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-      BODY=$(echo "$RESPONSE" | head -n-1)
-      
-      if [[ "$HTTP_CODE" != "200" ]] && [[ "$HTTP_CODE" != "204" ]]; then
-        echo "ERROR: API call failed (HTTP $HTTP_CODE): $BODY"
-        stop_syncthing
-        exit 1
-      fi
-      
-      echo "$BODY"
-    }
+    echo "Generating Syncthing config.xml at $CONFIG_FILE"
+    
+    # Create config directory
+    mkdir -p "$CONFIG_DIR"
     
     # Check if shared secret exists
     if [[ ! -f "${sharedSecretPath}" ]]; then
-      echo "Shared syncthing secret not found at ${sharedSecretPath}"
-      echo "Syncthing will run with certificate-based identity only"
+      echo "Warning: Shared syncthing secret not found at ${sharedSecretPath}"
+      echo "Skipping device configuration - will use certificate-based identity only"
       exit 0
     fi
     
-    # Wait for syncthing to be available (up to 30 seconds)
-    echo "Waiting for Syncthing API to be available..."
-    for i in {1..30}; do
-      if ${pkgs.curl}/bin/curl -s "127.0.0.1:${toString currentConfig.guiPort}/rest/system/ping" >/dev/null 2>&1; then
-        echo "Syncthing API is available"
-        break
-      fi
-      if [[ $i -eq 30 ]]; then
-        echo "Timeout waiting for Syncthing API"
-        exit 0  # Don't fail activation, just skip configuration
-      fi
-      sleep 1
-    done
-    
-    # Wait for config.xml to be created (up to 60 seconds)
-    echo "Waiting for Syncthing config.xml to be created..."
-    API_KEY=""
-    for i in {1..60}; do
-      CONFIG_FILE=""
-      if [[ -d "${config.home.homeDirectory}/.local/state/syncthing" ]]; then
-        CONFIG_FILE="${config.home.homeDirectory}/.local/state/syncthing/config.xml"
-      elif [[ -d "${config.home.homeDirectory}/Library/Application Support/Syncthing" ]]; then
-        CONFIG_FILE="${config.home.homeDirectory}/Library/Application Support/Syncthing/config.xml"
-      fi
-      
-      if [[ -f "$CONFIG_FILE" ]]; then
-        API_KEY=$(${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' "$CONFIG_FILE" 2>/dev/null || true)
-        if [[ -n "$API_KEY" ]]; then
-          echo "Successfully retrieved API key from $CONFIG_FILE"
-          break
-        fi
-      fi
-      
-      if [[ $i -eq 60 ]]; then
-        echo "Timeout waiting for Syncthing config.xml after 60 seconds"
-        echo "You may need to rebuild a second time after Syncthing initializes"
-        exit 0  # Don't fail activation, just skip configuration
-      fi
-      sleep 1
-    done
-    
-    # Read and validate shared configuration
-    if ! SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null); then
-      echo "ERROR: Failed to read shared secret file at ${sharedSecretPath}"
-      stop_syncthing
-      exit 1
+    # Check if machine-specific secret exists
+    if [[ ! -f "${secretPath}" ]]; then
+      echo "Warning: Machine syncthing secret not found at ${secretPath}"
+      echo "Skipping configuration generation"
+      exit 0
     fi
     
-    # Validate JSON structure
-    if ! echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -e '.devices' >/dev/null 2>&1; then
-      echo "ERROR: Invalid shared secret JSON structure - missing devices"
-      stop_syncthing
-      exit 1
-    fi
+    # Read device IDs from secrets
+    SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null || echo '{}')
+    MACHINE_CONFIG=$(cat "${secretPath}" 2>/dev/null || echo '{}')
     
     # Extract device IDs
-    MONACO_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.monaco // empty')
-    SILVER_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.silver // empty')
+    MONACO_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.monaco // empty' 2>/dev/null || echo "")
+    SILVER_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.devices.silver // empty' 2>/dev/null || echo "")
+    OWN_DEVICE_ID=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.deviceId // empty' 2>/dev/null || echo "")
     
-    echo "Starting declarative Syncthing configuration..."
+    # Preserve existing API key if config exists
+    EXISTING_API_KEY=""
+    if [[ -f "$CONFIG_FILE" ]]; then
+      EXISTING_API_KEY=$(${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' "$CONFIG_FILE" 2>/dev/null || echo "")
+    fi
+    
+    # Generate new API key if none exists
+    if [[ -z "$EXISTING_API_KEY" ]]; then
+      API_KEY=$(${pkgs.openssl}/bin/openssl rand -hex 16)
+    else
+      API_KEY="$EXISTING_API_KEY"
+    fi
+    
+    echo "Generating config for machine: ${machineName}"
+    echo "Own device ID: $OWN_DEVICE_ID"
     echo "Monaco ID: $MONACO_ID"
     echo "Silver ID: $SILVER_ID"
     
-    # Get current configuration to override everything
-    echo "Retrieving current Syncthing configuration..."
-    CURRENT_DEVICES=$(call_api GET "/rest/config/devices" "" "$API_KEY")
-    CURRENT_FOLDERS=$(call_api GET "/rest/config/folders" "" "$API_KEY")
-    
-    # DELETE all existing devices (except self)
-    echo "Removing all existing devices..."
-    for DEVICE_ID in $(echo "$CURRENT_DEVICES" | ${pkgs.jq}/bin/jq -r '.[] | select(.deviceID != "self") | .deviceID'); do
-      if [[ -n "$DEVICE_ID" ]]; then
-        echo "Removing existing device: $DEVICE_ID"
-        call_api DELETE "/rest/config/devices/$DEVICE_ID" "" "$API_KEY" >/dev/null
-      fi
-    done
-    
-    # DELETE all existing folders (except default)
-    echo "Removing all existing folders..."
-    for FOLDER_ID in $(echo "$CURRENT_FOLDERS" | ${pkgs.jq}/bin/jq -r '.[] | select(.id != "default") | .id'); do
-      if [[ -n "$FOLDER_ID" ]]; then
-        echo "Removing existing folder: $FOLDER_ID"
-        call_api DELETE "/rest/config/folders/$FOLDER_ID" "" "$API_KEY" >/dev/null
-      fi
-    done
-    
-    # Add our declarative devices (excluding current machine)
-    if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
-      echo "Adding Monaco device: $MONACO_ID"
-      call_api POST "/rest/config/devices" \
-        "{\"deviceID\":\"$MONACO_ID\",\"name\":\"Monaco\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" "$API_KEY" >/dev/null
-    fi
-    
-    if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
-      echo "Adding Silver device: $SILVER_ID"
-      call_api POST "/rest/config/devices" \
-        "{\"deviceID\":\"$SILVER_ID\",\"name\":\"Silver\",\"addresses\":[\"dynamic\"],\"compression\":\"metadata\",\"autoAcceptFolders\":false}" "$API_KEY" >/dev/null
-    fi
-    
-    # Add test folder if both devices are available
-    if [[ -n "$MONACO_ID" && -n "$SILVER_ID" ]]; then
-      echo "Adding test folder configuration"
-      FOLDER_DEVICES="[]"
-      if [[ "${machineName}" != "monaco" ]]; then
-        FOLDER_DEVICES=$(echo "$FOLDER_DEVICES" | ${pkgs.jq}/bin/jq ". + [{\"deviceID\":\"$MONACO_ID\"}]")
-      fi
-      if [[ "${machineName}" != "silver" ]]; then
-        FOLDER_DEVICES=$(echo "$FOLDER_DEVICES" | ${pkgs.jq}/bin/jq ". + [{\"deviceID\":\"$SILVER_ID\"}]")
-      fi
-      
-      call_api POST "/rest/config/folders" \
-        "{\"id\":\"nix-sync-test\",\"path\":\"${config.home.homeDirectory}/nix-syncthing\",\"devices\":$FOLDER_DEVICES,\"type\":\"sendreceive\",\"fsWatcherEnabled\":true,\"fsWatcherDelayS\":10,\"rescanIntervalS\":180,\"ignorePerms\":true}" "$API_KEY" >/dev/null
-    fi
-    
-    # Restart Syncthing to apply configuration
-    echo "Configuration complete, restarting Syncthing to apply changes..."
-    call_api POST "/rest/system/restart" "" "$API_KEY" >/dev/null
-    
-    echo "Syncthing configuration successfully updated and applied"
-  '';
+    # Generate complete config.xml
+    cat > "$CONFIG_FILE" << EOF
+    <configuration version="37">
+        <folder id="nix-sync-test" label="Nix Sync Test" path="${config.home.homeDirectory}/nix-syncthing" type="sendreceive" rescanIntervalS="180" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="true" autoNormalize="true">
+            <filesystemType>basic</filesystemType>
+            <device id="$MONACO_ID" introducedBy=""></device>
+            <device id="$SILVER_ID" introducedBy=""></device>
+            <minDiskFree unit="%">1</minDiskFree>
+            <versioning></versioning>
+            <copiers>0</copiers>
+            <pullerMaxPendingKiB>0</pullerMaxPendingKiB>
+            <hashers>0</hashers>
+            <order>random</order>
+            <ignoreDelete>false</ignoreDelete>
+            <scanProgressIntervalS>0</scanProgressIntervalS>
+            <pullerPauseS>0</pullerPauseS>
+            <maxConflicts>10</maxConflicts>
+            <disableSparseFiles>false</disableSparseFiles>
+            <disableTempIndexes>false</disableTempIndexes>
+            <paused>false</paused>
+            <weakHashThresholdPct>25</weakHashThresholdPct>
+            <markerName>.stfolder</markerName>
+            <copyOwnershipFromParent>false</copyOwnershipFromParent>
+            <modTimeWindowS>0</modTimeWindowS>
+            <maxConcurrentWrites>2</maxConcurrentWrites>
+            <disableFsync>false</disableFsync>
+            <blockPullOrder>standard</blockPullOrder>
+            <copyRangeMethod>standard</copyRangeMethod>
+            <caseSensitiveFS>true</caseSensitiveFS>
+            <junctionsAsDirs>false</junctionsAsDirs>
+            <syncOwnership>false</syncOwnership>
+            <sendOwnership>false</sendOwnership>
+            <syncXattrs>false</syncXattrs>
+            <sendXattrs>false</sendXattrs>
+            <xattrFilter>
+                <maxSingleEntrySize>1024</maxSingleEntrySize>
+                <maxTotalSize>4096</maxTotalSize>
+            </xattrFilter>
+        </folder>
+    EOF
 
-  # Device and folder configuration now handled at runtime via REST API
+        # Add devices (excluding current machine)
+        if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
+          cat >> "$CONFIG_FILE" << EOF
+        <device id="$MONACO_ID" name="Monaco" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
+            <address>dynamic</address>
+            <paused>false</paused>
+            <autoAcceptFolders>false</autoAcceptFolders>
+            <maxSendKbps>0</maxSendKbps>
+            <maxRecvKbps>0</maxRecvKbps>
+            <maxRequestKiB>0</maxRequestKiB>
+            <untrusted>false</untrusted>
+            <remoteGUIPort>0</remoteGUIPort>
+            <numConnections>0</numConnections>
+        </device>
+    EOF
+        fi
+    
+        if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
+          cat >> "$CONFIG_FILE" << EOF
+        <device id="$SILVER_ID" name="Silver" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
+            <address>dynamic</address>
+            <paused>false</paused>
+            <autoAcceptFolders>false</autoAcceptFolders>
+            <maxSendKbps>0</maxSendKbps>
+            <maxRecvKbps>0</maxRecvKbps>
+            <maxRequestKiB>0</maxRequestKiB>
+            <untrusted>false</untrusted>
+            <remoteGUIPort>0</remoteGUIPort>
+            <numConnections>0</numConnections>
+        </device>
+    EOF
+        fi
+
+        # Add GUI and options configuration
+        cat >> "$CONFIG_FILE" << EOF
+        <gui enabled="true" tls="false" debugging="false">
+            <address>127.0.0.1:${toString currentConfig.guiPort}</address>
+            <apikey>$API_KEY</apikey>
+            <theme>default</theme>
+        </gui>
+        <ldap></ldap>
+        <options>
+            <listenAddress>default</listenAddress>
+            <globalAnnounceServer>default</globalAnnounceServer>
+            <globalAnnounceEnabled>false</globalAnnounceEnabled>
+            <localAnnounceEnabled>true</localAnnounceEnabled>
+            <localAnnouncePort>21027</localAnnouncePort>
+            <localAnnounceMCAddr>[ff12::8384]:21027</localAnnounceMCAddr>
+            <maxSendKbps>0</maxSendKbps>
+            <maxRecvKbps>0</maxRecvKbps>
+            <reconnectionIntervalS>60</reconnectionIntervalS>
+            <relaysEnabled>false</relaysEnabled>
+            <relayReconnectIntervalM>10</relayReconnectIntervalM>
+            <startBrowser>false</startBrowser>
+            <natEnabled>false</natEnabled>
+            <natLeaseMinutes>60</natLeaseMinutes>
+            <natRenewalMinutes>30</natRenewalMinutes>
+            <natTimeoutSeconds>10</natTimeoutSeconds>
+            <urAccepted>-1</urAccepted>
+            <urSeen>3</urSeen>
+            <urUniqueID></urUniqueID>
+            <urURL>https://data.syncthing.net/newdata</urURL>
+            <urPostInsecurely>false</urPostInsecurely>
+            <urInitialDelayS>1800</urInitialDelayS>
+            <autoUpgradeIntervalH>12</autoUpgradeIntervalH>
+            <upgradeToPreReleases>false</upgradeToPreReleases>
+            <keepTemporariesH>24</keepTemporariesH>
+            <cacheIgnoredFiles>false</cacheIgnoredFiles>
+            <progressUpdateIntervalS>5</progressUpdateIntervalS>
+            <limitBandwidthInLan>false</limitBandwidthInLan>
+            <minHomeDiskFree unit="%">1</minHomeDiskFree>
+            <releasesURL>https://upgrades.syncthing.net/meta.json</releasesURL>
+            <overwriteRemoteDeviceNamesOnConnect>false</overwriteRemoteDeviceNamesOnConnect>
+            <tempIndexMinBlocks>10</tempIndexMinBlocks>
+            <trafficClass>0</trafficClass>
+            <setLowPriority>true</setLowPriority>
+            <maxFolderConcurrency>0</maxFolderConcurrency>
+            <crashReportingURL>https://crash.syncthing.net/newcrash</crashReportingURL>
+            <crashReportingEnabled>false</crashReportingEnabled>
+            <stunKeepaliveStartS>180</stunKeepaliveStartS>
+            <stunKeepaliveMinS>20</stunKeepaliveMinS>
+            <stunServer>default</stunServer>
+            <databaseTuning>auto</databaseTuning>
+            <maxConcurrentIncomingRequestKiB>0</maxConcurrentIncomingRequestKiB>
+            <announceLANAddresses>true</announceLANAddresses>
+            <sendFullIndexOnUpgrade>false</sendFullIndexOnUpgrade>
+            <connectionLimitEnough>0</connectionLimitEnough>
+            <connectionLimitMax>0</connectionLimitMax>
+            <insecureAllowOldTLSVersions>false</insecureAllowOldTLSVersions>
+            <connectionPriorityTcpLan>10</connectionPriorityTcpLan>
+            <connectionPriorityQuicLan>20</connectionPriorityQuicLan>
+            <connectionPriorityTcpWan>30</connectionPriorityTcpWan>
+            <connectionPriorityQuicWan>40</connectionPriorityQuicWan>
+            <connectionPriorityRelay>50</connectionPriorityRelay>
+            <connectionPriorityUpgradeThreshold>0</connectionPriorityUpgradeThreshold>
+        </options>
+        <remoteIgnoredDevice></remoteIgnoredDevice>
+        <pendingDevice></pendingDevice>
+        <pendingFolder></pendingFolder>
+    </configuration>
+    EOF
+
+        echo "Successfully generated Syncthing config.xml"
+        echo "Config file: $CONFIG_FILE"
+        echo "API key: $API_KEY"
+  '';
 
   # Global Syncthing options
   syncthingGlobalOptions = {
@@ -355,41 +390,18 @@ in
     $DRY_RUN_CMD ${createTestFilesScript}
   '');
 
-  # Update syncthing configuration from shared secret after service starts
-  home.activation.updateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
-    if [[ -n "''${DRY_RUN_CMD:-}" ]]; then
-      echo "[DRY-RUN] Would update Syncthing configuration from shared secret"
-      if [[ -f "${sharedSecretPath}" ]]; then
-        MONACO_ID=$(${pkgs.jq}/bin/jq -r '.devices.monaco // empty' "${sharedSecretPath}" 2>/dev/null || echo "")
-        SILVER_ID=$(${pkgs.jq}/bin/jq -r '.devices.silver // empty' "${sharedSecretPath}" 2>/dev/null || echo "")
-        echo "[DRY-RUN] Would wait for Syncthing API and config.xml"
-        echo "[DRY-RUN] Would remove all existing devices and folders"
-        if [[ "${machineName}" != "monaco" && -n "$MONACO_ID" ]]; then
-          echo "[DRY-RUN] Would add Monaco device: $MONACO_ID"
-        fi
-        if [[ "${machineName}" != "silver" && -n "$SILVER_ID" ]]; then
-          echo "[DRY-RUN] Would add Silver device: $SILVER_ID"
-        fi
-        if [[ -n "$MONACO_ID" && -n "$SILVER_ID" ]]; then
-          echo "[DRY-RUN] Would add test folder 'nix-sync-test' shared between devices"
-        fi
-        echo "[DRY-RUN] Would restart Syncthing to apply configuration"
-      else
-        echo "[DRY-RUN] Shared secret not found - would run with certificate-based identity only"
-      fi
-    else
-      # Run in background to avoid blocking activation
-      (${updateSyncthingConfigScript} &)
-    fi
+  # Generate syncthing configuration before service starts
+  home.activation.generateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+    $DRY_RUN_CMD ${generateSyncthingConfigScript}
   '');
 
-  # Configure Syncthing service (devices/folders managed via runtime REST API)
+  # Configure Syncthing service (devices/folders managed via generated config.xml)
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
     guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
     passwordFile = "${extractDir}/gui-password";
 
-    # Don't override devices/folders - managed via REST API at runtime
+    # Don't override devices/folders - managed via generated config.xml
     overrideDevices = false;
     overrideFolders = false;
 
@@ -401,8 +413,11 @@ in
   # Create a systemd user service override for NixOS to handle GUI authentication
   systemd.user.services.syncthing = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) {
     Service = {
-      # Ensure secrets are available before starting
-      ExecStartPre = lib.mkForce "${extractSecretsScript}";
+      # Ensure secrets are available and config is generated before starting
+      ExecStartPre = [
+        "${extractSecretsScript}"
+        "${generateSyncthingConfigScript}"
+      ];
     };
   };
 
@@ -419,9 +434,9 @@ in
       ${createTestFilesScript}
       echo "Test files created in ${config.home.homeDirectory}/nix-syncthing"
     '')
-    (pkgs.writeShellScriptBin "syncthing-update-config" ''
-      echo "Manually updating Syncthing configuration for ${machineName}..."
-      ${updateSyncthingConfigScript}
+    (pkgs.writeShellScriptBin "syncthing-generate-config" ''
+      echo "Manually generating Syncthing configuration for ${machineName}..."
+      ${generateSyncthingConfigScript}
     '')
   ];
 
@@ -435,7 +450,7 @@ in
 
   # Smart certificate deployment for Darwin using activation scripts
   home.activation.deploySyncthingCertificates = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
-    lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
       $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates" ''
         set -euo pipefail
         
@@ -496,7 +511,7 @@ in
 
   # Smart certificate deployment for NixOS using activation scripts
   home.activation.deploySyncthingCertificatesLinux = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (
-    lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
+    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
       $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates-linux" ''
         set -euo pipefail
         
