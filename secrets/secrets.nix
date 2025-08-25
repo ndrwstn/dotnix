@@ -26,6 +26,7 @@ in
   "ssh-setup.age".publicKeys = allUsers ++ setupKeyMachines;
 
   # Syncthing secrets (consolidated)
+  "syncthing.age".publicKeys = allUsers ++ activeMachines; # Shared config for all machines
   "syncthing-monaco.age".publicKeys = allUsers ++ [ monaco ];
   "syncthing-silver.age".publicKeys = allUsers ++ [ silver ];
   "syncthing-plutonium.age".publicKeys = allUsers ++ [ plutonium ];

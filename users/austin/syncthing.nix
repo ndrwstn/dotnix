@@ -12,40 +12,60 @@ let
   # Directory for extracted secrets
   extractDir = "${config.home.homeDirectory}/.config/syncthing-secrets";
 
+  # Read shared configuration (device IDs)
+  sharedConfig =
+    let
+      secretFile = sharedSecretPath;
+    in
+    if builtins.pathExists secretFile then
+      builtins.fromJSON (builtins.readFile secretFile)
+    else
+      { devices = { }; };
+
   # Machine-specific configuration
-  devices = {
+  machineConfigs = {
     monaco = {
       guiAddress = "127.0.0.1:8384";
       guiPort = 8384;
+      compression = "metadata";
     };
     plutonium = {
       guiAddress = "127.0.0.1:8385";
       guiPort = 8385;
+      compression = "metadata";
     };
     siberia = {
       guiAddress = "127.0.0.1:8386";
       guiPort = 8386;
+      compression = "metadata";
     };
     silver = {
       guiAddress = "127.0.0.1:8387";
       guiPort = 8387;
+      compression = "metadata";
     };
   };
 
+  # Device definitions with IDs from shared secret
+  devices =
+    if sharedConfig ? devices && sharedConfig.devices ? monaco && sharedConfig.devices ? silver then {
+      monaco = {
+        id = sharedConfig.devices.monaco;
+        guiPort = 8384;
+        compression = "metadata";
+      };
+      silver = {
+        id = sharedConfig.devices.silver;
+        guiPort = 8387;
+        compression = "metadata";
+      };
+    } else { };
+
   # Check if current machine is configured
-  isMachineConfigured = devices ? ${machineName};
+  isMachineConfigured = machineConfigs ? ${machineName};
 
   # Get configuration for current machine (only if configured)
-  currentConfig = if isMachineConfigured then devices.${machineName} else null;
-
-  # Fallback device IDs (will be replaced by actual IDs from shared secret at runtime)
-  fallbackDeviceIds = {
-    monaco = "DEVICE-ID-PLACEHOLDER-MONACO";
-    silver = "DEVICE-ID-PLACEHOLDER-SILVER";
-  };
-
-  # Generate timestamp for test files
-  timestamp = "$(date +%Y%m%d-%H%M%S)";
+  currentConfig = if isMachineConfigured then machineConfigs.${machineName} else null;
 
   # Script to extract JSON secrets to individual files
   extractSecretsScript = pkgs.writeShellScript "extract-syncthing-secrets" ''
@@ -94,30 +114,73 @@ let
     echo "Set Syncthing GUI user to: $GUI_USER"
   '';
 
+  # Generate device configuration for home-manager (excluding self)
+  syncthingDevices =
+    if isMachineConfigured then
+      lib.filterAttrs (name: _: name != machineName)
+        (lib.mapAttrs
+          (name: device: {
+            inherit (device) id;
+            name = lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
+            addresses = [ "dynamic" ];
+            compression = device.compression or "metadata";
+            autoAcceptFolders = false;
+          })
+          devices)
+    else { };
+
+  # Only configure folders if we have valid devices
+  syncthingFolders =
+    if isMachineConfigured && (builtins.length (builtins.attrNames devices) > 0) then
+      {
+        "nix-sync-test" = {
+          path = "${config.home.homeDirectory}/nix-syncthing";
+          devices = lib.remove machineName [ "monaco" "silver" ];
+          type = "sendreceive";
+          fsWatcherEnabled = true;
+          fsWatcherDelayS = 10;
+          rescanIntervalS = 180;
+          ignorePerms = true;
+        };
+      }
+    else { };
+
+  # Global Syncthing options
+  syncthingGlobalOptions = {
+    urAccepted = -1; # Disable usage reporting
+    relaysEnabled = false; # Local only
+    localAnnounceEnabled = true;
+    globalAnnounceEnabled = false;
+    natEnabled = false;
+  };
+
   # Script to create test files and .stignore
   createTestFilesScript = pkgs.writeShellScript "create-syncthing-test-files" ''
-    set -euo pipefail
+        set -euo pipefail
     
-    # Create test directory
-    TEST_DIR="${config.home.homeDirectory}/nix-syncthing"
-    mkdir -p "$TEST_DIR"
+        # Create test directory
+        TEST_DIR="${config.home.homeDirectory}/nix-syncthing"
+        mkdir -p "$TEST_DIR"
     
-    # Create test file with machine info
-    TEST_FILE="$TEST_DIR/test-${machineName}-${timestamp}.txt"
-    cat > "$TEST_FILE" << EOF
+        # Generate timestamp and hostname at runtime
+        TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
+        HOSTNAME=$(hostname -s)
+    
+        # Create test file with machine info
+        TEST_FILE="$TEST_DIR/test-${machineName}-$TIMESTAMP-$HOSTNAME.txt"
+        cat > "$TEST_FILE" << EOF
     # Syncthing Test File
     Machine: ${machineName}
-    Hostname: $(hostname)
-    User: $(whoami)
-    Timestamp: $(date)
-    UUID: $(${pkgs.util-linux}/bin/uuidgen 2>/dev/null || echo "N/A")
-    
+    Hostname: $HOSTNAME
+    Created: $(date '+%Y-%m-%d %H:%M:%S')
+    User: ${config.home.username}
+
     This file was created automatically during home-manager activation
     to test the syncthing configuration on ${machineName}.
     EOF
     
-    # Create .stignore file with macOS hidden file patterns
-    cat > "$TEST_DIR/.stignore" << 'EOF'
+        # Create .stignore file with macOS hidden file patterns
+        cat > "$TEST_DIR/.stignore" << 'EOF'
     # macOS hidden files and metadata
     .DS_Store
     ._*
@@ -126,31 +189,31 @@ let
     .fseventsd
     .TemporaryItems
     .VolumeIcon.icns
-    
+
     # Temporary files
     *.tmp
     *.temp
     *~
     .#*
-    
+
     # Version control
     .git
     .svn
     .hg
-    
+
     # IDE files
     .vscode
     .idea
     *.swp
     *.swo
-    
+
     # OS generated files
     Thumbs.db
     desktop.ini
     EOF
     
-    echo "Created test file: $TEST_FILE"
-    echo "Created .stignore file: $TEST_DIR/.stignore"
+        echo "Created test file: $TEST_FILE"
+        echo "Created .stignore file: $TEST_DIR/.stignore"
   '';
 
 in
@@ -174,52 +237,17 @@ in
   # Configure Syncthing service with declarative configuration
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
-
-    # GUI settings with machine-specific configuration
-    guiAddress = currentConfig.guiAddress;
-
-    # GUI authentication using passwordFile
+    guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
     passwordFile = "${extractDir}/gui-password";
 
-    # Declarative configuration - override existing devices and folders
-    overrideDevices = true;
-    overrideFolders = true;
+    # Only override if we have valid configuration
+    overrideDevices = (builtins.length (builtins.attrNames syncthingDevices) > 0);
+    overrideFolders = (builtins.length (builtins.attrNames syncthingFolders) > 0);
 
-    # Global Syncthing settings
     settings = {
-      # Global options
-      options = {
-        urAccepted = -1; # Disable usage reporting
-        relaysEnabled = false; # Local only
-        localAnnounceEnabled = true;
-        globalAnnounceEnabled = false;
-        natEnabled = false;
-      };
-
-      # Device configuration (will be updated with actual IDs at runtime)
-      devices = {
-        monaco = {
-          id = fallbackDeviceIds.monaco;
-          compression = "metadata";
-        };
-        silver = {
-          id = fallbackDeviceIds.silver;
-          compression = "metadata";
-        };
-      };
-
-      # Folder configuration
-      folders = {
-        "nix-sync-test" = {
-          path = "${config.home.homeDirectory}/nix-syncthing";
-          devices = [ "monaco" "silver" ];
-          type = "sendreceive";
-          fsWatcherEnabled = true;
-          fsWatcherDelayS = 10;
-          rescanIntervalS = 180; # 3 minutes for testing
-          ignorePerms = true; # macOS/Linux compatibility
-        };
-      };
+      devices = syncthingDevices;
+      folders = syncthingFolders;
+      options = syncthingGlobalOptions;
     };
   };
 
@@ -374,9 +402,13 @@ in
     ''
   );
 
-  # Warning message for unknown machines
-  warnings = lib.optional (!isMachineConfigured)
-    "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames devices)}";
+  # Warning messages
+  warnings =
+    (lib.optional (!isMachineConfigured)
+      "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames machineConfigs)}")
+    ++
+    (lib.optional (isMachineConfigured && !builtins.pathExists sharedSecretPath)
+      "Syncthing shared secret not found at ${sharedSecretPath} - running without declarative device/folder configuration");
 }
 
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
