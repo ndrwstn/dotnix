@@ -100,7 +100,7 @@ let
     set -euo pipefail
     
     # Determine config directory based on platform
-    if [[ "${toString pkgs.stdenv.isLinux}" == "true" ]]; then
+    if [[ ${pkgs.stdenv.isLinux} ]]; then
       CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
     else
       CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
@@ -217,7 +217,7 @@ let
         ' | while IFS=: read -r DEVICE_NAME DEVICE_ID; do
           if [[ -n "$DEVICE_ID" ]]; then
             # Capitalize first letter for display name
-            DISPLAY_NAME="\$${DEVICE_NAME^}"
+            DISPLAY_NAME="\''${DEVICE_NAME^}"
             
             cat >> "$CONFIG_FILE" << EOF
         <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
