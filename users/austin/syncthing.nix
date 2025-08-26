@@ -256,7 +256,7 @@ let
         <options>
             <listenAddress>default</listenAddress>
             <globalAnnounceServer>default</globalAnnounceServer>
-            <globalAnnounceEnabled>false</globalAnnounceEnabled>
+            <globalAnnounceEnabled>true</globalAnnounceEnabled>
             <localAnnounceEnabled>true</localAnnounceEnabled>
             <localAnnouncePort>21027</localAnnouncePort>
             <localAnnounceMCAddr>[ff12::8384]:21027</localAnnounceMCAddr>
@@ -324,7 +324,7 @@ let
     urAccepted = -1; # Disable usage reporting
     relaysEnabled = false; # Local only
     localAnnounceEnabled = true;
-    globalAnnounceEnabled = false;
+    globalAnnounceEnabled = true;
     natEnabled = false;
   };
 
