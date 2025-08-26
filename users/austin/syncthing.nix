@@ -328,67 +328,7 @@ let
     natEnabled = false;
   };
 
-  # Script to create test files and .stignore
-  createTestFilesScript = pkgs.writeShellScript "create-syncthing-test-files" ''
-            set -euo pipefail
-    
-            # Create test directory
-            TEST_DIR="${config.home.homeDirectory}/nix-syncthing"
-            mkdir -p "$TEST_DIR"
-    
-            # Generate timestamp and hostname at runtime
-            TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
-            HOSTNAME=$(${pkgs.inetutils}/bin/hostname -s)
-    
-            # Create test file with machine info
-            TEST_FILE="$TEST_DIR/test-${machineName}-$TIMESTAMP-$HOSTNAME.txt"
-            cat > "$TEST_FILE" << EOF
-        # Syncthing Test File
-        Machine: ${machineName}
-        Hostname: $HOSTNAME
-        Created: $(date '+%Y-%m-%d %H:%M:%S')
-        User: ${config.home.username}
 
-        This file was created automatically during home-manager activation
-        to test the syncthing configuration on ${machineName}.
-    EOF
-    
-            # Create .stignore file with macOS hidden file patterns
-            cat > "$TEST_DIR/.stignore" << 'EOF'
-        # macOS hidden files and metadata
-        .DS_Store
-        ._*
-        .Spotlight-V100
-        .Trashes
-        .fseventsd
-        .TemporaryItems
-        .VolumeIcon.icns
-
-        # Temporary files
-        *.tmp
-        *.temp
-        *~
-        .#*
-
-        # Version control
-        .git
-        .svn
-        .hg
-
-        # IDE files
-        .vscode
-        .idea
-        *.swp
-        *.swo
-
-        # OS generated files
-        Thumbs.db
-        desktop.ini
-    EOF
-    
-            echo "Created test file: $TEST_FILE"
-            echo "Created .stignore file: $TEST_DIR/.stignore"
-  '';
 
 in
 {
@@ -398,10 +338,7 @@ in
     $DRY_RUN_CMD ${extractSecretsScript}
   '');
 
-  # Create test files during home activation
-  home.activation.createSyncthingTestFiles = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${createTestFilesScript}
-  '');
+
 
   # Generate syncthing configuration before service starts
   home.activation.generateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
@@ -506,11 +443,7 @@ in
       echo "Secrets extracted. Files available in ${extractDir}:"
       ls -la "${extractDir}" 2>/dev/null || echo "No secrets found"
     '')
-    (pkgs.writeShellScriptBin "syncthing-create-test-files" ''
-      echo "Creating Syncthing test files for ${machineName}..."
-      ${createTestFilesScript}
-      echo "Test files created in ${config.home.homeDirectory}/nix-syncthing"
-    '')
+
     (pkgs.writeShellScriptBin "syncthing-generate-config" ''
       echo "Manually generating Syncthing configuration for ${machineName}..."
       ${generateSyncthingConfigScript}
