@@ -319,14 +319,7 @@ let
         echo "API key: $API_KEY"
   '';
 
-  # Global Syncthing options
-  syncthingGlobalOptions = {
-    urAccepted = -1; # Disable usage reporting
-    relaysEnabled = false; # Local only
-    localAnnounceEnabled = true;
-    globalAnnounceEnabled = true;
-    natEnabled = false;
-  };
+
 
 
 
@@ -406,22 +399,12 @@ in
     ''
   );
 
-  # Configure Syncthing service (devices/folders managed via generated config.xml)
+  # Configure Syncthing service
+  # Note: devices, folders, GUI settings, and options are managed via generated config.xml
+  # This approach provides more reliable configuration than using NixOS service settings
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
-    guiAddress = "127.0.0.1:${toString currentConfig.guiPort}";
-    passwordFile = "${extractDir}/gui-password";
-
-    # Don't override devices/folders - managed via generated config.xml
-    overrideDevices = false;
-    overrideFolders = false;
-
-    # Use direct syncthing package (no wrapper)
     package = pkgs.syncthing;
-
-    settings = {
-      options = syncthingGlobalOptions;
-    };
   };
 
   # Create a systemd user service override for NixOS to handle GUI authentication
