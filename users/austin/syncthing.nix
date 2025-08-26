@@ -146,250 +146,250 @@ let
 
   # Script to generate complete Syncthing config.xml at service start
   generateSyncthingConfigScript = pkgs.writeShellScript "generate-syncthing-config" ''
-                                set -euo pipefail
+                                                                        set -euo pipefail
     
-                                # Determine config directory based on platform
-                                if [[ "${lib.boolToString pkgs.stdenv.isLinux}" == "true" ]]; then
-                                  CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
-                                else
-                                  CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
-                                fi
-                                CONFIG_FILE="$CONFIG_DIR/config.xml"
+                                                                        # Determine config directory based on platform
+                                                                        if [[ "${lib.boolToString pkgs.stdenv.isLinux}" == "true" ]]; then
+                                                                          CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
+                                                                        else
+                                                                          CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
+                                                                        fi
+                                                                        CONFIG_FILE="$CONFIG_DIR/config.xml"
     
-                                echo "Generating Syncthing config.xml at $CONFIG_FILE"
+                                                                        echo "Generating Syncthing config.xml at $CONFIG_FILE"
     
-                                # Create config directory
-                                mkdir -p "$CONFIG_DIR"
+                                                                        # Create config directory
+                                                                        mkdir -p "$CONFIG_DIR"
     
-                                # Check if shared secret exists
-                                if [[ ! -f "${sharedSecretPath}" ]]; then
-                                  echo "Warning: Shared syncthing secret not found at ${sharedSecretPath}"
-                                  echo "Skipping device configuration - will use certificate-based identity only"
-                                  exit 0
-                                fi
+                                                                        # Check if shared secret exists
+                                                                        if [[ ! -f "${sharedSecretPath}" ]]; then
+                                                                          echo "Warning: Shared syncthing secret not found at ${sharedSecretPath}"
+                                                                          echo "Skipping device configuration - will use certificate-based identity only"
+                                                                          exit 0
+                                                                        fi
     
-                                # Check if machine-specific secret exists
-                                if [[ ! -f "${secretPath}" ]]; then
-                                  echo "Warning: Machine syncthing secret not found at ${secretPath}"
-                                  echo "Skipping configuration generation"
-                                  exit 0
-                                fi
+                                                                        # Check if machine-specific secret exists
+                                                                        if [[ ! -f "${secretPath}" ]]; then
+                                                                          echo "Warning: Machine syncthing secret not found at ${secretPath}"
+                                                                          echo "Skipping configuration generation"
+                                                                          exit 0
+                                                                        fi
     
-                                # Read device IDs from secrets
-                                SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null || echo '{}')
-                                MACHINE_CONFIG=$(cat "${secretPath}" 2>/dev/null || echo '{}')
+                                                                        # Read device IDs from secrets
+                                                                        SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null || echo '{}')
+                                                                        MACHINE_CONFIG=$(cat "${secretPath}" 2>/dev/null || echo '{}')
     
-                                # Extract own device ID
-                                OWN_DEVICE_ID=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.deviceId // empty' 2>/dev/null || echo "")
+                                                                        # Extract own device ID
+                                                                        OWN_DEVICE_ID=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.deviceId // empty' 2>/dev/null || echo "")
     
-                                # Count available devices for logging
-                                DEVICE_COUNT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
-                                  .devices | to_entries[] | select(.key != $self) | .key
-                                ' 2>/dev/null | wc -l || echo "0")
+                                                                        # Count available devices for logging
+                                                                        DEVICE_COUNT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+                                                                          .devices | to_entries[] | select(.key != $self) | .key
+                                                                        ' 2>/dev/null | wc -l || echo "0")
     
-                                # Preserve existing API key if config exists
-                                EXISTING_API_KEY=""
-                                if [[ -f "$CONFIG_FILE" ]]; then
-                                  EXISTING_API_KEY=$(${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' "$CONFIG_FILE" 2>/dev/null || echo "")
-                                fi
+                                                                        # Preserve existing API key if config exists
+                                                                        EXISTING_API_KEY=""
+                                                                        if [[ -f "$CONFIG_FILE" ]]; then
+                                                                          EXISTING_API_KEY=$(${pkgs.libxml2}/bin/xmllint --xpath 'string(configuration/gui/apikey)' "$CONFIG_FILE" 2>/dev/null || echo "")
+                                                                        fi
     
-                                # Generate new API key if none exists
-                                if [[ -z "$EXISTING_API_KEY" ]]; then
-                                  API_KEY=$(${pkgs.openssl}/bin/openssl rand -hex 16)
-                                else
-                                  API_KEY="$EXISTING_API_KEY"
-                                fi
+                                                                        # Generate new API key if none exists
+                                                                        if [[ -z "$EXISTING_API_KEY" ]]; then
+                                                                          API_KEY=$(${pkgs.openssl}/bin/openssl rand -hex 16)
+                                                                        else
+                                                                          API_KEY="$EXISTING_API_KEY"
+                                                                        fi
     
-                                echo "Generating config for machine: ${machineName}"
-                                echo "Own device ID: $OWN_DEVICE_ID"
-                                echo "Available peer devices: $DEVICE_COUNT"
+                                                                        echo "Generating config for machine: ${machineName}"
+                                                                        echo "Own device ID: $OWN_DEVICE_ID"
+                                                                        echo "Available peer devices: $DEVICE_COUNT"
     
-                                # Get all device IDs except our own for folder configuration
-                                FOLDER_DEVICE_IDS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
-                                  .devices | to_entries[] | select(.key != $self) | .value
-                                ' 2>/dev/null || echo "")
+                                                                        # Get all device IDs except our own for folder configuration
+                                                                        FOLDER_DEVICE_IDS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+                                                                          .devices | to_entries[] | select(.key != $self) | .value
+                                                                        ' 2>/dev/null || echo "")
 
-                                # Build XML device entries for folder
-                                FOLDER_DEVICES=""
-                                while IFS= read -r DEVICE_ID; do
-                                  if [[ -n "$DEVICE_ID" ]]; then
-                                    FOLDER_DEVICES="$FOLDER_DEVICES
-                                        <device id=\"$DEVICE_ID\" introducedBy=\"\"></device>"
-                                  fi
-                                done <<< "$FOLDER_DEVICE_IDS"
+                                                                        # Build XML device entries for folder
+                                                                        FOLDER_DEVICES=""
+                                                                        while IFS= read -r DEVICE_ID; do
+                                                                          if [[ -n "$DEVICE_ID" ]]; then
+                                                                            FOLDER_DEVICES="$FOLDER_DEVICES
+                                                                                <device id=\"$DEVICE_ID\" introducedBy=\"\"></device>"
+                                                                          fi
+                                                                        done <<< "$FOLDER_DEVICE_IDS"
 
-                                # Ensure clean config generation
-                                rm -f "$CONFIG_FILE"
+                                                                        # Ensure clean config generation
+                                                                        rm -f "$CONFIG_FILE"
     
-                                # Generate complete config.xml
-                                cat > "$CONFIG_FILE" <<-EOF
-                                <configuration version="37">
-                                    <folder id="nix-sync-test" label="Nix Sync Test" path="${config.home.homeDirectory}/nix-syncthing" type="sendreceive" rescanIntervalS="180" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="true" autoNormalize="true">
-                                        <filesystemType>basic</filesystemType>$FOLDER_DEVICES
-                                        <minDiskFree unit="%">1</minDiskFree>
-                                        <versioning></versioning>
-                                        <copiers>0</copiers>
-                                        <pullerMaxPendingKiB>0</pullerMaxPendingKiB>
-                                        <hashers>0</hashers>
-                                        <order>random</order>
-                                        <ignoreDelete>false</ignoreDelete>
-                                        <scanProgressIntervalS>0</scanProgressIntervalS>
-                                        <pullerPauseS>0</pullerPauseS>
-                                        <maxConflicts>10</maxConflicts>
-                                        <disableSparseFiles>false</disableSparseFiles>
-                                        <disableTempIndexes>false</disableTempIndexes>
-                                        <paused>false</paused>
-                                        <weakHashThresholdPct>25</weakHashThresholdPct>
-                                        <markerName>.stfolder</markerName>
-                                        <copyOwnershipFromParent>false</copyOwnershipFromParent>
-                                        <modTimeWindowS>0</modTimeWindowS>
-                                        <maxConcurrentWrites>2</maxConcurrentWrites>
-                                        <disableFsync>false</disableFsync>
-                                        <blockPullOrder>standard</blockPullOrder>
-                                        <copyRangeMethod>standard</copyRangeMethod>
-                                        <caseSensitiveFS>true</caseSensitiveFS>
-                                        <junctionsAsDirs>false</junctionsAsDirs>
-                                        <syncOwnership>false</syncOwnership>
-                                        <sendOwnership>false</sendOwnership>
-                                        <syncXattrs>false</syncXattrs>
-                                        <sendXattrs>false</sendXattrs>
-                                        <xattrFilter>
-                                            <maxSingleEntrySize>1024</maxSingleEntrySize>
-                                            <maxTotalSize>4096</maxTotalSize>
-                                        </xattrFilter>
-                                    </folder>
-                EOF
+                                                                        # Generate complete config.xml
+                                                                        cat > "$CONFIG_FILE" <<-EOF
+                                                                        <configuration version="37">
+                                                                            <folder id="nix-sync-test" label="Nix Sync Test" path="${config.home.homeDirectory}/nix-syncthing" type="sendreceive" rescanIntervalS="180" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="true" autoNormalize="true">
+                                                                                <filesystemType>basic</filesystemType>$FOLDER_DEVICES
+                                                                                <minDiskFree unit="%">1</minDiskFree>
+                                                                                <versioning></versioning>
+                                                                                <copiers>0</copiers>
+                                                                                <pullerMaxPendingKiB>0</pullerMaxPendingKiB>
+                                                                                <hashers>0</hashers>
+                                                                                <order>random</order>
+                                                                                <ignoreDelete>false</ignoreDelete>
+                                                                                <scanProgressIntervalS>0</scanProgressIntervalS>
+                                                                                <pullerPauseS>0</pullerPauseS>
+                                                                                <maxConflicts>10</maxConflicts>
+                                                                                <disableSparseFiles>false</disableSparseFiles>
+                                                                                <disableTempIndexes>false</disableTempIndexes>
+                                                                                <paused>false</paused>
+                                                                                <weakHashThresholdPct>25</weakHashThresholdPct>
+                                                                                <markerName>.stfolder</markerName>
+                                                                                <copyOwnershipFromParent>false</copyOwnershipFromParent>
+                                                                                <modTimeWindowS>0</modTimeWindowS>
+                                                                                <maxConcurrentWrites>2</maxConcurrentWrites>
+                                                                                <disableFsync>false</disableFsync>
+                                                                                <blockPullOrder>standard</blockPullOrder>
+                                                                                <copyRangeMethod>standard</copyRangeMethod>
+                                                                                <caseSensitiveFS>true</caseSensitiveFS>
+                                                                                <junctionsAsDirs>false</junctionsAsDirs>
+                                                                                <syncOwnership>false</syncOwnership>
+                                                                                <sendOwnership>false</sendOwnership>
+                                                                                <syncXattrs>false</syncXattrs>
+                                                                                <sendXattrs>false</sendXattrs>
+                                                                                <xattrFilter>
+                                                                                    <maxSingleEntrySize>1024</maxSingleEntrySize>
+                                                                                    <maxTotalSize>4096</maxTotalSize>
+                                                                                </xattrFilter>
+                                                                </folder>
+EOF
 
-                                    # Add devices dynamically (excluding current machine)
-                                    echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
-                                      .devices | to_entries[] | select(.key != $self) | .key + ":" + .value
-                                    ' | while IFS=: read -r DEVICE_NAME DEVICE_ID; do
-                                      if [[ -n "$DEVICE_ID" ]]; then
-                                        # Capitalize first letter for display name
-                                        DISPLAY_NAME="''${DEVICE_NAME^}"
+                                                                            # Add devices dynamically (excluding current machine)
+                                                                            echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
+                                                                              .devices | to_entries[] | select(.key != $self) | .key + ":" + .value
+                                                                            ' | while IFS=: read -r DEVICE_NAME DEVICE_ID; do
+                                                                              if [[ -n "$DEVICE_ID" ]]; then
+                                                                                # Capitalize first letter for display name
+                                                                                DISPLAY_NAME="''${DEVICE_NAME^}"
             
-                                        cat >> "$CONFIG_FILE" <<-EOF
-                                    <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
-                                        <address>dynamic</address>
-                                        <paused>false</paused>
-                                        <autoAcceptFolders>false</autoAcceptFolders>
-                                        <maxSendKbps>0</maxSendKbps>
-                                        <maxRecvKbps>0</maxRecvKbps>
-                                        <maxRequestKiB>0</maxRequestKiB>
-                                        <untrusted>false</untrusted>
-                                        <remoteGUIPort>0</remoteGUIPort>
-                                        <numConnections>0</numConnections>
-                                    </device>
-            EOF
-                                      fi
-                                    done
+                                                                                cat >> "$CONFIG_FILE" <<-EOF
+                                                                            <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
+                                                                                <address>dynamic</address>
+                                                                                <paused>false</paused>
+                                                                                <autoAcceptFolders>false</autoAcceptFolders>
+                                                                                <maxSendKbps>0</maxSendKbps>
+                                                                                <maxRecvKbps>0</maxRecvKbps>
+                                                                                <maxRequestKiB>0</maxRequestKiB>
+                                                                                <untrusted>false</untrusted>
+                                                                                <remoteGUIPort>0</remoteGUIPort>
+                                                                                <numConnections>0</numConnections>
+                                            </device>
+EOF
+                                                                              fi
+                                                                            done
 
-                                # Extract GUI credentials from secrets
-                                GUI_USER=$(cat "${extractDir}/gui-user" 2>/dev/null || echo "")
-                                GUI_PASSWORD_PLAIN=$(cat "${extractDir}/gui-password" 2>/dev/null || echo "")
+                                                                        # Extract GUI credentials from secrets
+                                                                        GUI_USER=$(cat "${extractDir}/gui-user" 2>/dev/null || echo "")
+                                                                        GUI_PASSWORD_PLAIN=$(cat "${extractDir}/gui-password" 2>/dev/null || echo "")
         
-                                # Hash the password using bcrypt if it's not already hashed
-                                if [[ -n "$GUI_PASSWORD_PLAIN" ]]; then
-                                  if [[ "$GUI_PASSWORD_PLAIN" =~ ^\$2[aby]\$ ]]; then
-                                    # Password is already bcrypt hashed
-                                    GUI_PASSWORD="$GUI_PASSWORD_PLAIN"
-                                  else
-                                # Hash the plain password with bcrypt
-                                GUI_PASSWORD=$(echo "$GUI_PASSWORD_PLAIN" | ${pkgs.python3.withPackages (ps: [ ps.bcrypt ])}/bin/python3 -c '
-        import bcrypt
-        import sys
-        password = sys.stdin.read().strip()
-        if password:
-            hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-            print(hashed.decode("utf-8"))
-        else:
-            print("")
-        ')
-                                  fi
-                                else
-                                  GUI_PASSWORD=""
-                                fi
+                                                                        # Hash the password using bcrypt if it's not already hashed
+                                                                        if [[ -n "$GUI_PASSWORD_PLAIN" ]]; then
+                                                                          if [[ "$GUI_PASSWORD_PLAIN" =~ ^\$2[aby]\$ ]]; then
+                                                                            # Password is already bcrypt hashed
+                                                                            GUI_PASSWORD="$GUI_PASSWORD_PLAIN"
+                                                                          else
+                                                                        # Hash the plain password with bcrypt
+                                                                        GUI_PASSWORD=$(echo "$GUI_PASSWORD_PLAIN" | ${pkgs.python3.withPackages (ps: [ ps.bcrypt ])}/bin/python3 -c '
+                                                import bcrypt
+                                                import sys
+                                                password = sys.stdin.read().strip()
+                                                if password:
+                                                    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+                                                    print(hashed.decode("utf-8"))
+                                                else:
+                                                    print("")
+                                                ')
+                                                                          fi
+                                                                        else
+                                                                          GUI_PASSWORD=""
+                                                                        fi
         
-                                # Add GUI and options configuration
-                                cat >> "$CONFIG_FILE" <<-EOF
-                                <gui enabled="true" tls="false" debugging="false">
-                                    <address>127.0.0.1:${toString currentConfig.guiPort}</address>
-                                    <user>$GUI_USER</user>
-                                    <password>$GUI_PASSWORD</password>
-                                    <apikey>$API_KEY</apikey>
-                                    <theme>default</theme>
-                                </gui>
-                                <ldap></ldap>
-                            <options>
-                                <listenAddresses>
-                                    <listenAddress>default</listenAddress>
-                                </listenAddresses>
-                                <globalAnnounceServers>
-                                    <globalAnnounceServer>default</globalAnnounceServer>
-                                </globalAnnounceServers>
-                                    <globalAnnounceEnabled>false</globalAnnounceEnabled>
-                                    <localAnnounceEnabled>true</localAnnounceEnabled>
-                                    <localAnnouncePort>21027</localAnnouncePort>
-                                    <localAnnounceMCAddr>[ff12::8384]:21027</localAnnounceMCAddr>
-                                    <maxSendKbps>0</maxSendKbps>
-                                    <maxRecvKbps>0</maxRecvKbps>
-                                    <reconnectionIntervalS>60</reconnectionIntervalS>
-                                    <relaysEnabled>false</relaysEnabled>
-                                    <relayReconnectIntervalM>10</relayReconnectIntervalM>
-                                    <startBrowser>false</startBrowser>
-                                    <natEnabled>false</natEnabled>
-                                    <natLeaseMinutes>60</natLeaseMinutes>
-                                    <natRenewalMinutes>30</natRenewalMinutes>
-                                    <natTimeoutSeconds>10</natTimeoutSeconds>
-                                    <urAccepted>-1</urAccepted>
-                                    <urSeen>3</urSeen>
-                                    <urUniqueID></urUniqueID>
-                                    <urURL>https://data.syncthing.net/newdata</urURL>
-                                    <urPostInsecurely>false</urPostInsecurely>
-                                    <urInitialDelayS>1800</urInitialDelayS>
-                                    <autoUpgradeIntervalH>12</autoUpgradeIntervalH>
-                                    <upgradeToPreReleases>false</upgradeToPreReleases>
-                                    <keepTemporariesH>24</keepTemporariesH>
-                                    <cacheIgnoredFiles>false</cacheIgnoredFiles>
-                                    <progressUpdateIntervalS>5</progressUpdateIntervalS>
-                                    <limitBandwidthInLan>false</limitBandwidthInLan>
-                                    <minHomeDiskFree unit="%">1</minHomeDiskFree>
-                                    <releasesURL>https://upgrades.syncthing.net/meta.json</releasesURL>
-                                    <overwriteRemoteDeviceNamesOnConnect>false</overwriteRemoteDeviceNamesOnConnect>
-                                    <tempIndexMinBlocks>10</tempIndexMinBlocks>
-                                    <trafficClass>0</trafficClass>
-                                    <setLowPriority>true</setLowPriority>
-                                    <maxFolderConcurrency>0</maxFolderConcurrency>
-                                    <crashReportingURL>https://crash.syncthing.net/newcrash</crashReportingURL>
-                                    <crashReportingEnabled>false</crashReportingEnabled>
-                                    <stunKeepaliveStartS>180</stunKeepaliveStartS>
-                                    <stunKeepaliveMinS>20</stunKeepaliveMinS>
-                                    <stunServers>
-                                    <stunServer>default</stunServer>
-                                </stunServers>
-                                    <databaseTuning>auto</databaseTuning>
-                                    <maxConcurrentIncomingRequestKiB>0</maxConcurrentIncomingRequestKiB>
-                                    <announceLANAddresses>true</announceLANAddresses>
-                                    <sendFullIndexOnUpgrade>false</sendFullIndexOnUpgrade>
-                                    <connectionLimitEnough>0</connectionLimitEnough>
-                                    <connectionLimitMax>0</connectionLimitMax>
-                                    <insecureAllowOldTLSVersions>false</insecureAllowOldTLSVersions>
-                                    <connectionPriorityTcpLan>10</connectionPriorityTcpLan>
-                                    <connectionPriorityQuicLan>20</connectionPriorityQuicLan>
-                                    <connectionPriorityTcpWan>30</connectionPriorityTcpWan>
-                                    <connectionPriorityQuicWan>40</connectionPriorityQuicWan>
-                                    <connectionPriorityRelay>50</connectionPriorityRelay>
-                                    <connectionPriorityUpgradeThreshold>0</connectionPriorityUpgradeThreshold>
-                                </options>
-                                <remoteIgnoredDevice></remoteIgnoredDevice>
-                                <pendingDevice></pendingDevice>
-                                <pendingFolder></pendingFolder>
-                            </configuration>
-    EOF
+                                                                        # Add GUI and options configuration
+                                                                        cat >> "$CONFIG_FILE" <<-EOF
+                                                                        <gui enabled="true" tls="false" debugging="false">
+                                                                            <address>127.0.0.1:${toString currentConfig.guiPort}</address>
+                                                                            <user>$GUI_USER</user>
+                                                                            <password>$GUI_PASSWORD</password>
+                                                                            <apikey>$API_KEY</apikey>
+                                                                            <theme>default</theme>
+                                                                        </gui>
+                                                                        <ldap></ldap>
+                                                                    <options>
+                                                                        <listenAddresses>
+                                                                            <listenAddress>default</listenAddress>
+                                                                        </listenAddresses>
+                                                                        <globalAnnounceServers>
+                                                                            <globalAnnounceServer>default</globalAnnounceServer>
+                                                                        </globalAnnounceServers>
+                                                                            <globalAnnounceEnabled>false</globalAnnounceEnabled>
+                                                                            <localAnnounceEnabled>true</localAnnounceEnabled>
+                                                                            <localAnnouncePort>21027</localAnnouncePort>
+                                                                            <localAnnounceMCAddr>[ff12::8384]:21027</localAnnounceMCAddr>
+                                                                            <maxSendKbps>0</maxSendKbps>
+                                                                            <maxRecvKbps>0</maxRecvKbps>
+                                                                            <reconnectionIntervalS>60</reconnectionIntervalS>
+                                                                            <relaysEnabled>false</relaysEnabled>
+                                                                            <relayReconnectIntervalM>10</relayReconnectIntervalM>
+                                                                            <startBrowser>false</startBrowser>
+                                                                            <natEnabled>false</natEnabled>
+                                                                            <natLeaseMinutes>60</natLeaseMinutes>
+                                                                            <natRenewalMinutes>30</natRenewalMinutes>
+                                                                            <natTimeoutSeconds>10</natTimeoutSeconds>
+                                                                            <urAccepted>-1</urAccepted>
+                                                                            <urSeen>3</urSeen>
+                                                                            <urUniqueID></urUniqueID>
+                                                                            <urURL>https://data.syncthing.net/newdata</urURL>
+                                                                            <urPostInsecurely>false</urPostInsecurely>
+                                                                            <urInitialDelayS>1800</urInitialDelayS>
+                                                                            <autoUpgradeIntervalH>12</autoUpgradeIntervalH>
+                                                                            <upgradeToPreReleases>false</upgradeToPreReleases>
+                                                                            <keepTemporariesH>24</keepTemporariesH>
+                                                                            <cacheIgnoredFiles>false</cacheIgnoredFiles>
+                                                                            <progressUpdateIntervalS>5</progressUpdateIntervalS>
+                                                                            <limitBandwidthInLan>false</limitBandwidthInLan>
+                                                                            <minHomeDiskFree unit="%">1</minHomeDiskFree>
+                                                                            <releasesURL>https://upgrades.syncthing.net/meta.json</releasesURL>
+                                                                            <overwriteRemoteDeviceNamesOnConnect>false</overwriteRemoteDeviceNamesOnConnect>
+                                                                            <tempIndexMinBlocks>10</tempIndexMinBlocks>
+                                                                            <trafficClass>0</trafficClass>
+                                                                            <setLowPriority>true</setLowPriority>
+                                                                            <maxFolderConcurrency>0</maxFolderConcurrency>
+                                                                            <crashReportingURL>https://crash.syncthing.net/newcrash</crashReportingURL>
+                                                                            <crashReportingEnabled>false</crashReportingEnabled>
+                                                                            <stunKeepaliveStartS>180</stunKeepaliveStartS>
+                                                                            <stunKeepaliveMinS>20</stunKeepaliveMinS>
+                                                                            <stunServers>
+                                                                            <stunServer>default</stunServer>
+                                                                        </stunServers>
+                                                                            <databaseTuning>auto</databaseTuning>
+                                                                            <maxConcurrentIncomingRequestKiB>0</maxConcurrentIncomingRequestKiB>
+                                                                            <announceLANAddresses>true</announceLANAddresses>
+                                                                            <sendFullIndexOnUpgrade>false</sendFullIndexOnUpgrade>
+                                                                            <connectionLimitEnough>0</connectionLimitEnough>
+                                                                            <connectionLimitMax>0</connectionLimitMax>
+                                                                            <insecureAllowOldTLSVersions>false</insecureAllowOldTLSVersions>
+                                                                            <connectionPriorityTcpLan>10</connectionPriorityTcpLan>
+                                                                            <connectionPriorityQuicLan>20</connectionPriorityQuicLan>
+                                                                            <connectionPriorityTcpWan>30</connectionPriorityTcpWan>
+                                                                            <connectionPriorityQuicWan>40</connectionPriorityQuicWan>
+                                                                            <connectionPriorityRelay>50</connectionPriorityRelay>
+                                                                            <connectionPriorityUpgradeThreshold>0</connectionPriorityUpgradeThreshold>
+                                                                        </options>
+                                                                        <remoteIgnoredDevice></remoteIgnoredDevice>
+                                                                        <pendingDevice></pendingDevice>
+                                                                        <pendingFolder></pendingFolder>
+                                </configuration>
+EOF
 
-                                echo "Successfully generated Syncthing config.xml"
-                                echo "Config file: $CONFIG_FILE"
-                                echo "API key: $API_KEY"
+                                                                        echo "Successfully generated Syncthing config.xml"
+                                                                        echo "Config file: $CONFIG_FILE"
+                                                                        echo "API key: $API_KEY"
   '';
 
   # Global Syncthing options
@@ -424,7 +424,7 @@ let
 
     This file was created automatically during home-manager activation
     to test the syncthing configuration on ${machineName}.
-    EOF
+EOF
     
         # Create .stignore file with macOS hidden file patterns
         cat > "$TEST_DIR/.stignore" << 'EOF'
@@ -457,7 +457,7 @@ let
     # OS generated files
     Thumbs.db
     desktop.ini
-    EOF
+EOF
     
         echo "Created test file: $TEST_FILE"
         echo "Created .stignore file: $TEST_DIR/.stignore"
