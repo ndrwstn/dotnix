@@ -418,20 +418,7 @@ in
     };
   };
 
-  # Create helper scripts for manual operations (useful for debugging)
-  home.packages = lib.mkIf isMachineConfigured [
-    (pkgs.writeShellScriptBin "syncthing-extract-secrets" ''
-      echo "Extracting Syncthing secrets for ${machineName}..."
-      ${extractSecretsScript}
-      echo "Secrets extracted. Files available in ${extractDir}:"
-      ls -la "${extractDir}" 2>/dev/null || echo "No secrets found"
-    '')
 
-    (pkgs.writeShellScriptBin "syncthing-generate-config" ''
-      echo "Manually generating Syncthing configuration for ${machineName}..."
-      ${generateSyncthingConfigScript}
-    '')
-  ];
 
   # Ensure the extraction directory exists and has correct permissions
   home.file.".config/syncthing-secrets/.keep" = lib.mkIf isMachineConfigured {
