@@ -171,7 +171,6 @@ let
             <pullerPauseS>0</pullerPauseS>
             <maxConflicts>10</maxConflicts>
             <disableSparseFiles>false</disableSparseFiles>
-            <disableTempIndexes>false</disableTempIndexes>
             <paused>false</paused>
             <weakHashThresholdPct>25</weakHashThresholdPct>
             <markerName>.stfolder</markerName>
@@ -255,12 +254,8 @@ let
         </gui>
         <ldap></ldap>
         <options>
-            <listenAddresses>
-                <listenAddress>default</listenAddress>
-            </listenAddresses>
-            <globalAnnounceServers>
-                <globalAnnounceServer>default</globalAnnounceServer>
-            </globalAnnounceServers>
+            <listenAddress>default</listenAddress>
+            <globalAnnounceServer>default</globalAnnounceServer>
             <globalAnnounceEnabled>false</globalAnnounceEnabled>
             <localAnnounceEnabled>true</localAnnounceEnabled>
             <localAnnouncePort>21027</localAnnouncePort>
@@ -298,9 +293,7 @@ let
             <crashReportingEnabled>false</crashReportingEnabled>
             <stunKeepaliveStartS>180</stunKeepaliveStartS>
             <stunKeepaliveMinS>20</stunKeepaliveMinS>
-            <stunServers>
-                <stunServer>default</stunServer>
-            </stunServers>
+            <stunServer>default</stunServer>
             <databaseTuning>auto</databaseTuning>
             <maxConcurrentIncomingRequestKiB>0</maxConcurrentIncomingRequestKiB>
             <announceLANAddresses>true</announceLANAddresses>
