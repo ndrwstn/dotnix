@@ -89,6 +89,14 @@ let
     echo "Extracting secrets..."
     ${extractSecretsScript}
     
+    # Validate that certificates were extracted successfully
+    if [[ ! -f "${extractDir}/cert.pem" ]] || [[ ! -f "${extractDir}/key.pem" ]]; then
+      echo "Error: Certificates not found in extraction directory after secret extraction"
+      echo "Expected files: ${extractDir}/cert.pem and ${extractDir}/key.pem"
+      echo "Please ensure agenix secrets are properly configured and accessible"
+      exit 1
+    fi
+    
     # Step 2: Deploy certificates with change detection
     echo "Checking certificates..."
     NEEDS_CERT_UPDATE=0
