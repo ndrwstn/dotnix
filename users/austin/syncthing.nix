@@ -467,8 +467,8 @@ in
         
         # Check machine-specific secret
         if [[ -f "${secretPath}" ]]; then
-          MACHINE_SECRET_TIME=$(stat -f "%m" "${secretPath}" 2>/dev/null || echo "0")
-          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
+          MACHINE_SECRET_TIME=$(stat -c %Y "${secretPath}" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -c %Y "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
           
           if [[ $MACHINE_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
             NEEDS_RESTART=1
@@ -478,8 +478,8 @@ in
         
         # Check shared secret
         if [[ -f "${sharedSecretPath}" ]]; then
-          SHARED_SECRET_TIME=$(stat -f "%m" "${sharedSecretPath}" 2>/dev/null || echo "0")
-          LAST_RESTART_TIME=$(stat -f "%m" "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
+          SHARED_SECRET_TIME=$(stat -c %Y "${sharedSecretPath}" 2>/dev/null || echo "0")
+          LAST_RESTART_TIME=$(stat -c %Y "$HOME/Library/Application Support/Syncthing/.syncthing_config_timestamp" 2>/dev/null || echo "0")
           
           if [[ $SHARED_SECRET_TIME -gt $LAST_RESTART_TIME ]]; then
             NEEDS_RESTART=1
