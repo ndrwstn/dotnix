@@ -407,23 +407,6 @@ in
     package = pkgs.syncthing;
   };
 
-  # Create a systemd user service override for NixOS to handle GUI authentication
-  systemd.user.services.syncthing = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) {
-    Service = {
-      # Ensure secrets are available and config is generated before starting
-      ExecStartPre = [
-        "${extractSecretsScript}"
-        "${generateSyncthingConfigScript}"
-      ];
-    };
-  };
-
-
-
-
-
-
-
   # Smart certificate deployment for NixOS using activation scripts
   home.activation.deploySyncthingCertificatesLinux = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (
     lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
