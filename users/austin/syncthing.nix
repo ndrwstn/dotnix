@@ -328,20 +328,20 @@ in
   # Only configure Syncthing if machine is in the configured list
   # Extract secrets during home activation
   home.activation.extractSyncthingSecrets = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${extractSecretsScript}
+    ${extractSecretsScript}
   '');
 
 
 
   # Generate syncthing configuration before service starts
   home.activation.generateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
-    $DRY_RUN_CMD ${generateSyncthingConfigScript}
+    ${generateSyncthingConfigScript}
   '');
 
   # Deploy certificates for Darwin
   home.activation.deploySyncthingCertificatesDarwin = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
     lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
-      $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates-darwin" ''
+      ${pkgs.writeShellScript "deploy-syncthing-certificates-darwin" ''
         set -euo pipefail
         
         SYNCTHING_DIR="$HOME/Library/Application Support/Syncthing"
@@ -420,20 +420,14 @@ in
 
 
 
-  # Ensure the extraction directory exists and has correct permissions
-  home.file.".config/syncthing-secrets/.keep" = lib.mkIf isMachineConfigured {
-    text = "# This directory contains extracted Syncthing secrets\n";
-    onChange = ''
-      chmod 700 "${config.home.homeDirectory}/.config/syncthing-secrets"
-    '';
-  };
+
 
 
 
   # Smart certificate deployment for NixOS using activation scripts
   home.activation.deploySyncthingCertificatesLinux = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (
     lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
-      $DRY_RUN_CMD ${pkgs.writeShellScript "deploy-syncthing-certificates-linux" ''
+      ${pkgs.writeShellScript "deploy-syncthing-certificates-linux" ''
         set -euo pipefail
         
         SYNCTHING_DIR="$HOME/.local/state/syncthing"
