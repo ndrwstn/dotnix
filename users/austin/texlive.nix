@@ -31,6 +31,7 @@ pkgs.texlive.combine {
     pdfpages
     datetime2
     datetime2-english
+    fmtcount
     pgfopts
     multirow
     makecell
