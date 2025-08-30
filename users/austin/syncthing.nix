@@ -195,55 +195,156 @@ let
           .devices | to_entries[] | select(.key != $self) | .value
         ' 2>/dev/null || echo "")
 
-        # Build XML device entries for folder
-        FOLDER_DEVICES=""
-        while IFS= read -r DEVICE_ID; do
-          if [[ -n "$DEVICE_ID" ]]; then
-            FOLDER_DEVICES="$FOLDER_DEVICES
-                <device id=\"$DEVICE_ID\" introducedBy=\"\"></device>"
-          fi
-        done <<< "$FOLDER_DEVICE_IDS"
-
         # Ensure clean config generation
         rm -f "$CONFIG_FILE"
     
         # Generate complete config.xml
         cat > "$CONFIG_FILE" <<EOF
     <configuration version="37">
-        <folder id="nix-sync-test" label="Nix Sync Test" path="${config.home.homeDirectory}/nix-syncthing" type="sendreceive" rescanIntervalS="180" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="true" autoNormalize="true">
-            <filesystemType>basic</filesystemType>$FOLDER_DEVICES
-            <minDiskFree unit="%">1</minDiskFree>
-            <versioning></versioning>
-            <copiers>0</copiers>
-            <pullerMaxPendingKiB>0</pullerMaxPendingKiB>
-            <hashers>0</hashers>
-            <order>random</order>
+    EOF
+
+        # Process folders from JSON configuration
+        echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r '.folders // {} | to_entries[] | .key' | while IFS= read -r FOLDER_KEY; do
+          if [[ -n "$FOLDER_KEY" ]]; then
+            # Extract folder configuration with defaults
+            FOLDER_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].id // $key')
+            FOLDER_LABEL=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].label // $key')
+            FOLDER_PATH_RAW=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" --arg home "${config.home.homeDirectory}" '.folders[$key].path // ($home + "/sync/" + $key)')
+            
+            # Expand ~ to home directory
+            if [[ "$FOLDER_PATH_RAW" == "~"* ]]; then
+              FOLDER_PATH="${config.home.homeDirectory}''${FOLDER_PATH_RAW:1}"
+            else
+              FOLDER_PATH="$FOLDER_PATH_RAW"
+            fi
+            
+            # Core folder properties
+            FOLDER_TYPE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].type // "sendreceive"')
+            FILESYSTEM_TYPE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].filesystemType // "basic"')
+            
+            # Synchronization options
+            RESCAN_INTERVAL_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].rescanIntervalS // 180')
+            FS_WATCHER_ENABLED=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].fsWatcherEnabled as $val | if $val == null then true else $val end')
+            FS_WATCHER_DELAY_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].fsWatcherDelayS // 10')
+            FS_WATCHER_TIMEOUT_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].fsWatcherTimeoutS // 0')
+            IGNORE_PERMS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].ignorePerms as $val | if $val == null then false else $val end')
+            AUTO_NORMALIZE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].autoNormalize as $val | if $val == null then true else $val end')
+            
+            # Performance options
+            COPIERS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].copiers // 0')
+            PULLER_MAX_PENDING_KIB=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].pullerMaxPendingKiB // 0')
+            HASHERS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].hashers // 0')
+            ORDER=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].order // "random"')
+            SCAN_PROGRESS_INTERVAL_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].scanProgressIntervalS // 0')
+            PULLER_PAUSE_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].pullerPauseS // 0')
+            MAX_CONCURRENT_WRITES=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].maxConcurrentWrites // 2')
+            
+            # Conflict & safety options
+            MAX_CONFLICTS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].maxConflicts // 10')
+            MIN_DISK_FREE_VALUE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].minDiskFree.value // 1')
+            MIN_DISK_FREE_UNIT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].minDiskFree.unit // "%"')
+            BLOCK_PULL_ORDER=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].blockPullOrder // "standard"')
+            COPY_RANGE_METHOD=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].copyRangeMethod // "standard"')
+            
+            # Advanced options
+            DISABLE_SPARSE_FILES=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].disableSparseFiles as $val | if $val == null then false else $val end')
+            DISABLE_TEMP_INDEXES=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].disableTempIndexes as $val | if $val == null then false else $val end')
+            PAUSED=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].paused as $val | if $val == null then false else $val end')
+            WEAK_HASH_THRESHOLD_PCT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].weakHashThresholdPct // 25')
+            MARKER_NAME=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].markerName // ".stfolder"')
+            COPY_OWNERSHIP_FROM_PARENT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].copyOwnershipFromParent as $val | if $val == null then false else $val end')
+            MOD_TIME_WINDOW_S=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].modTimeWindowS // 0')
+            DISABLE_FSYNC=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].disableFsync as $val | if $val == null then false else $val end')
+            CASE_SENSITIVE_FS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].caseSensitiveFS as $val | if $val == null then true else $val end')
+            JUNCTIONS_AS_DIRS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].junctionsAsDirs as $val | if $val == null then false else $val end')
+            SYNC_OWNERSHIP=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].syncOwnership as $val | if $val == null then false else $val end')
+            SEND_OWNERSHIP=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].sendOwnership as $val | if $val == null then false else $val end')
+            SYNC_XATTRS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].syncXattrs as $val | if $val == null then false else $val end')
+            SEND_XATTRS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].sendXattrs as $val | if $val == null then false else $val end')
+            
+            # xattrFilter options
+            XATTR_MAX_SINGLE_ENTRY_SIZE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].xattrFilter.maxSingleEntrySize // 1024')
+            XATTR_MAX_TOTAL_SIZE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].xattrFilter.maxTotalSize // 4096')
+            
+            # Build device list for this folder
+            FOLDER_DEVICES=""
+            # Check if folder has specific device topology, otherwise use all devices
+            FOLDER_DEVICE_LIST=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" --arg self "${machineName}" '
+              if .folders[$key].devices then
+                .folders[$key].devices[] | select(. != $self)
+              else
+                .devices | to_entries[] | select(.key != $self) | .key
+              end
+            ' 2>/dev/null || echo "")
+            
+            # Convert device names to device IDs and build XML
+            while IFS= read -r DEVICE_NAME; do
+              if [[ -n "$DEVICE_NAME" ]]; then
+                DEVICE_ID=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.devices[$device] // empty')
+                if [[ -n "$DEVICE_ID" ]]; then
+                  FOLDER_DEVICES="$FOLDER_DEVICES
+                <device id=\"$DEVICE_ID\" introducedBy=\"\"></device>"
+                fi
+              fi
+            done <<< "$FOLDER_DEVICE_LIST"
+            
+            # Handle versioning configuration
+            VERSIONING_XML=""
+            VERSIONING_TYPE=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].versioning.type // empty')
+            if [[ -n "$VERSIONING_TYPE" && "$VERSIONING_TYPE" != "null" ]]; then
+              VERSIONING_XML="<versioning type=\"$VERSIONING_TYPE\">"
+              # Add versioning parameters if they exist
+              echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg key "$FOLDER_KEY" '.folders[$key].versioning.params // {} | to_entries[] | .key + ":" + (.value | tostring)' | while IFS=: read -r PARAM_KEY PARAM_VALUE; do
+                if [[ -n "$PARAM_KEY" ]]; then
+                  VERSIONING_XML="$VERSIONING_XML
+                <param key=\"$PARAM_KEY\" val=\"$PARAM_VALUE\"></param>"
+                fi
+              done
+              VERSIONING_XML="$VERSIONING_XML
+            </versioning>"
+            else
+              VERSIONING_XML="<versioning></versioning>"
+            fi
+            
+            # Generate folder XML
+            cat >> "$CONFIG_FILE" <<EOF
+        <folder id="$FOLDER_ID" label="$FOLDER_LABEL" path="$FOLDER_PATH" type="$FOLDER_TYPE" rescanIntervalS="$RESCAN_INTERVAL_S" fsWatcherEnabled="$FS_WATCHER_ENABLED" fsWatcherDelayS="$FS_WATCHER_DELAY_S" fsWatcherTimeoutS="$FS_WATCHER_TIMEOUT_S" ignorePerms="$IGNORE_PERMS" autoNormalize="$AUTO_NORMALIZE">
+            <filesystemType>$FILESYSTEM_TYPE</filesystemType>$FOLDER_DEVICES
+            <minDiskFree unit="$MIN_DISK_FREE_UNIT">$MIN_DISK_FREE_VALUE</minDiskFree>
+            $VERSIONING_XML
+            <copiers>$COPIERS</copiers>
+            <pullerMaxPendingKiB>$PULLER_MAX_PENDING_KIB</pullerMaxPendingKiB>
+            <hashers>$HASHERS</hashers>
+            <order>$ORDER</order>
             <ignoreDelete>false</ignoreDelete>
-            <scanProgressIntervalS>0</scanProgressIntervalS>
-            <pullerPauseS>0</pullerPauseS>
-            <maxConflicts>10</maxConflicts>
-            <disableSparseFiles>false</disableSparseFiles>
-            <paused>false</paused>
-            <weakHashThresholdPct>25</weakHashThresholdPct>
-            <markerName>.stfolder</markerName>
-            <copyOwnershipFromParent>false</copyOwnershipFromParent>
-            <modTimeWindowS>0</modTimeWindowS>
-            <maxConcurrentWrites>2</maxConcurrentWrites>
-            <disableFsync>false</disableFsync>
-            <blockPullOrder>standard</blockPullOrder>
-            <copyRangeMethod>standard</copyRangeMethod>
-            <caseSensitiveFS>true</caseSensitiveFS>
-            <junctionsAsDirs>false</junctionsAsDirs>
-            <syncOwnership>false</syncOwnership>
-            <sendOwnership>false</sendOwnership>
-            <syncXattrs>false</syncXattrs>
-            <sendXattrs>false</sendXattrs>
+            <scanProgressIntervalS>$SCAN_PROGRESS_INTERVAL_S</scanProgressIntervalS>
+            <pullerPauseS>$PULLER_PAUSE_S</pullerPauseS>
+            <maxConflicts>$MAX_CONFLICTS</maxConflicts>
+            <disableSparseFiles>$DISABLE_SPARSE_FILES</disableSparseFiles>
+            <disableTempIndexes>$DISABLE_TEMP_INDEXES</disableTempIndexes>
+            <paused>$PAUSED</paused>
+            <weakHashThresholdPct>$WEAK_HASH_THRESHOLD_PCT</weakHashThresholdPct>
+            <markerName>$MARKER_NAME</markerName>
+            <copyOwnershipFromParent>$COPY_OWNERSHIP_FROM_PARENT</copyOwnershipFromParent>
+            <modTimeWindowS>$MOD_TIME_WINDOW_S</modTimeWindowS>
+            <maxConcurrentWrites>$MAX_CONCURRENT_WRITES</maxConcurrentWrites>
+            <disableFsync>$DISABLE_FSYNC</disableFsync>
+            <blockPullOrder>$BLOCK_PULL_ORDER</blockPullOrder>
+            <copyRangeMethod>$COPY_RANGE_METHOD</copyRangeMethod>
+            <caseSensitiveFS>$CASE_SENSITIVE_FS</caseSensitiveFS>
+            <junctionsAsDirs>$JUNCTIONS_AS_DIRS</junctionsAsDirs>
+            <syncOwnership>$SYNC_OWNERSHIP</syncOwnership>
+            <sendOwnership>$SEND_OWNERSHIP</sendOwnership>
+            <syncXattrs>$SYNC_XATTRS</syncXattrs>
+            <sendXattrs>$SEND_XATTRS</sendXattrs>
             <xattrFilter>
-                <maxSingleEntrySize>1024</maxSingleEntrySize>
-                <maxTotalSize>4096</maxTotalSize>
+                <maxSingleEntrySize>$XATTR_MAX_SINGLE_ENTRY_SIZE</maxSingleEntrySize>
+                <maxTotalSize>$XATTR_MAX_TOTAL_SIZE</maxTotalSize>
             </xattrFilter>
         </folder>
     EOF
+          fi
+        done
 
         # Add devices dynamically (excluding current machine)
         echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg self "${machineName}" '
