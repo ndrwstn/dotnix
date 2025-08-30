@@ -16,37 +16,8 @@ let
   # This replaces the complex REST API approach with a simpler, more reliable method
   # Secrets are read at runtime when agenix has decrypted them
 
-  # Machine-specific configuration
-  machineConfigs = {
-    monaco = {
-      guiAddress = "127.0.0.1:8384";
-      guiPort = 8384;
-      compression = "metadata";
-    };
-    plutonium = {
-      guiAddress = "127.0.0.1:8385";
-      guiPort = 8385;
-      compression = "metadata";
-    };
-    siberia = {
-      guiAddress = "127.0.0.1:8386";
-      guiPort = 8386;
-      compression = "metadata";
-    };
-    silver = {
-      guiAddress = "127.0.0.1:8387";
-      guiPort = 8387;
-      compression = "metadata";
-    };
-  };
-
-
-
-  # Check if current machine is configured
-  isMachineConfigured = machineConfigs ? ${machineName};
-
-  # Get configuration for current machine (only if configured)
-  currentConfig = if isMachineConfigured then machineConfigs.${machineName} else null;
+  # Check if current machine is configured by checking if secrets exist
+  isMachineConfigured = true; # Will be validated at runtime by checking secret files
 
   # Script to extract JSON secrets to individual files
   extractSecretsScript = pkgs.writeShellScript "extract-syncthing-secrets" ''
@@ -115,6 +86,10 @@ let
 
         # Extract own device ID
         OWN_DEVICE_ID=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.deviceId // empty' 2>/dev/null || echo "")
+
+        # Extract machine-specific GUI options from MACHINE_CONFIG with defaults
+        GUI_ADDRESS=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.machineOptions.guiAddress // "127.0.0.1:8384"')
+        GUI_PORT=$(echo "$MACHINE_CONFIG" | ${pkgs.jq}/bin/jq -r '.machineOptions.guiPort // 8384')
 
         # Extract global options from SHARED_CONFIG with defaults
         # Note: For booleans, we use explicit null checks because jq's // operator treats false as falsy
@@ -278,17 +253,79 @@ let
             # Capitalize first letter for display name
             DISPLAY_NAME="''${DEVICE_NAME^}"
         
+            # Extract device options from SHARED_CONFIG with proper defaults
+            # Core Device Options
+            COMPRESSION=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].compression // "metadata"')
+            INTRODUCER=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].introducer as $val | if $val == null then false else $val end')
+            SKIP_INTRODUCTION_REMOVALS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].skipIntroductionRemovals as $val | if $val == null then false else $val end')
+            INTRODUCED_BY=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].introducedBy // ""')
+            PAUSED=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].paused as $val | if $val == null then false else $val end')
+            AUTO_ACCEPT_FOLDERS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].autoAcceptFolders as $val | if $val == null then false else $val end')
+            UNTRUSTED=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].untrusted as $val | if $val == null then false else $val end')
+            
+            # Network/Performance Options
+            ADDRESSES=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].addresses // ["dynamic"] | join(",")')
+            MAX_SEND_KBPS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].maxSendKbps // 0')
+            MAX_RECV_KBPS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].maxRecvKbps // 0')
+            MAX_REQUEST_KIB=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].maxRequestKiB // 0')
+            NUM_CONNECTIONS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].numConnections // 0')
+            ALLOWED_NETWORKS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].allowedNetworks // [] | join(",")')
+            
+            # Advanced Options
+            CERT_NAME=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].certName // "syncthing"')
+            REMOTE_GUI_PORT=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].remoteGUIPort // 0')
+            IGNORED_FOLDERS=$(echo "$SHARED_CONFIG" | ${pkgs.jq}/bin/jq -r --arg device "$DEVICE_NAME" '.deviceOptions[$device].ignoredFolders // [] | join(",")')
+            
+            # Apply untrusted constraint validation
+            if [[ "$UNTRUSTED" == "true" ]]; then
+              INTRODUCER="false"
+              AUTO_ACCEPT_FOLDERS="false"
+            fi
+        
+            # Generate address elements
+            ADDRESS_ELEMENTS=""
+            IFS=',' read -ra ADDR_ARRAY <<< "$ADDRESSES"
+            for addr in "''${ADDR_ARRAY[@]}"; do
+              if [[ -n "$addr" ]]; then
+                ADDRESS_ELEMENTS="$ADDRESS_ELEMENTS
+            <address>$addr</address>"
+              fi
+            done
+            
+            # Generate allowedNetwork elements
+            ALLOWED_NETWORK_ELEMENTS=""
+            if [[ -n "$ALLOWED_NETWORKS" ]]; then
+              IFS=',' read -ra NETWORK_ARRAY <<< "$ALLOWED_NETWORKS"
+              for network in "''${NETWORK_ARRAY[@]}"; do
+                if [[ -n "$network" ]]; then
+                  ALLOWED_NETWORK_ELEMENTS="$ALLOWED_NETWORK_ELEMENTS
+            <allowedNetwork>$network</allowedNetwork>"
+                fi
+              done
+            fi
+            
+            # Generate ignoredFolder elements
+            IGNORED_FOLDER_ELEMENTS=""
+            if [[ -n "$IGNORED_FOLDERS" ]]; then
+              IFS=',' read -ra FOLDER_ARRAY <<< "$IGNORED_FOLDERS"
+              for folder in "''${FOLDER_ARRAY[@]}"; do
+                if [[ -n "$folder" ]]; then
+                  IGNORED_FOLDER_ELEMENTS="$IGNORED_FOLDER_ELEMENTS
+            <ignoredFolder>$folder</ignoredFolder>"
+                fi
+              done
+            fi
+        
             cat >> "$CONFIG_FILE" <<EOF
-        <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="metadata" introducer="false" skipIntroductionRemovals="false" introducedBy="">
-            <address>dynamic</address>
-            <paused>false</paused>
-            <autoAcceptFolders>false</autoAcceptFolders>
-            <maxSendKbps>0</maxSendKbps>
-            <maxRecvKbps>0</maxRecvKbps>
-            <maxRequestKiB>0</maxRequestKiB>
-            <untrusted>false</untrusted>
-            <remoteGUIPort>0</remoteGUIPort>
-            <numConnections>0</numConnections>
+        <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="$COMPRESSION" introducer="$INTRODUCER" skipIntroductionRemovals="$SKIP_INTRODUCTION_REMOVALS" introducedBy="$INTRODUCED_BY">$ADDRESS_ELEMENTS
+            <paused>$PAUSED</paused>
+            <autoAcceptFolders>$AUTO_ACCEPT_FOLDERS</autoAcceptFolders>
+            <maxSendKbps>$MAX_SEND_KBPS</maxSendKbps>
+            <maxRecvKbps>$MAX_RECV_KBPS</maxRecvKbps>
+            <maxRequestKiB>$MAX_REQUEST_KIB</maxRequestKiB>
+            <untrusted>$UNTRUSTED</untrusted>
+            <remoteGUIPort>$REMOTE_GUI_PORT</remoteGUIPort>
+            <numConnections>$NUM_CONNECTIONS</numConnections>$ALLOWED_NETWORK_ELEMENTS$IGNORED_FOLDER_ELEMENTS
         </device>
     EOF
           fi
@@ -323,7 +360,7 @@ let
         # Add GUI and options configuration
         cat >> "$CONFIG_FILE" <<EOF
         <gui enabled="true" tls="false" debugging="false">
-            <address>127.0.0.1:${toString currentConfig.guiPort}</address>
+            <address>$GUI_ADDRESS</address>
             <user>$GUI_USER</user>
             <password>$GUI_PASSWORD</password>
             <apikey>$API_KEY</apikey>
@@ -547,7 +584,7 @@ in
 
   # Warning messages
   warnings = lib.optional (!isMachineConfigured)
-    "Syncthing is disabled for machine '${machineName}' - not found in configured devices: ${lib.concatStringsSep ", " (lib.attrNames machineConfigs)}";
+    "Syncthing is disabled for machine '${machineName}' - machine-specific secret file not found";
 }
 
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
