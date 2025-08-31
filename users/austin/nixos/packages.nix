@@ -9,7 +9,7 @@
     _1password-gui
     alsa-utils
     blender
-    calibre
+    # calibre ## fails to build 2025-08-31
     dbeaver-bin
     freecad
     ghostty
