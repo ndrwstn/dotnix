@@ -63,6 +63,19 @@
   # Enable networking
   networking = {
     networkmanager.enable = true;
+
+    # Enable firewall with Syncthing ports
+    # Syncthing requires these ports for device discovery and synchronization
+    firewall = {
+      enable = true; # Explicitly enable firewall (default in NixOS)
+      allowedTCPPorts = [
+        22000 # Syncthing sync protocol (TCP)
+      ];
+      allowedUDPPorts = [
+        22000 # Syncthing sync protocol (QUIC/UDP) 
+        21027 # Syncthing local discovery broadcasts
+      ];
+    };
   };
 
   # Set your time zone
