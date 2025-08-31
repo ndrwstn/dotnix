@@ -481,7 +481,7 @@ let
         fi
     
         # Add GUI and options configuration
-        cat >> "$CONFIG_FILE" <<EOF
+        cat >> "$CONFIG_TEMP" <<EOF
         <gui enabled="true" tls="false" debugging="false">
             <address>$GUI_ADDRESS</address>
             <user>$GUI_USER</user>
