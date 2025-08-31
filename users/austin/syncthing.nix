@@ -41,8 +41,8 @@ let
       PLATFORM="linux"
       CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
       SERVICE_NAME="syncthing.service"
-      SYSTEMCTL_CMD="${pkgs.systemd}/bin/systemctl"
-      CMP_CMD="${pkgs.diffutils}/bin/cmp"
+      SYSTEMCTL_CMD="systemctl"
+      CMP_CMD="cmp"
     fi
     
     CONFIG_FILE="$CONFIG_DIR/config.xml"
