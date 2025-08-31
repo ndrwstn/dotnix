@@ -19,9 +19,52 @@ let
   # Check if current machine is configured by checking if secrets exist
   isMachineConfigured = true; # Will be validated at runtime by checking secret files
 
-  # Script to extract JSON secrets to individual files
-  extractSecretsScript = pkgs.writeShellScript "extract-syncthing-secrets" ''
+  # Combined script that handles all syncthing setup with platform detection
+  # IMPORTANT: This script now checks for changes BEFORE stopping syncthing to avoid
+  # unnecessary service restarts. The flow is:
+  # 1. Check if syncthing is running (but don't stop it)
+  # 2. Extract secrets and generate config to temp file
+  # 3. Compare temp config and certificates with existing ones
+  # 4. Only stop syncthing if changes detected AND it's running
+  # 5. Deploy changes and restart only when needed
+  setupSyncthingScript = pkgs.writeShellScript "setup-syncthing" ''
     set -euo pipefail
+    
+    # Platform detection
+    if [[ "${lib.boolToString pkgs.stdenv.isDarwin}" == "true" ]]; then
+      PLATFORM="darwin"
+      CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
+      SERVICE_NAME="org.nix-community.home.syncthing"
+      LAUNCHCTL_CMD="/bin/launchctl"
+      CMP_CMD="/usr/bin/cmp"
+    else
+      PLATFORM="linux"
+      CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
+      SERVICE_NAME="syncthing.service"
+      SYSTEMCTL_CMD="${pkgs.systemd}/bin/systemctl"
+      CMP_CMD="${pkgs.diffutils}/bin/cmp"
+    fi
+    
+    CONFIG_FILE="$CONFIG_DIR/config.xml"
+    
+    echo "Setting up Syncthing for $PLATFORM platform"
+    
+    # Check if syncthing is currently running and remember state
+    SYNCTHING_WAS_RUNNING=0
+    if [[ "$PLATFORM" == "darwin" ]]; then
+      if $LAUNCHCTL_CMD list | grep -q $SERVICE_NAME; then
+        SYNCTHING_WAS_RUNNING=1
+        echo "Syncthing is currently running"
+      fi
+    else
+      if $SYSTEMCTL_CMD --user is-active $SERVICE_NAME >/dev/null 2>&1; then
+        SYNCTHING_WAS_RUNNING=1
+        echo "Syncthing is currently running"
+      fi
+    fi
+    
+    # === EXTRACT SECRETS ===
+    echo "Extracting Syncthing secrets..."
     
     # Check if secret file exists
     if [[ ! -f "${secretPath}" ]]; then
@@ -45,40 +88,22 @@ let
     chmod 600 "${extractDir}"/*
     
     echo "Syncthing secrets extracted to ${extractDir}"
-  '';
-
-
-
-  # Script to generate complete Syncthing config.xml at service start
-  generateSyncthingConfigScript = pkgs.writeShellScript "generate-syncthing-config" ''
-        set -euo pipefail
     
-        # Determine config directory based on platform
-        if [[ "${lib.boolToString pkgs.stdenv.isLinux}" == "true" ]]; then
-          CONFIG_DIR="${config.home.homeDirectory}/.local/state/syncthing"
-        else
-          CONFIG_DIR="${config.home.homeDirectory}/Library/Application Support/Syncthing"
-        fi
-        CONFIG_FILE="$CONFIG_DIR/config.xml"
+    # === GENERATE CONFIG ===
+    echo "Generating Syncthing config.xml..."
     
-        echo "Generating Syncthing config.xml at $CONFIG_FILE"
+    # Create config directory
+    mkdir -p "$CONFIG_DIR"
     
-        # Create config directory
-        mkdir -p "$CONFIG_DIR"
+    # Create temporary file for config generation
+    CONFIG_TEMP=$(mktemp "$CONFIG_DIR/config.xml.XXXXXX")
     
-        # Check if shared secret exists
-        if [[ ! -f "${sharedSecretPath}" ]]; then
-          echo "Warning: Shared syncthing secret not found at ${sharedSecretPath}"
-          echo "Skipping device configuration - will use certificate-based identity only"
-          exit 0
-        fi
-    
-        # Check if machine-specific secret exists
-        if [[ ! -f "${secretPath}" ]]; then
-          echo "Warning: Machine syncthing secret not found at ${secretPath}"
-          echo "Skipping configuration generation"
-          exit 0
-        fi
+    # Check if shared secret exists
+    if [[ ! -f "${sharedSecretPath}" ]]; then
+      echo "Warning: Shared syncthing secret not found at ${sharedSecretPath}"
+      echo "Skipping device configuration - will use certificate-based identity only"
+      exit 0
+    fi
     
         # Read device IDs from secrets
         SHARED_CONFIG=$(cat "${sharedSecretPath}" 2>/dev/null || echo '{}')
@@ -195,11 +220,8 @@ let
           .devices | to_entries[] | select(.key != $self) | .value
         ' 2>/dev/null || echo "")
 
-        # Ensure clean config generation
-        rm -f "$CONFIG_FILE"
-    
-        # Generate complete config.xml
-        cat > "$CONFIG_FILE" <<EOF
+        # Generate complete config.xml to temporary file
+        cat > "$CONFIG_TEMP" <<EOF
     <configuration version="37">
     EOF
 
@@ -307,7 +329,7 @@ let
             fi
             
             # Generate folder XML
-            cat >> "$CONFIG_FILE" <<EOF
+            cat >> "$CONFIG_TEMP" <<EOF
         <folder id="$FOLDER_ID" label="$FOLDER_LABEL" path="$FOLDER_PATH" type="$FOLDER_TYPE" rescanIntervalS="$RESCAN_INTERVAL_S" fsWatcherEnabled="$FS_WATCHER_ENABLED" fsWatcherDelayS="$FS_WATCHER_DELAY_S" fsWatcherTimeoutS="$FS_WATCHER_TIMEOUT_S" ignorePerms="$IGNORE_PERMS" autoNormalize="$AUTO_NORMALIZE">
             <filesystemType>$FILESYSTEM_TYPE</filesystemType>$FOLDER_DEVICES
             <minDiskFree unit="$MIN_DISK_FREE_UNIT">$MIN_DISK_FREE_VALUE</minDiskFree>
@@ -417,7 +439,7 @@ let
               done
             fi
         
-            cat >> "$CONFIG_FILE" <<EOF
+            cat >> "$CONFIG_TEMP" <<EOF
         <device id="$DEVICE_ID" name="$DISPLAY_NAME" compression="$COMPRESSION" introducer="$INTRODUCER" skipIntroductionRemovals="$SKIP_INTRODUCTION_REMOVALS" introducedBy="$INTRODUCED_BY">$ADDRESS_ELEMENTS
             <paused>$PAUSED</paused>
             <autoAcceptFolders>$AUTO_ACCEPT_FOLDERS</autoAcceptFolders>
@@ -529,9 +551,106 @@ let
     </configuration>
     EOF
 
-        echo "Successfully generated Syncthing config.xml"
-        echo "Config file: $CONFIG_FILE"
-        echo "API key: $API_KEY"
+    echo "Successfully generated temporary Syncthing config"
+    
+    # === CHECK FOR CHANGES ===
+    echo "Checking for configuration changes..."
+    
+    # Initialize change detection flags
+    NEEDS_RESTART=0
+    CONFIG_CHANGED=0
+    CERTS_CHANGED=0
+    
+    # Check if config.xml changed
+    if [[ -f "$CONFIG_FILE" ]]; then
+      if $CMP_CMD -s "$CONFIG_TEMP" "$CONFIG_FILE" 2>/dev/null; then
+        echo "Config.xml is unchanged"
+      else
+        echo "Config.xml has changed"
+        CONFIG_CHANGED=1
+        NEEDS_RESTART=1
+      fi
+    else
+      echo "Config.xml does not exist, will be created"
+      CONFIG_CHANGED=1
+      NEEDS_RESTART=1
+    fi
+    
+    # Check if certificates need updating
+    if [[ -f "$CONFIG_DIR/cert.pem" ]] && $CMP_CMD -s "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"; then
+      echo "Certificate is up-to-date"
+    else
+      echo "Certificate needs updating"
+      CERTS_CHANGED=1
+      NEEDS_RESTART=1
+    fi
+    
+    if [[ -f "$CONFIG_DIR/key.pem" ]] && $CMP_CMD -s "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"; then
+      echo "Private key is up-to-date"
+    else
+      echo "Private key needs updating"
+      CERTS_CHANGED=1
+      NEEDS_RESTART=1
+    fi
+    
+    # === CONDITIONAL SERVICE STOP ===
+    # Only stop syncthing if it's running AND changes need to be deployed
+    if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]] && [[ $NEEDS_RESTART -eq 1 ]]; then
+      echo "Stopping Syncthing service to deploy changes..."
+      if [[ "$PLATFORM" == "darwin" ]]; then
+        $LAUNCHCTL_CMD stop $SERVICE_NAME 2>/dev/null || true
+      else
+        $SYSTEMCTL_CMD --user stop $SERVICE_NAME 2>/dev/null || true
+      fi
+      sleep 2
+    fi
+    
+    # === DEPLOY CHANGES ===
+    # Deploy config if it changed
+    if [[ $CONFIG_CHANGED -eq 1 ]]; then
+      echo "Deploying new Syncthing config.xml..."
+      mv "$CONFIG_TEMP" "$CONFIG_FILE"
+      chmod 600 "$CONFIG_FILE"
+      echo "Config deployed successfully"
+      echo "API key: $API_KEY"
+    else
+      # Clean up temp file if no changes
+      rm -f "$CONFIG_TEMP"
+    fi
+    
+    # Deploy certificates if they changed
+    if [[ $CERTS_CHANGED -eq 1 ]]; then
+      echo "Deploying new Syncthing certificates..."
+      
+      # Deploy certificates (remove existing files first to avoid permission issues)
+      rm -f "$CONFIG_DIR/cert.pem" "$CONFIG_DIR/key.pem"
+      cp "${extractDir}/cert.pem" "$CONFIG_DIR/cert.pem"
+      cp "${extractDir}/key.pem" "$CONFIG_DIR/key.pem"
+      chmod 400 "$CONFIG_DIR/cert.pem"
+      chmod 400 "$CONFIG_DIR/key.pem"
+      
+      echo "Certificates deployed successfully"
+    fi
+    
+    # === CONDITIONAL SERVICE START ===
+    # Only start syncthing if it was stopped for changes
+    if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]] && [[ $NEEDS_RESTART -eq 1 ]]; then
+      echo "Starting Syncthing service after deploying changes..."
+      if [[ "$PLATFORM" == "darwin" ]]; then
+        $LAUNCHCTL_CMD start $SERVICE_NAME 2>/dev/null || true
+      else
+        $SYSTEMCTL_CMD --user start $SERVICE_NAME 2>/dev/null || true
+      fi
+      echo "Syncthing restarted successfully"
+    elif [[ $SYNCTHING_WAS_RUNNING -eq 1 ]]; then
+      echo "No changes detected, Syncthing continues running without restart"
+    elif [[ $NEEDS_RESTART -eq 1 ]]; then
+      echo "Changes deployed. Syncthing was not running, changes will be used on next start"
+    else
+      echo "No changes detected and Syncthing was not running"
+    fi
+    
+    echo "Syncthing setup completed successfully"
   '';
 
 
@@ -541,78 +660,10 @@ let
 in
 {
   # Only configure Syncthing if machine is in the configured list
-  # Extract secrets during home activation
-  home.activation.extractSyncthingSecrets = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${extractSecretsScript}
+  # Combined setup script that handles secrets, config generation, and certificate deployment
+  home.activation.setupSyncthing = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${setupSyncthingScript}
   '');
-
-
-
-  # Generate syncthing configuration before service starts
-  home.activation.generateSyncthingConfig = lib.mkIf isMachineConfigured (lib.hm.dag.entryAfter [ "extractSyncthingSecrets" ] ''
-    ${generateSyncthingConfigScript}
-  '');
-
-  # Deploy certificates for Darwin
-  home.activation.deploySyncthingCertificatesDarwin = lib.mkIf (isMachineConfigured && pkgs.stdenv.isDarwin) (
-    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
-      ${pkgs.writeShellScript "deploy-syncthing-certificates-darwin" ''
-        set -euo pipefail
-        
-        SYNCTHING_DIR="$HOME/Library/Application Support/Syncthing"
-        
-        # Check if certificates need updating
-        NEEDS_UPDATE=0
-        
-        if [[ -f "$SYNCTHING_DIR/cert.pem" ]] && /usr/bin/cmp -s "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"; then
-          echo "Certificate is up-to-date"
-        else
-          echo "Certificate needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && /usr/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
-          echo "Private key is up-to-date"
-        else
-          echo "Private key needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        # Only restart if certificates actually changed
-        if [[ $NEEDS_UPDATE -eq 1 ]]; then
-          echo "Deploying new Syncthing certificates..."
-          
-          # Check if syncthing is running
-          SYNCTHING_WAS_RUNNING=0
-          if /bin/launchctl list | grep -q org.nix-community.home.syncthing; then
-            SYNCTHING_WAS_RUNNING=1
-            echo "Stopping Syncthing service..."
-            /bin/launchctl stop org.nix-community.home.syncthing 2>/dev/null || true
-            sleep 2
-          fi
-          
-          # Deploy certificates (remove existing files first to avoid permission issues)
-          mkdir -p "$SYNCTHING_DIR"
-          rm -f "$SYNCTHING_DIR/cert.pem" "$SYNCTHING_DIR/key.pem"
-          cp "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"
-          cp "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"
-          chmod 400 "$SYNCTHING_DIR/cert.pem"
-          chmod 400 "$SYNCTHING_DIR/key.pem"
-          
-          # Restart syncthing if it was running
-          if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]]; then
-            echo "Starting Syncthing service..."
-            /bin/launchctl start org.nix-community.home.syncthing 2>/dev/null || true
-            echo "Syncthing restarted with new certificates"
-          else
-            echo "Syncthing was not running, certificates will be used on next start"
-          fi
-        else
-          echo "Syncthing certificates are up-to-date, no restart needed"
-        fi
-      ''}
-    ''
-  );
 
   # Configure Syncthing service
   # Note: devices, folders, GUI settings, and options are managed via generated config.xml
@@ -621,67 +672,6 @@ in
     enable = true;
     package = pkgs.syncthing;
   };
-
-  # Smart certificate deployment for NixOS using activation scripts
-  home.activation.deploySyncthingCertificatesLinux = lib.mkIf (isMachineConfigured && pkgs.stdenv.isLinux) (
-    lib.hm.dag.entryAfter [ "generateSyncthingConfig" ] ''
-      ${pkgs.writeShellScript "deploy-syncthing-certificates-linux" ''
-        set -euo pipefail
-        
-        SYNCTHING_DIR="$HOME/.local/state/syncthing"
-        
-        # Check if certificates need updating
-        NEEDS_UPDATE=0
-        
-        if [[ -f "$SYNCTHING_DIR/cert.pem" ]] && ${pkgs.diffutils}/bin/cmp -s "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"; then
-          echo "Certificate is up-to-date"
-        else
-          echo "Certificate needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        if [[ -f "$SYNCTHING_DIR/key.pem" ]] && ${pkgs.diffutils}/bin/cmp -s "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"; then
-          echo "Private key is up-to-date"
-        else
-          echo "Private key needs updating"
-          NEEDS_UPDATE=1
-        fi
-        
-        # Only restart if certificates actually changed
-        if [[ $NEEDS_UPDATE -eq 1 ]]; then
-          echo "Deploying new Syncthing certificates..."
-          
-          # Check if syncthing is running
-          SYNCTHING_WAS_RUNNING=0
-          if ${pkgs.systemd}/bin/systemctl --user is-active syncthing.service >/dev/null 2>&1; then
-            SYNCTHING_WAS_RUNNING=1
-            echo "Stopping Syncthing service..."
-            ${pkgs.systemd}/bin/systemctl --user stop syncthing.service 2>/dev/null || true
-            sleep 2
-          fi
-          
-          # Deploy certificates (remove existing files first to avoid permission issues)
-          mkdir -p "$SYNCTHING_DIR"
-          rm -f "$SYNCTHING_DIR/cert.pem" "$SYNCTHING_DIR/key.pem"
-          cp "${extractDir}/cert.pem" "$SYNCTHING_DIR/cert.pem"
-          cp "${extractDir}/key.pem" "$SYNCTHING_DIR/key.pem"
-          chmod 400 "$SYNCTHING_DIR/cert.pem"
-          chmod 400 "$SYNCTHING_DIR/key.pem"
-          
-          # Restart syncthing if it was running
-          if [[ $SYNCTHING_WAS_RUNNING -eq 1 ]]; then
-            echo "Starting Syncthing service..."
-            ${pkgs.systemd}/bin/systemctl --user start syncthing.service 2>/dev/null || true
-            echo "Syncthing restarted with new certificates"
-          else
-            echo "Syncthing was not running, certificates will be used on next start"
-          fi
-        else
-          echo "Syncthing certificates are up-to-date, no restart needed"
-        fi
-      ''}
-    ''
-  );
 
   # Warning messages
   warnings = lib.optional (!isMachineConfigured)
