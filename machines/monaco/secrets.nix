@@ -19,14 +19,6 @@
       owner = "austin";
       group = "staff";
     };
-
-    # NEW: Shared syncthing configuration (all machines can decrypt)
-    syncthing = {
-      file = ../../secrets/syncthing.age;
-      mode = "0400";
-      owner = "austin";
-      group = "staff";
-    };
   };
 
   # Configure agenix identity paths for Monaco

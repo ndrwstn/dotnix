@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./users.nix
+    ./secrets.nix
   ];
 
   options = {
