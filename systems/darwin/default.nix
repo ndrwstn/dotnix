@@ -53,6 +53,12 @@ in
     "nixpkgs=flake:nixpkgs"
   ];
 
+  # Match nixbld GID across all Darwin systems
+  ids.gids.nixbld = 350;
+
+  # Allow unfree packages on Darwin systems
+  nixpkgs.config.allowUnfree = true;
+
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
 
