@@ -1,5 +1,5 @@
 # users/austin/syncthing.nix - Simplified Syncthing configuration with direct config.xml generation
-{ config, lib, pkgs, hostName ? "unknown", ... }:
+{ config, lib, pkgs, hostName ? "unknown", unstable, ... }:
 
 let
   # Use the hostName parameter passed from flake, normalize to lowercase
@@ -670,7 +670,7 @@ in
   # This approach provides more reliable configuration than using NixOS service settings
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
-    package = pkgs.syncthing;
+    package = unstable.syncthing;
   };
 
   # Warning messages

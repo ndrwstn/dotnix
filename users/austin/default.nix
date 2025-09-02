@@ -236,7 +236,7 @@ lib.mkMerge [
   }
 
   # Import syncthing configuration
-  (import ./syncthing.nix { inherit config pkgs lib hostName; })
+  (import ./syncthing.nix { inherit config pkgs lib hostName unstable; })
 
   # Import SSH configuration
   (import ./ssh.nix { inherit config pkgs lib; })
