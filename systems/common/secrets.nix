@@ -4,6 +4,11 @@
 { pkgs, ... }:
 
 {
+  # Common identity paths for all systems
+  age.identityPaths = [
+    "/etc/ssh/ssh_host_ed25519_key"
+  ];
+
   # Shared agenix secrets configuration
   age.secrets = {
     # Shared syncthing configuration (all machines can decrypt)
