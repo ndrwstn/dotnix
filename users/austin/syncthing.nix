@@ -670,7 +670,7 @@ in
   # This approach provides more reliable configuration than using NixOS service settings
   services.syncthing = lib.mkIf isMachineConfigured {
     enable = true;
-    package = unstable.syncthing;
+    package = pkgs.syncthing;
   };
 
   # Warning messages

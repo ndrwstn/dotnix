@@ -189,6 +189,7 @@
                 sysConfig.hmModule
                 {
                   nixpkgs.overlays = [
+                    (import ./overlays/syncthing.nix)
                   ];
                 }
                 ({ config, ... }: {
