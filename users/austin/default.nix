@@ -131,6 +131,7 @@ lib.mkMerge [
         baseIndex = 1;
         historyLimit = 50000;
         mouse = true;
+        plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
       };
 
       # Zoxide configuration
