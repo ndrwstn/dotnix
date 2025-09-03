@@ -1,5 +1,5 @@
 # systems/nixos/agenix.nix
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   # Import agenix module
@@ -9,11 +9,14 @@
 
   # Add agenix package to system packages
   environment.systemPackages = [
-    inputs.agenix.packages.${builtins.currentSystem}.default
+    inputs.agenix.packages.${pkgs.system}.default
   ];
 
   # Configure agenix
   age = {
+    secretsDir = "/run/agenix";
+    secretsMountPoint = "/run/agenix.d";
+
     # Secrets directory
     secrets = {
       # WiFi secrets (consolidated JSON)
