@@ -48,6 +48,35 @@
     { key = "<leader>fp"; mode = "n"; action = "<cmd>Telescope projects<CR>"; options.desc = "Find Projects (Telescope)"; }
     { key = "<leader>fr"; mode = "n"; action = "<cmd>Telescope frecency<CR>"; options.desc = "Find Recent/Frequent (Telescope)"; }
 
+    # Undotree
+    # === Undotree window navigation (defaults) ===
+    # j/k - Move up/down in history
+    # <CR> - Jump to selected state  
+    # p - Preview diff of selected state
+    # q - Close undotree window
+    { key = "<leader>u"; mode = "n"; action = "<cmd>UndotreeToggle<CR>"; options.desc = "Toggle Undotree"; }
+
+    # Todo Comments
+    # === Todo navigation (defaults) ===
+    # ]t - Jump to next todo comment
+    # [t - Jump to previous todo comment
+    { key = "<leader>xt"; mode = "n"; action = "<cmd>TodoQuickFix<CR>"; options.desc = "Todo Quickfix List"; }
+
+    # nvim-surround (all defaults, no custom mappings needed)
+    # === Normal mode ===
+    # ys{motion}{char} - Add surround (e.g., ysiw" to surround word with quotes)
+    # yss{char} - Surround entire line
+    # ds{char} - Delete surround (e.g., ds" to remove quotes)
+    # cs{old}{new} - Change surround (e.g., cs"' to change " to ')
+    # === Visual mode ===
+    # S{char} - Surround selection
+    # gS{char} - Surround selection on new lines
+
+    # nvim-autopairs (automatic, no keybindings)
+    # Automatically pairs: ( ) [ ] { } " " ' ' ` `
+    # <CR> - Smart indent when pressing enter between pairs
+    # <BS> - Delete both pairs when backspacing
+
     # Miscellaneous
     { key = "<leader>qf"; mode = "n"; action = "<cmd>Format<CR>"; options.desc = "Format Buffer (Conform)"; }
   ];

@@ -172,6 +172,52 @@
     web-devicons.enable = true;
     which-key.enable = true;
 
+    # Auto-pairs for automatic bracket/quote closing
+    nvim-autopairs = {
+      enable = true;
+      settings = {
+        check_ts = true; # Use treesitter for better pair checking
+        disable_filetype = [ "TelescopePrompt" "vim" ];
+      };
+    };
+
+    # Highlight and search TODO/FIXME comments
+    todo-comments = {
+      enable = true;
+      settings = {
+        signs = true;
+        keywords = {
+          FIX = { icon = " "; color = "error"; alt = [ "FIXME" "BUG" "FIXIT" "ISSUE" ]; };
+          TODO = { icon = " "; color = "info"; };
+          HACK = { icon = " "; color = "warning"; };
+          WARN = { icon = " "; color = "warning"; alt = [ "WARNING" "XXX" ]; };
+          PERF = { icon = " "; alt = [ "OPTIM" "PERFORMANCE" "OPTIMIZE" ]; };
+          NOTE = { icon = " "; color = "hint"; alt = [ "INFO" ]; };
+          TEST = { icon = "⏲ "; color = "test"; alt = [ "TESTING" "PASSED" "FAILED" ]; };
+        };
+      };
+    };
+
+    # Surround text objects with quotes/brackets/tags
+    nvim-surround = {
+      enable = true;
+      settings = {
+        keymaps = {
+          insert = "<C-g>s";
+          insert_line = "<C-g>S";
+          normal = "ys";
+          normal_cur = "yss";
+          normal_line = "yS";
+          normal_cur_line = "ySS";
+          visual = "S";
+          visual_line = "gS";
+          delete = "ds";
+          change = "cs";
+          change_line = "cS";
+        };
+      };
+    };
+
     # Sops integration for Neovim (uncomment when fully set up)
     # nvim-sops = {
     #   enable = true;
