@@ -89,6 +89,13 @@ in
     text = generateKnownHosts sshData.knownHosts;
   };
 
+  # Ensure writable known_hosts file exists for dynamic host entries
+  home.activation.ensureWritableKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -f "$HOME/.ssh/known_hosts" ]; then
+      $DRY_RUN_CMD touch "$HOME/.ssh/known_hosts"
+    fi
+  '';
+
   # Note: SSH setup key is deployed via machine-specific secrets.nix files
   # for machines with setup-key capability (monaco, silver, etc.)
 }
