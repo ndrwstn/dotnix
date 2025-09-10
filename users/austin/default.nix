@@ -239,6 +239,9 @@ lib.mkMerge [
   # Import syncthing configuration
   (import ./syncthing.nix { inherit config pkgs lib hostName unstable; })
 
+  # Import Atuin shell history sync configuration
+  (import ./atuin.nix { inherit config pkgs lib hostName; })
+
   # Import SSH configuration
   (import ./ssh.nix { inherit config pkgs lib; })
 

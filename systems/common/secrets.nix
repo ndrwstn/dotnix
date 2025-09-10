@@ -18,5 +18,13 @@
       owner = "austin";
       group = if pkgs.stdenv.isDarwin then "staff" else "users";
     };
+
+    # Atuin shell history sync (shared across all machines)
+    atuin = {
+      file = ../../secrets/atuin.age;
+      mode = "0400";
+      owner = "austin";
+      group = if pkgs.stdenv.isDarwin then "staff" else "users";
+    };
   };
 }

@@ -33,4 +33,7 @@ in
   "syncthing-silver.age".publicKeys = allUsers ++ [ silver ];
   "syncthing-plutonium.age".publicKeys = allUsers ++ [ plutonium ];
   # "syncthing-siberia.age".publicKeys = allUsers ++ [ siberia ];
+
+  # Atuin shared encryption key (all machines)
+  "atuin.age".publicKeys = allUsers ++ activeMachines;
 }
