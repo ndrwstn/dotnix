@@ -113,13 +113,22 @@ let
   };
 
   # SSH client match configurations
+  # This configuration solves the "SSH trying all keys" problem with 1Password by:
+  # 1. Setting IdentitiesOnly yes globally to prevent SSH from trying all available keys
+  # 2. Explicitly specifying IdentityFile for each host to use only the intended key
+  # 3. Using 1Password phantom paths for Nix machines (keys stored in 1Password)
+  # 4. Using deployed public keys for external services (gitea, github)
+  # 5. Using physical setup key for goetz (bootstrap/setup scenarios)
   sshMatches = [
+    # Nix machines - use 1Password phantom paths
     {
       condition = "Host monaco.impetuo.us";
       config = {
         HostName = "monaco.impetuo.us";
         User = "austin";
         Port = 22;
+        IdentityFile = "~/.ssh/monaco";
+        IdentitiesOnly = "yes";
       };
     }
     {
@@ -128,6 +137,8 @@ let
         HostName = "silver.impetuo.us";
         User = "austin";
         Port = 22;
+        IdentityFile = "~/.ssh/silver";
+        IdentitiesOnly = "yes";
       };
     }
     {
@@ -136,6 +147,8 @@ let
         HostName = "plutonium.impetuo.us";
         User = "austin";
         Port = 22;
+        IdentityFile = "~/.ssh/plutonium";
+        IdentitiesOnly = "yes";
       };
     }
     {
@@ -144,6 +157,61 @@ let
         HostName = "molybdenum.impetuo.us";
         User = "austin";
         Port = 22;
+        IdentityFile = "~/.ssh/molybdenum";
+        IdentitiesOnly = "yes";
+      };
+    }
+    {
+      condition = "Host siberia.impetuo.us";
+      config = {
+        HostName = "siberia.impetuo.us";
+        User = "austin";
+        Port = 22;
+        IdentityFile = "~/.ssh/siberia";
+        IdentitiesOnly = "yes";
+      };
+    }
+    # External services - use deployed public keys
+    {
+      condition = "Host gitea.impetuo.us";
+      config = {
+        HostName = "gitea.impetuo.us";
+        User = "git";
+        Port = 22;
+        IdentityFile = "~/.ssh/gitea.pub";
+        IdentitiesOnly = "yes";
+      };
+    }
+    {
+      condition = "Host github.com";
+      config = {
+        HostName = "github.com";
+        User = "git";
+        Port = 22;
+        IdentityFile = "~/.ssh/github.pub";
+        IdentitiesOnly = "yes";
+      };
+    }
+    # Physical setup key for bootstrap scenarios
+    {
+      condition = "Host goetz.impetuo.us";
+      config = {
+        HostName = "goetz.impetuo.us";
+        User = "austin";
+        Port = 22;
+        IdentityFile = "~/.ssh/setup";
+        IdentitiesOnly = "yes";
+      };
+    }
+    # 1Password phantom path for nietzsche
+    {
+      condition = "Host nietzsche.impetuo.us";
+      config = {
+        HostName = "nietzsche.impetuo.us";
+        User = "austin";
+        Port = 22;
+        IdentityFile = "~/.ssh/nietzsche-monaco";
+        IdentitiesOnly = "yes";
       };
     }
   ];
@@ -229,14 +297,21 @@ in
     # Use dual known_hosts files: Nix-managed (read-only) + writable for new hosts
     userKnownHostsFile = "~/.ssh/known_hosts_nix ~/.ssh/known_hosts";
 
-    # Configure 1Password SSH agent for all platforms
+    # Configure 1Password SSH agent for all platforms with IdentitiesOnly
+    # This configuration prevents SSH from trying all available keys in 1Password,
+    # which was causing authentication failures due to too many key attempts.
+    # Instead, we explicitly specify which key to use for each host via IdentityFile.
     extraConfig = ''
       Host *
+        # Use 1Password SSH agent for key management
         IdentityAgent ${
           if pkgs.stdenv.isDarwin 
           then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
           else "~/.1password/agent.sock"
         }
+        # Prevent SSH from trying all available keys - only use explicitly specified ones
+        IdentitiesOnly yes
+        # Terminal and security settings
         SetEnv TERM=xterm-256color
         StrictHostKeyChecking accept-new
       
@@ -252,6 +327,16 @@ in
   # Create Nix-managed known_hosts file (read-only)
   home.file.".ssh/known_hosts_nix" = {
     text = generateKnownHosts knownHosts;
+  };
+
+  # Deploy public keys for external services
+  # These are used with IdentitiesOnly to ensure only the correct key is tried
+  home.file.".ssh/gitea.pub" = {
+    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
+  };
+
+  home.file.".ssh/github.pub" = {
+    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
   };
 
   # Ensure writable known_hosts file exists for dynamic host entries
