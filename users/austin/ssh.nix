@@ -334,12 +334,10 @@ in
   # These are used with IdentitiesOnly to ensure only the correct key is tried
   home.file.".ssh/gitea.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
-    mode = "0644";
   };
 
   home.file.".ssh/github.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
-    mode = "0644";
   };
 
   # Create symlink to setup key for machines that have it deployed via agenix
