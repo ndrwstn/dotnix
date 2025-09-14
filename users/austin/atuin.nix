@@ -192,7 +192,6 @@ in
     # Place environment variables file using Home Manager
     file.".config/atuin/env.sh" = lib.mkIf isMachineConfigured {
       text = envFileContent;
-      onChange = "chmod 600 ${config.home.homeDirectory}/.config/atuin/env.sh";
     };
   };
 
