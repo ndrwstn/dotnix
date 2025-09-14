@@ -239,8 +239,7 @@ let
 
   # Helper function to get current machine data
   getCurrentMachine = hostName:
-    lib.findFirst (machine: machine.hostname == "${lib.toLower hostName}.local") null
-      (lib.attrValues machines);
+    machines.${lib.toLower hostName} or null;
 
   # Generate authorized keys based on machine capabilities
   generateAuthorizedKeys = machine:
