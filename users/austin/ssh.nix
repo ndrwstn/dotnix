@@ -294,8 +294,9 @@ in
   programs.ssh = {
     enable = true;
 
-    # Use dual known_hosts files: Nix-managed (read-only) + writable for new hosts
-    userKnownHostsFile = "~/.ssh/known_hosts_nix ~/.ssh/known_hosts";
+    # Use dual known_hosts files: writable for new hosts + Nix-managed (read-only)
+    # Order matters: SSH writes to the first file, so put writable file first
+    userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
 
     # Configure 1Password SSH agent for all platforms with IdentitiesOnly
     # This configuration prevents SSH from trying all available keys in 1Password,
@@ -333,10 +334,18 @@ in
   # These are used with IdentitiesOnly to ensure only the correct key is tried
   home.file.".ssh/gitea.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
+    mode = "0644";
   };
 
   home.file.".ssh/github.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
+    mode = "0644";
+  };
+
+  # Create symlink to setup key for machines that have it deployed via agenix
+  # This allows SSH config to reference ~/.ssh/setup while agenix deploys to /run/agenix/ssh-setup
+  home.file.".ssh/setup" = lib.mkIf (currentMachine != null && hasCapability "setup-key" currentMachine) {
+    source = "/run/agenix/ssh-setup";
   };
 
   # Ensure writable known_hosts file exists for dynamic host entries
