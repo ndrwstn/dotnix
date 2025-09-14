@@ -243,7 +243,7 @@ lib.mkMerge [
   (import ./atuin.nix { inherit config pkgs lib hostName; })
 
   # Import SSH configuration
-  (import ./ssh.nix { inherit config pkgs lib; })
+  (import ./ssh.nix { inherit config pkgs lib hostName; })
 
   # Import Darwin-specific flakes
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
