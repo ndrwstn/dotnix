@@ -341,9 +341,14 @@ in
 
   # Create symlink to setup key for machines that have it deployed via agenix
   # This allows SSH config to reference ~/.ssh/setup while agenix deploys to /run/agenix/ssh-setup
-  home.file.".ssh/setup" = lib.mkIf (currentMachine != null && hasCapability "setup-key" currentMachine) {
-    source = "/run/agenix/ssh-setup";
-  };
+  # Note: Using home.activation because /run/agenix/ssh-setup only exists at runtime, not build time
+  home.activation.linkSetupKey = lib.mkIf (currentMachine != null && hasCapability "setup-key" currentMachine) (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      if [ -f "/run/agenix/ssh-setup" ]; then
+        $DRY_RUN_CMD ln -sf "/run/agenix/ssh-setup" "$HOME/.ssh/setup"
+      fi
+    ''
+  );
 
   # Ensure writable known_hosts file exists for dynamic host entries
   home.activation.ensureWritableKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
