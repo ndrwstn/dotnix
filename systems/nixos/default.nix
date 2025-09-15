@@ -51,7 +51,9 @@
       };
     };
 
-
+    # Disable GNOME Keyring entirely to prevent SSH agent conflicts
+    # This allows 1Password SSH agent to work without interference
+    gnome.gnome-keyring.enable = false;
 
     # Syncthing is configured per-user via home-manager
 
