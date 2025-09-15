@@ -53,7 +53,8 @@
 
     # Disable GNOME Keyring entirely to prevent SSH agent conflicts
     # This allows 1Password SSH agent to work without interference
-    gnome.gnome-keyring.enable = false;
+    # Use mkForce to override the GNOME desktop manager's automatic enablement
+    gnome.gnome-keyring.enable = lib.mkForce false;
 
     # Syncthing is configured per-user via home-manager
 
