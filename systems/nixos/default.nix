@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./agenix.nix
+    ./1password.nix
   ];
   # Enable the X11 windowing system by default
   services.xserver = {

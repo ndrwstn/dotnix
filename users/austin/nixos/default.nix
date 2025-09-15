@@ -12,6 +12,10 @@ lib.mkMerge [
     home.sessionVariables = {
       # Set default editor to nvim
       EDITOR = "nvim";
+      # 1Password CLI integration
+      OP_PLUGIN_ALIASES_SOURCED = "1";
+      # Prevent GNOME keyring conflicts with 1Password SSH agent
+      GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
     };
   }
 
