@@ -28,17 +28,13 @@
 
   # Systemd user service to run 1Password silently in background
   systemd.user.services._1password = {
-    Unit = {
-      Description = "1Password";
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
+    description = "1Password";
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
       ExecStart = "${pkgs._1password-gui}/bin/1password --silent";
       Restart = "on-failure";
       Type = "simple";
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
     };
   };
 }
