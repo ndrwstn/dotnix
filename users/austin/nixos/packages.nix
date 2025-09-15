@@ -28,6 +28,7 @@
     plex-media-player
     python313
     rtl-sdr
+    ungoogled-chromium
     vlc
     vscodium-fhs
     wl-clipboard

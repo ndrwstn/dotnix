@@ -19,8 +19,8 @@
     "1password/custom_allowed_browsers" = {
       text = ''
         chromium
-        epiphany
-        .epiphany-wrapped
+        ungoogled-chromium
+        firefox
       '';
       mode = "0644";
     };
