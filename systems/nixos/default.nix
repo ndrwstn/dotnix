@@ -51,6 +51,8 @@
       };
     };
 
+
+
     # Syncthing is configured per-user via home-manager
 
     # Enable iSCSI support
@@ -59,6 +61,10 @@
       name = "iqn.2025-01.us.impetuo.${config.networking.hostName}";
     };
   };
+
+  # Disable GNOME's GCR SSH agent to prevent SSH_AUTH_SOCK override
+  # This allows 1Password SSH agent to work properly
+  environment.variables.GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
 
   # Enable networking
   networking = {
