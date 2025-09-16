@@ -115,19 +115,19 @@ let
   # SSH client match configurations
   # This configuration solves the "SSH trying all keys" problem with 1Password by:
   # 1. Setting IdentitiesOnly yes globally to prevent SSH from trying all available keys
-  # 2. Explicitly specifying IdentityFile for each host to use only the intended key
-  # 3. Using 1Password phantom paths for Nix machines (keys stored in 1Password)
+  # 2. Explicitly specifying IdentityFile for each host to use the current machine's key
+  # 3. Using deployed public key files that 1Password can match to private keys
   # 4. Using deployed public keys for external services (gitea, github)
   # 5. Using physical setup key for goetz (bootstrap/setup scenarios)
   sshMatches = [
-    # Nix machines - use 1Password phantom paths
+    # Nix machines - use current machine's public key file
     {
       condition = "Host monaco.impetuo.us";
       config = {
         HostName = "monaco.impetuo.us";
         User = "austin";
         Port = 22;
-        IdentityFile = "~/.ssh/monaco";
+        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
         IdentitiesOnly = "yes";
       };
     }
@@ -137,7 +137,7 @@ let
         HostName = "silver.impetuo.us";
         User = "austin";
         Port = 22;
-        IdentityFile = "~/.ssh/silver";
+        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
         IdentitiesOnly = "yes";
       };
     }
@@ -147,7 +147,7 @@ let
         HostName = "plutonium.impetuo.us";
         User = "austin";
         Port = 22;
-        IdentityFile = "~/.ssh/plutonium";
+        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
         IdentitiesOnly = "yes";
       };
     }
@@ -157,17 +157,7 @@ let
         HostName = "molybdenum.impetuo.us";
         User = "austin";
         Port = 22;
-        IdentityFile = "~/.ssh/molybdenum";
-        IdentitiesOnly = "yes";
-      };
-    }
-    {
-      condition = "Host siberia.impetuo.us";
-      config = {
-        HostName = "siberia.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/siberia";
+        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
         IdentitiesOnly = "yes";
       };
     }
@@ -327,6 +317,12 @@ in
   # Create Nix-managed known_hosts file (read-only)
   home.file.".ssh/known_hosts_nix" = {
     text = generateKnownHosts knownHosts;
+  };
+
+  # Deploy current machine's public key for SSH authentication  
+  # This allows IdentityFile to reference a real file while using 1Password
+  home.file.".ssh/${lib.toLower hostName}.pub" = lib.mkIf (currentMachine != null) {
+    text = currentMachine.key; # The machine's public key from the machines definition
   };
 
   # Deploy public keys for external services
