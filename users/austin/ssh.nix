@@ -279,24 +279,19 @@ in
     # Order matters: SSH writes to the first file, so put writable file first
     userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
 
-    # Configure 1Password SSH agent for all platforms with IdentitiesOnly
-    # This configuration prevents SSH from trying all available keys in 1Password,
-    # which was causing authentication failures due to too many key attempts.
-    # Instead, we explicitly specify which key to use for each host via IdentityFile.
+    # Configure 1Password SSH agent for all platforms
     extraConfig = ''
-            # Global settings for all hosts
-            Host *
-              # Use 1Password SSH agent for key management
-              IdentityAgent ${
-                if pkgs.stdenv.isDarwin 
-                then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
-                else "~/.1password/agent.sock"
-              }
-              # Prevent SSH from trying all available keys - only use explicitly specified ones
-              IdentitiesOnly yes
-              # Terminal and security settings
-              SetEnv TERM=xterm-256color
-              StrictHostKeyChecking accept-new
+            # Use 1Password SSH agent for key management
+            IdentityAgent ${
+              if pkgs.stdenv.isDarwin 
+              then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+              else "~/.1password/agent.sock"
+            }
+            # Prevent SSH from trying all available keys - only use explicitly specified ones
+            IdentitiesOnly yes
+            # Terminal and security settings
+            SetEnv TERM=xterm-256color
+            StrictHostKeyChecking accept-new
 
       ${generateSSHMatches sshMatches}
     '';
