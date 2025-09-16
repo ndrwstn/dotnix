@@ -260,7 +260,10 @@ let
             hostname = match.config.HostName or null;
             user = match.config.User or null;
             port = match.config.Port or null;
-            identityFile = match.config.IdentityFile or null;
+            identityFile =
+              if match.config.IdentityFile or null != null
+              then [ match.config.IdentityFile ]
+              else null;
           };
         in
         {
