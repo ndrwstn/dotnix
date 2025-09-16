@@ -24,6 +24,9 @@
     };
   };
 
+   # Exclude Seahorse to prevent SSH_ASKPASS interference
+   environment.gnome.excludePackages = [ pkgs.seahorse ];
+
   # Enable dbus for zathura synctex
   services.dbus.enable = true;
 
@@ -67,7 +70,11 @@
 
   # Disable GNOME's GCR SSH agent to prevent SSH_AUTH_SOCK override
   # This allows 1Password SSH agent to work properly
-  environment.variables.GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
+   environment.variables = {
+     GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
+     # Prevent Seahorse from setting SSH_ASKPASS and interfering with 1Password
+     SSH_ASKPASS = lib.mkForce "";
+   };
 
   # Enable networking
   networking = {
