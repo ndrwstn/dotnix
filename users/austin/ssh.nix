@@ -128,7 +128,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-        IdentitiesOnly = "yes";
       };
     }
     {
@@ -138,7 +137,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-        IdentitiesOnly = "yes";
       };
     }
     {
@@ -148,7 +146,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-        IdentitiesOnly = "yes";
       };
     }
     {
@@ -158,7 +155,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-        IdentitiesOnly = "yes";
       };
     }
     # External services - use deployed public keys
@@ -169,7 +165,6 @@ let
         User = "git";
         Port = 22;
         IdentityFile = "~/.ssh/gitea.pub";
-        IdentitiesOnly = "yes";
       };
     }
     {
@@ -179,7 +174,6 @@ let
         User = "git";
         Port = 22;
         IdentityFile = "~/.ssh/github.pub";
-        IdentitiesOnly = "yes";
       };
     }
     # Physical setup key for bootstrap scenarios
@@ -190,7 +184,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/setup";
-        IdentitiesOnly = "yes";
       };
     }
     # 1Password phantom path for nietzsche
@@ -201,7 +194,6 @@ let
         User = "austin";
         Port = 22;
         IdentityFile = "~/.ssh/nietzsche-monaco";
-        IdentitiesOnly = "yes";
       };
     }
   ];
@@ -292,19 +284,20 @@ in
     # which was causing authentication failures due to too many key attempts.
     # Instead, we explicitly specify which key to use for each host via IdentityFile.
     extraConfig = ''
-      Host *
-        # Use 1Password SSH agent for key management
-        IdentityAgent ${
-          if pkgs.stdenv.isDarwin 
-          then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
-          else "~/.1password/agent.sock"
-        }
-        # Prevent SSH from trying all available keys - only use explicitly specified ones
-        IdentitiesOnly yes
-        # Terminal and security settings
-        SetEnv TERM=xterm-256color
-        StrictHostKeyChecking accept-new
-      
+            # Global settings for all hosts
+            Host *
+              # Use 1Password SSH agent for key management
+              IdentityAgent ${
+                if pkgs.stdenv.isDarwin 
+                then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+                else "~/.1password/agent.sock"
+              }
+              # Prevent SSH from trying all available keys - only use explicitly specified ones
+              IdentitiesOnly yes
+              # Terminal and security settings
+              SetEnv TERM=xterm-256color
+              StrictHostKeyChecking accept-new
+
       ${generateSSHMatches sshMatches}
     '';
   };
