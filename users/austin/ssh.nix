@@ -237,13 +237,36 @@ let
     in
     machineKeys ++ deviceKeys;
 
-  # Generate SSH client configuration from match rules
-  generateSSHMatches = matches:
-    lib.concatStringsSep "\n" (map
-      (match: ''
-        ${match.condition}
-          ${lib.concatStringsSep "\n  " (lib.mapAttrsToList (key: value: "${key} ${toString value}") match.config)}
-      '')
+  # Generate SSH client configuration from match rules (deprecated - kept for reference)
+  # generateSSHMatches = matches:
+  #   lib.concatStringsSep "\n" (map
+  #     (match: ''
+  #       ${match.condition}
+  #         ${lib.concatStringsSep "\n  " (lib.mapAttrsToList (key: value: "${key} ${toString value}") match.config)}
+  #     '')
+  #     matches);
+
+  # Convert sshMatches list to Home Manager matchBlocks attribute set
+  generateMatchBlocks = matches:
+    lib.listToAttrs (map
+      (match:
+        let
+          # Extract hostname from "Host hostname" condition
+          hostPattern = lib.removePrefix "Host " match.condition;
+
+          # Map config fields to Home Manager format
+          # Only include non-null values
+          config = lib.filterAttrs (n: v: v != null) {
+            hostname = match.config.HostName or null;
+            user = match.config.User or null;
+            port = match.config.Port or null;
+            identityFile = match.config.IdentityFile or null;
+          };
+        in
+        {
+          name = hostPattern;
+          value = config;
+        })
       matches);
 
   # Generate known_hosts content
@@ -279,22 +302,23 @@ in
     # Order matters: SSH writes to the first file, so put writable file first
     userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
 
-    # Configure 1Password SSH agent for all platforms
+    # Global settings only
     extraConfig = ''
-            # Use 1Password SSH agent for key management
-            IdentityAgent ${
-              if pkgs.stdenv.isDarwin 
-              then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
-              else "~/.1password/agent.sock"
-            }
-            # Prevent SSH from trying all available keys - only use explicitly specified ones
-            IdentitiesOnly yes
-            # Terminal and security settings
-            SetEnv TERM=xterm-256color
-            StrictHostKeyChecking accept-new
-
-      ${generateSSHMatches sshMatches}
+      # Use 1Password SSH agent for key management
+      IdentityAgent ${
+        if pkgs.stdenv.isDarwin 
+        then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+        else "~/.1password/agent.sock"
+      }
+      # Prevent SSH from trying all available keys - only use explicitly specified ones
+      IdentitiesOnly yes
+      # Terminal and security settings
+      SetEnv TERM=xterm-256color
+      StrictHostKeyChecking accept-new
     '';
+
+    # Host-specific settings (generates separate Host blocks)
+    matchBlocks = generateMatchBlocks sshMatches;
   };
 
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
