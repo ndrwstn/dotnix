@@ -30,6 +30,7 @@ let
     # Search configuration
     search_mode = "fuzzy";
     filter_mode = "global";
+    filter_mode_shell_up_key_binding = "session"; # Up arrow searches current session only
 
     # UI configuration
     inline_height = 0;
@@ -70,6 +71,7 @@ let
     update_check = false;
     sync_on_exit = true;
     enter_accept = true;
+    ctrl_n_shortcuts = true; # Use Ctrl-0..9 instead of Alt-0..9 for macOS
 
     # Daemon configuration
     daemon = {
