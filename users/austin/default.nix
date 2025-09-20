@@ -124,15 +124,7 @@ lib.mkMerge [
         # TODO - 'esc' alias
       };
 
-      # Tmux configuration
-      tmux = {
-        enable = true;
-        terminal = "tmux-256color";
-        baseIndex = 1;
-        historyLimit = 50000;
-        mouse = true;
-        plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
-      };
+      # Note: Tmux configuration moved to tmux.nix
 
       # Zoxide configuration
       zoxide = {
@@ -244,6 +236,12 @@ lib.mkMerge [
 
   # Import SSH configuration
   (import ./ssh.nix { inherit config pkgs lib hostName; })
+
+  # Import Ghostty terminal configuration
+  (import ./ghostty.nix { inherit config pkgs lib; })
+
+  # Import tmux configuration
+  (import ./tmux.nix { inherit config pkgs lib; })
 
   # Import Darwin-specific flakes
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
