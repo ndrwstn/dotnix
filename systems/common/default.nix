@@ -20,6 +20,11 @@
   };
 
   config = {
+
+    # Ghostty-1.1.3 broken and evaluated by home-manager even if not being installed
+    # TODO: Remove when release-25.05 ghostty>1.1.3
+    nixpkgs.config.allowBroken = true;
+
     # Common system packages
     environment.systemPackages = with pkgs; [
       # Core utilities

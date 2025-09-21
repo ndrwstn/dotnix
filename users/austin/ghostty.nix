@@ -5,7 +5,10 @@
     enable = true;
 
     # Only install package on NixOS, use unstable version
-    package = lib.mkIf (!pkgs.stdenv.isDarwin) unstable.ghostty;
+    package = lib.mkMerge [
+      (lib.mkIf (!pkgs.stdenv.isDarwin) unstable.ghostty)
+      (lib.mkIf (pkgs.stdenv.isDarwin) null)
+    ];
 
     settings = {
       # Enable CSI u protocol support for modified keys
