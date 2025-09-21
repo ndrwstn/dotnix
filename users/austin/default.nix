@@ -238,7 +238,7 @@ lib.mkMerge [
   (import ./ssh.nix { inherit config pkgs lib hostName; })
 
   # Import Ghostty terminal configuration
-  (import ./ghostty.nix { inherit config pkgs lib; })
+  (import ./ghostty.nix { inherit config pkgs lib unstable; })
 
   # Import tmux configuration
   (import ./tmux.nix { inherit config pkgs lib; })
@@ -247,7 +247,7 @@ lib.mkMerge [
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
 
   # Import NixOS-specific flakes
-  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs lib; }))
+  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib; }))
 ]
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 

@@ -1,8 +1,8 @@
 # users/austin/nixos/default.nix
 { config
 , pkgs
-, # unstable,
-  lib
+, unstable
+, lib
 , ...
 }:
 lib.mkMerge [
@@ -21,6 +21,6 @@ lib.mkMerge [
     };
   }
 
-  # nixos flakes
-  (import ./packages.nix { inherit config pkgs; })
+  # nixos packages
+  (import ./packages.nix { inherit config pkgs unstable; })
 ]

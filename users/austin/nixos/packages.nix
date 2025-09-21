@@ -1,8 +1,8 @@
 # users/austin/nixos/packages.nix
 { config
 , pkgs
-, # unstable,
-  ...
+, unstable
+, ...
 }: {
   home.packages = with pkgs; [
     _1password-cli
@@ -12,7 +12,7 @@
     # calibre ## fails to build 2025-08-31
     dbeaver-bin
     freecad
-    ghostty
+    # ghostty
     gimp
     gqrx
     inkscape
@@ -34,5 +34,6 @@
     wl-clipboard
     zathura
     ## unstable
+    unstable.ghostty
   ];
 }
