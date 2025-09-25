@@ -9,16 +9,17 @@ let
   # Note: Plutonium and Siberia keys will be added when those machines are activated
   # For now, using placeholder keys that will be updated when machines are deployed
   plutonium = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAYrqn/+SZCfR4TCjIUWCmn1/Os4scpP1fI/pcRtSwnn";
+  molybdenum = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINmELnQH/n96+5+eK3JPsDHG4QCY0BhtBalTVg0MPYG4";
   # siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPlaceholder-key-for-siberia-will-be-updated";
 
   # Key groups for active machines
   allUsers = [ austin ];
-  # activeMachines = [ monaco silver plutonium siberia ];
-  activeMachines = [ monaco silver plutonium ];
+  # activeMachines = [ monaco silver plutonium siberia molybdenum ];
+  activeMachines = [ monaco silver plutonium molybdenum ];
 
   # Machines with setup-key capability (can receive the universal setup private key)
-  # setupKeyMachines = [ monaco silver plutonium siberia ];
-  setupKeyMachines = [ monaco silver plutonium ];
+  # setupKeyMachines = [ monaco silver plutonium siberia molybdenum ];
+  setupKeyMachines = [ monaco silver plutonium molybdenum ];
 in
 {
   # Consolidated secrets with same access control as before
@@ -36,4 +37,14 @@ in
 
   # Atuin shared encryption key (all machines)
   "atuin.age".publicKeys = allUsers ++ activeMachines;
+
+  # SSH machine-specific private keys (new pattern)
+  "ssh/machine-monaco.age".publicKeys = allUsers ++ [ monaco ];
+  "ssh/machine-silver.age".publicKeys = allUsers ++ [ silver ];
+  "ssh/machine-plutonium.age".publicKeys = allUsers ++ [ plutonium ];
+  "ssh/machine-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
+
+  # Service SSH keys (new pattern)
+  "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
+  "ssh/key-github.age".publicKeys = allUsers ++ activeMachines;
 }

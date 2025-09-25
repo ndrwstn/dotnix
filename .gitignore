@@ -65,4 +65,4 @@ systems/common/fonts/
 tmp/
 
 # Unencrypted jsons used to make .age keys
-secrets/*.json
+secrets/**/*.json
