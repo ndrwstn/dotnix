@@ -164,7 +164,7 @@ let
         HostName = "gitea.impetuo.us";
         User = "git";
         Port = 22;
-        IdentityFile = "~/.ssh/gitea.pub";
+        IdentityFile = "~/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub";
       };
     }
     {
@@ -173,7 +173,7 @@ let
         HostName = "github.com";
         User = "git";
         Port = 22;
-        IdentityFile = "~/.ssh/github.pub";
+        IdentityFile = "~/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub";
       };
     }
     # Physical setup key for bootstrap scenarios
@@ -222,6 +222,22 @@ let
   # Helper function to get current machine data
   getCurrentMachine = hostName:
     machines.${lib.toLower hostName} or null;
+
+  # Helper function to format SSH key fingerprint for 1Password filename
+  formatFingerprintFilename = fingerprint:
+    let
+      cleanFingerprint = lib.replaceStrings [ ":" "/" "+" ] [ "_" "_" "_" ]
+        (lib.removePrefix "SHA256:" fingerprint);
+    in
+    "SHA256_${cleanFingerprint}.pub";
+
+  # Helper function to get agenix secret path for a machine
+  getMachineSecretPath = machineName:
+    "/run/agenix/ssh-machine-${machineName}";
+
+  # Helper function to get agenix secret path for a service key
+  getServiceSecretPath = serviceName:
+    "/run/agenix/ssh-key-${serviceName}";
 
   # Generate authorized keys based on machine capabilities
   generateAuthorizedKeys = machine:
@@ -340,13 +356,13 @@ in
     text = currentMachine.key; # The machine's public key from the machines definition
   };
 
-  # Deploy public keys for external services
+  # Deploy public keys for external services with fingerprint filenames for 1Password compatibility
   # These are used with IdentitiesOnly to ensure only the correct key is tried
-  home.file.".ssh/gitea.pub" = {
+  home.file.".ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
   };
 
-  home.file.".ssh/github.pub" = {
+  home.file.".ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
   };
 
@@ -365,6 +381,21 @@ in
   home.activation.ensureWritableKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -f "$HOME/.ssh/known_hosts" ]; then
       $DRY_RUN_CMD touch "$HOME/.ssh/known_hosts"
+    fi
+  '';
+
+  # Deploy service keys with fingerprint filenames for 1Password compatibility
+  home.activation.deployServiceFingerprintKeys = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    # Gitea key
+    if [ -f "/run/agenix/ssh-key-gitea" ]; then
+      ${pkgs.jq}/bin/jq -r .public_key "/run/agenix/ssh-key-gitea" > "$HOME/.ssh/gitea-fingerprint.pub"
+      chmod 644 "$HOME/.ssh/gitea-fingerprint.pub"
+    fi
+    
+    # GitHub key  
+    if [ -f "/run/agenix/ssh-key-github" ]; then
+      ${pkgs.jq}/bin/jq -r .public_key "/run/agenix/ssh-key-github" > "$HOME/.ssh/github-fingerprint.pub"
+      chmod 644 "$HOME/.ssh/github-fingerprint.pub"
     fi
   '';
 
