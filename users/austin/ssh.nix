@@ -316,6 +316,7 @@ in
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false; # Disable contradictory multiplexing defaults
 
     # Global options (unindented, at top of config)
     extraOptionOverrides = {
@@ -329,6 +330,8 @@ in
       # Terminal and security settings
       SetEnv = "TERM=xterm-256color";
       StrictHostKeyChecking = "accept-new";
+      # Known hosts files - applies to ALL SSH connections
+      UserKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
     };
 
     # Host-specific settings (generates separate Host blocks)
@@ -336,16 +339,13 @@ in
       # Manual "*" block with only desired defaults (no multiplexing options)
       "*" = {
         forwardAgent = false;
+        addKeysToAgent = "no";
         compression = false;
         serverAliveInterval = 0;
         serverAliveCountMax = 3;
+        hashKnownHosts = false;
       };
     };
-
-    # Only option that needs to be in Host "*" block
-    extraConfig = ''
-      UserKnownHostsFile ~/.ssh/known_hosts ~/.ssh/known_hosts_nix
-    '';
   };
 
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
