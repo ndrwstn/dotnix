@@ -181,6 +181,7 @@ lib.mkMerge [
       nix-diff # Nix derivation diff tool
       nix-prefetch-scripts
       nix-tree # Nix dependency tree viewer
+      nix-update
       nixpkgs-fmt
       # nmap
       nodejs_22
