@@ -14,6 +14,7 @@
 
   # Allow the insecure broadcom-sta package for WiFi
   nixpkgs.config.permittedInsecurePackages = [
+    "broadcom-sta-6.30.223.271-57-6.12.48"
     "broadcom-sta-6.30.223.271-57-6.12.49"
   ];
 
