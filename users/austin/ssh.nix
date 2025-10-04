@@ -314,9 +314,30 @@ in
 {
   # Note: agenix secrets are configured via age.secrets below, not via imports
 
+  # TODO: Re-evaluate for Home Manager 25.11 (Nov 2025)
+  # 
+  # The enableDefaultConfig option was added to Home Manager in late August 2025
+  # to replace the old top-level SSH options. This feature should be available
+  # in Home Manager 25.11 release (November 2025).
+  #
+  # Current approach (compatible with existing Home Manager):
+  # - Manual "*" matchBlock to override defaults
+  # - Limited to options available in current Home Manager version
+  # - Note: addKeysToAgent and hashKnownHosts not available in current version
+  #
+  # Future approach (Home Manager 25.11+):
+  # enableDefaultConfig = false;  # Disable contradictory multiplexing defaults
+  # matchBlocks = generateMatchBlocks sshMatches;  # No manual "*" block needed
+  #
+  # Migration steps for 25.11:
+  # 1. Uncomment enableDefaultConfig = false;
+  # 2. Remove the manual "*" matchBlock
+  # 3. Test configuration
+  # 4. Add back any options like addKeysToAgent if needed
+
   programs.ssh = {
     enable = true;
-    enableDefaultConfig = false; # Disable contradictory multiplexing defaults
+    # enableDefaultConfig = false; # Disable contradictory multiplexing defaults
 
     # Global options (unindented, at top of config)
     extraOptionOverrides = {
@@ -339,11 +360,11 @@ in
       # Manual "*" block with only desired defaults (no multiplexing options)
       "*" = {
         forwardAgent = false;
-        addKeysToAgent = "no";
+        # addKeysToAgent = "no";  # TODO: Available in Home Manager 25.11+
         compression = false;
         serverAliveInterval = 0;
         serverAliveCountMax = 3;
-        hashKnownHosts = false;
+        # hashKnownHosts = false;  # TODO: Available in Home Manager 25.11+
       };
     };
   };
