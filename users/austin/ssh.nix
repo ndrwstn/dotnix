@@ -119,84 +119,53 @@ let
   # 3. Using deployed public key files that 1Password can match to private keys
   # 4. Using deployed public keys for external services (gitea, github)
   # 5. Using physical setup key for goetz (bootstrap/setup scenarios)
-  sshMatches = [
-    # Nix machines - use current machine's public key file
-    {
-      condition = "Host monaco.impetuo.us";
-      config = {
-        HostName = "monaco.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-      };
-    }
-    {
-      condition = "Host silver.impetuo.us";
-      config = {
-        HostName = "silver.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-      };
-    }
-    {
-      condition = "Host plutonium.impetuo.us";
-      config = {
-        HostName = "plutonium.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-      };
-    }
-    {
-      condition = "Host molybdenum.impetuo.us";
-      config = {
-        HostName = "molybdenum.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/${lib.toLower hostName}.pub";
-      };
-    }
+  sshMatches =
+    # Generate machine-specific matches, filtering out current machine
+    (lib.mapAttrsToList
+      (name: machineData:
+        {
+          condition = "Host ${machineData.hostname}";
+          config = {
+            HostName = machineData.hostname;
+            User = machineData.user;
+            Port = machineData.port;
+            IdentityFile = "~/.ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}";
+          };
+        }
+      )
+      (lib.filterAttrs (name: machineData: lib.toLower name != lib.toLower hostName) machines))
+    ++
     # External services - use deployed public keys
-    {
-      condition = "Host gitea.impetuo.us";
-      config = {
-        HostName = "gitea.impetuo.us";
-        User = "git";
-        Port = 22;
-        IdentityFile = "~/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub";
-      };
-    }
-    {
-      condition = "Host github.com";
-      config = {
-        HostName = "github.com";
-        User = "git";
-        Port = 22;
-        IdentityFile = "~/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub";
-      };
-    }
-    # Physical setup key for bootstrap scenarios
-    {
-      condition = "Host goetz.impetuo.us";
-      config = {
-        HostName = "goetz.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/setup";
-      };
-    }
-    # 1Password phantom path for nietzsche
-    {
-      condition = "Host nietzsche.impetuo.us";
-      config = {
-        HostName = "nietzsche.impetuo.us";
-        User = "austin";
-        Port = 22;
-        IdentityFile = "~/.ssh/nietzsche-monaco";
-      };
-    }
-  ];
+    [
+      {
+        condition = "Host gitea.impetuo.us";
+        config = {
+          HostName = "gitea.impetuo.us";
+          User = "git";
+          Port = 22;
+          IdentityFile = "~/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub";
+        };
+      }
+      {
+        condition = "Host github.com";
+        config = {
+          HostName = "github.com";
+          User = "git";
+          Port = 22;
+          IdentityFile = "~/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub";
+        };
+      }
+      # 1Password phantom path for nietzsche
+      {
+        condition = "Host nietzsche.impetuo.us";
+        config = {
+          HostName = "nietzsche.impetuo.us";
+          User = "austin";
+          Port = 22;
+          IdentityFile = "~/.ssh/nietzsche-monaco";
+        };
+      }
+    ];
 
   # Capability definitions
   capabilities = {
@@ -238,6 +207,18 @@ let
   # Helper function to get agenix secret path for a service key
   getServiceSecretPath = serviceName:
     "/run/agenix/ssh-key-${serviceName}";
+
+  # Helper function to get current machine fingerprint from JSON data
+  getCurrentMachineFingerprint = hostName:
+    let
+      fingerprintMap = {
+        monaco = "SHA256:Negs/tW0gnzGAmdESIyOYGXXNe41cx1aQvzLpuItIT4";
+        silver = "SHA256:wLzldigjBJabY5UxoEnqv7GlSA4m7cJWE272GkEDtU";
+        plutonium = "SHA256:hXkM+c7yfxEXbYrxhW4zOyzd7xV+04WlRJEezy8F2DU";
+        molybdenum = "SHA256:kmWudCpmzZJ8T3ppGx+B0W+jRVf25JLUQGmt1isac/Q";
+      };
+    in
+      fingerprintMap.${lib.toLower hostName} or null;
 
   # Generate authorized keys based on machine capabilities
   generateAuthorizedKeys = machine:
@@ -381,9 +362,10 @@ in
 
   # Deploy current machine's public key for SSH authentication  
   # This allows IdentityFile to reference a real file while using 1Password
-  home.file.".ssh/${lib.toLower hostName}.pub" = lib.mkIf (currentMachine != null) {
-    text = currentMachine.key; # The machine's public key from the machines definition
-  };
+  # OLD: hostname-based key deployment (replaced by fingerprint-based approach)
+  # home.file.".ssh/${lib.toLower hostName}.pub" = lib.mkIf (currentMachine != null) {
+  #   text = currentMachine.key; # The machine's public key from the machines definition
+  # };
 
   # Deploy public keys for external services with fingerprint filenames for 1Password compatibility
   # These are used with IdentitiesOnly to ensure only the correct key is tried
@@ -393,6 +375,11 @@ in
 
   home.file.".ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
+  };
+
+  # Deploy current machine's public key with fingerprint filename
+  home.file.".ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}" = lib.mkIf (currentMachine != null) {
+    text = currentMachine.key;
   };
 
   # Create symlink to setup key for machines that have it deployed via agenix
