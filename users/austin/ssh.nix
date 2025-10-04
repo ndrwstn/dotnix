@@ -325,7 +325,7 @@ in
       # Use 1Password SSH agent for key management
       IdentityAgent =
         if pkgs.stdenv.isDarwin
-        then "\"%d/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+        then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
         else "~/.1password/agent.sock";
       # Prevent SSH from trying all available keys - only use explicitly specified ones
       IdentitiesOnly = "yes";
@@ -333,7 +333,7 @@ in
       SetEnv = "TERM=xterm-256color";
       StrictHostKeyChecking = "accept-new";
       # Known hosts files - applies to ALL SSH connections
-      UserKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
+      UserKnownHostsFile = ''"~/.ssh/known_hosts" "~/.ssh/known_hosts_nix"'';
     };
 
     # Host-specific settings (generates separate Host blocks)
