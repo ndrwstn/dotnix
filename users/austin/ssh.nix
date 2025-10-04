@@ -317,27 +317,35 @@ in
   programs.ssh = {
     enable = true;
 
-    # Use dual known_hosts files: writable for new hosts + Nix-managed (read-only)
-    # Order matters: SSH writes to the first file, so put writable file first
-    userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
-
-    # Global settings only
-    extraConfig = ''
+    # Global options (unindented, at top of config)
+    extraOptionOverrides = {
       # Use 1Password SSH agent for key management
-      IdentityAgent ${
-        if pkgs.stdenv.isDarwin 
-        then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
-        else "~/.1password/agent.sock"
-      }
+      IdentityAgent =
+        if pkgs.stdenv.isDarwin
+        then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+        else "~/.1password/agent.sock";
       # Prevent SSH from trying all available keys - only use explicitly specified ones
-      IdentitiesOnly yes
+      IdentitiesOnly = "yes";
       # Terminal and security settings
-      SetEnv TERM=xterm-256color
-      StrictHostKeyChecking accept-new
-    '';
+      SetEnv = "TERM=xterm-256color";
+      StrictHostKeyChecking = "accept-new";
+    };
 
     # Host-specific settings (generates separate Host blocks)
-    matchBlocks = generateMatchBlocks sshMatches;
+    matchBlocks = generateMatchBlocks sshMatches // {
+      # Manual "*" block with only desired defaults (no multiplexing options)
+      "*" = {
+        forwardAgent = false;
+        compression = false;
+        serverAliveInterval = 0;
+        serverAliveCountMax = 3;
+      };
+    };
+
+    # Only option that needs to be in Host "*" block
+    extraConfig = ''
+      UserKnownHostsFile ~/.ssh/known_hosts ~/.ssh/known_hosts_nix
+    '';
   };
 
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
