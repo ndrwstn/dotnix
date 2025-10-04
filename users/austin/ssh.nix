@@ -344,7 +344,7 @@ in
       # Use 1Password SSH agent for key management
       IdentityAgent =
         if pkgs.stdenv.isDarwin
-        then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+        then "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
         else "~/.1password/agent.sock";
       # Prevent SSH from trying all available keys - only use explicitly specified ones
       IdentitiesOnly = "yes";
