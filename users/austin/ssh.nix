@@ -155,14 +155,14 @@ let
           IdentityFile = "~/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub";
         };
       }
-      # 1Password phantom path for nietzsche
+      # nietzsche.impetuo.us using fingerprint filename
       {
         condition = "Host nietzsche.impetuo.us";
         config = {
           HostName = "nietzsche.impetuo.us";
           User = "austin";
           Port = 22;
-          IdentityFile = "~/.ssh/nietzsche-monaco";
+          IdentityFile = "~/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub";
         };
       }
     ];
@@ -216,6 +216,7 @@ let
         silver = "SHA256:wLzldigjBJabY5UxoEnqv7GlSA4m7cJWE272GkEDtU";
         plutonium = "SHA256:hXkM+c7yfxEXbYrxhW4zOyzd7xV+04WlRJEezy8F2DU";
         molybdenum = "SHA256:kmWudCpmzZJ8T3ppGx+B0W+jRVf25JLUQGmt1isac/Q";
+        "nietzsche-monaco" = "SHA256:NfbmzZUKXR4TU0krknzd227+DNd/1M+87SEcF7t/BaE";
       };
     in
       fingerprintMap.${lib.toLower hostName} or null;
@@ -377,6 +378,11 @@ in
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
   };
 
+  # Deploy nietzsche-monaco public key with fingerprint filename
+  home.file.".ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" = {
+    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIETrnFlZK34DorsbbetCJoRtEHS3r7yAUI5EcSP1hX0y";
+  };
+
   # Deploy current machine's public key with fingerprint filename
   home.file.".ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}" = lib.mkIf (currentMachine != null) {
     text = currentMachine.key;
@@ -452,6 +458,12 @@ in
         $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
         $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub"
+      fi
+      
+      if [ -f "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
+        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub"
       fi
       
       # Conditional fingerprint file (current machine's public key)
