@@ -415,6 +415,53 @@ in
     fi
   '';
 
+  # Fix SSH file permissions - home-manager files are immutable Nix store symlinks
+  # SSH requires 600 for private files and 644 for public files
+  home.activation.sshFilePermissions =
+    let
+      currentFingerprintFile = formatFingerprintFilename (getCurrentMachineFingerprint hostName);
+    in
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      # Private files (600 permissions)
+      if [ -f "$HOME/.ssh/authorized_keys" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/authorized_keys" "$HOME/.ssh/authorized_keys.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/authorized_keys.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/authorized_keys.tmp" "$HOME/.ssh/authorized_keys"
+      fi
+      
+      if [ -f "$HOME/.ssh/config" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/config" "$HOME/.ssh/config.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/config.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config"
+      fi
+      
+      # Public files (644 permissions)
+      if [ -f "$HOME/.ssh/known_hosts_nix" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/known_hosts_nix" "$HOME/.ssh/known_hosts_nix.tmp"
+        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/known_hosts_nix.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/known_hosts_nix.tmp" "$HOME/.ssh/known_hosts_nix"
+      fi
+      
+      if [ -f "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
+        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub"
+      fi
+      
+      if [ -f "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
+        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub"
+      fi
+      
+      # Conditional fingerprint file (current machine's public key)
+      if [ -f "$HOME/.ssh/${currentFingerprintFile}" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/${currentFingerprintFile}" "$HOME/.ssh/${currentFingerprintFile}.tmp"
+        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/${currentFingerprintFile}.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/${currentFingerprintFile}.tmp" "$HOME/.ssh/${currentFingerprintFile}"
+      fi
+    '';
+
   # Note: SSH setup key is deployed via machine-specific secrets.nix files
   # for machines with setup-key capability (monaco, silver, etc.)
 }
