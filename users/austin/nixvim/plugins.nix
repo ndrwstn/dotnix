@@ -148,6 +148,13 @@
     trouble = {
       enable = true;
     };
+    render-markdown = {
+      enable = true;
+      settings = {
+        preset = "none";
+        enabled = true;
+      };
+    };
     vimtex = {
       enable = true;
       texlivePackage = texlivePackage;
