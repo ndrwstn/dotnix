@@ -18,6 +18,7 @@ pkgs.texlive.combine {
     graphics
     texcount
     # Document elements
+    amsmath
     enumitem
     nth
     footmisc
