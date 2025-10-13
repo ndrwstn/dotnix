@@ -138,71 +138,69 @@ lib.mkMerge [
 
     # Common packages across all systems
     home.packages = with pkgs; [
-      act # Run GitHub Actions locally
-      actionlint # GitHub Actions linter
-      age # Modern encryption tool
+      act
+      actionlint
+      age
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
-      bats # Bash testing framework
-      clippy # Rust linter
+      bats
+      clippy
       # cloudflared
-      curlie # Modern curl alternative
-      deadnix # Dead Nix code scanner
+      curlie
+      deadnix
       # docker
-      eslint # JavaScript/TypeScript linter
+      eslint
       eza
       # ffmpeg_7
       fd
       # firefox
       fluxcd
       # gcc
-      gh # GitHub CLI
-      gitleaks # Git secrets scanner
-      gitlint # Git commit message linter
-
-      golangci-lint # Go linter
-      gopls # Go language server
+      gh
+      gitleaks
+      gitlint
+      golangci-lint
+      gopls
       # go-task
-      hyperfine # Command-line benchmarking
-      jq # JSON processor
+      hyperfine
+      jq
       k9s
       kubeconform
       kubectl
       kubernetes-helm
-      kubeval # Kubernetes YAML validator
+      kubeval
       kustomize
-
       lazygit
       lua-language-server
       marksman
-      moreutils # Additional Unix utilities
-      mypy # Python type checker
+      moreutils
+      mypy
       nil
-      nix-diff # Nix derivation diff tool
+      nix-diff
       nix-prefetch-scripts
-      nix-tree # Nix dependency tree viewer
+      nix-tree
       nix-update
       nixpkgs-fmt
       # nmap
       nodejs_22
       nodePackages.prettier
-      nvd # Nix version diff tool
-      pluto # Kubernetes deprecated API detector
+      nvd
+      pluto
       # printrun
       # python3
       pyright
       # rsync
       qpdf
-      rage # Rust implementation of age encryption
-      ruff # Python linter and formatter
-      rust-analyzer # Rust language server
-      rustfmt # Rust formatter
-      shellcheck # Shell script linter
+      rage
+      ruff
+      rust-analyzer
+      rustfmt
+      shellcheck
       shfmt
-      ssh-to-age # Convert SSH keys to age keys
+      ssh-to-age
       sqlfluff
       sqls
-      statix # Nix linter
+      statix
       stylua
       # stern
       talosctl
@@ -210,20 +208,26 @@ lib.mkMerge [
       thefuck
       tlrc
       tree-sitter
-      typescript-language-server # TypeScript language server
-      typos # Source code spell checker
+      typescript-language-server
+      typos
       # ungoogled-chromium
       watch
-      watchexec # Execute commands on file changes
+      watchexec
       # yed
-      yamllint # YAML linter
-      yq # YAML processor
+      yamllint
+      yq
       # yt-dlp
+
+
       ## overlays
       autopkgs.gcs
       autopkgs.opencode
+
+
       ## fonts
       nerd-fonts.inconsolata
+
+
       ## defined variables
       texlivePackage
     ];
