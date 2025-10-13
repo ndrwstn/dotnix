@@ -164,6 +164,7 @@ lib.mkMerge [
       # go-task
       hyperfine
       jq
+      jqp
       k9s
       kubeconform
       kubectl
