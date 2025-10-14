@@ -5,6 +5,7 @@
 , autopkgs
 , lib
 , hostName ? "unknown"
+, nur ? null
 , ...
 }:
 let
@@ -134,6 +135,34 @@ lib.mkMerge [
           "--cmd cd"
         ];
       };
+
+      # Firefox with Multi-Account Containers
+      firefox = lib.mkIf (nur != null) {
+        enable = true;
+
+        # Configure container settings
+        profiles.default = {
+          extensions.packages = with nur.repos.rycee.firefox-addons; [
+            multi-account-containers
+          ];
+
+          settings = {
+            # Enable Multi-Account Containers
+            "privacy.userContext.enabled" = true;
+            "privacy.userContext.ui.enabled" = true;
+          };
+
+          # Define containers declaratively
+          containers = {
+            "impetuous" = {
+              id = 1;
+              name = "Impetuous";
+              color = "orange";
+              icon = "circle";
+            };
+          };
+        };
+      };
     };
 
     # Common packages across all systems
@@ -153,7 +182,7 @@ lib.mkMerge [
       eza
       # ffmpeg_7
       fd
-      # firefox
+      firefox
       fluxcd
       # gcc
       gh

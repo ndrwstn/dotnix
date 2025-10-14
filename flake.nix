@@ -35,6 +35,12 @@
       url = "github:ndrwstn/nixautopkgs";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    # NUR repository for Firefox extensions
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -46,6 +52,7 @@
     , nixvim
     , agenix
     , nixautopkgs
+    , nur
     , ...
     }:
     let
@@ -88,7 +95,7 @@
             autopkgs = nixautopkgs.packages.${pkgs.system};
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable autopkgs; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs nur; };
           })
       ];
 
