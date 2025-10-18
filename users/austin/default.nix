@@ -252,6 +252,7 @@ lib.mkMerge [
       ## overlays
       autopkgs.gcs
       autopkgs.opencode
+      autopkgs.openspec
 
 
       ## fonts
