@@ -182,6 +182,7 @@ lib.mkMerge [
       eza
       # ffmpeg_7
       fd
+      figlet
       firefox
       fluxcd
       # gcc
@@ -201,6 +202,7 @@ lib.mkMerge [
       kubeval
       kustomize
       lazygit
+      lolcat
       lua-language-server
       marksman
       moreutils
