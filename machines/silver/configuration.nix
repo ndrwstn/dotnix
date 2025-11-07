@@ -14,8 +14,7 @@
 
   # Allow the insecure broadcom-sta package for WiFi
   nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-57-6.12.53"
-    "broadcom-sta-6.30.223.271-57-6.12.54"
+    "broadcom-sta-6.30.223.271-59-6.12.57"
   ];
 
   # Use new OpenGL renderer on old MacBook Pro
