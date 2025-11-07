@@ -37,6 +37,12 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # OpenCode flake (testing PR #3924)
+    opencode = {
+      url = "github:Alb-O/opencode/nix-support";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # NUR repository for Firefox extensions
     nur = {
       url = "github:nix-community/NUR";
@@ -53,6 +59,7 @@
     , nixvim
     , agenix
     , nixautopkgs
+    , opencode
     , nur
     , ...
     }:
@@ -94,9 +101,10 @@
               config.allowUnfree = true;
             };
             autopkgs = nixautopkgs.packages.${pkgs.system};
+            opencode = inputs.opencode;
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable autopkgs nur; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs opencode nur; };
           })
       ];
 
@@ -159,6 +167,7 @@
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
+          opencode = inputs.opencode;
 
           # Discover valid user directories
           validUsers = autoDiscovery.discoverDirectories {
@@ -170,7 +179,7 @@
           buildUserConfig = user: {
             name = user;
             value = { config, pkgs, lib, hostName, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs hostName; };
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs opencode hostName; };
           };
 
           # Create attrset of user configs
@@ -210,7 +219,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs;
+                    inherit unstable autopkgs opencode;
                     hostName = name;
                   };
                   home-manager.sharedModules = [

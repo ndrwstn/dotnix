@@ -3,6 +3,7 @@
 , pkgs
 , unstable
 , autopkgs
+, opencode
 , lib
 , hostName ? "unknown"
 , nur ? null
@@ -253,7 +254,7 @@ lib.mkMerge [
 
       ## overlays
       autopkgs.gcs
-      autopkgs.opencode
+      opencode.packages.${pkgs.system}.default
       autopkgs.openspec
 
 
