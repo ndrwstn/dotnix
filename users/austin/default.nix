@@ -275,6 +275,9 @@ lib.mkMerge [
   # Import SSH configuration
   (import ./ssh.nix { inherit config pkgs lib hostName; })
 
+  # Import OpenCode authentication configuration
+  (import ./opencode.nix { inherit config pkgs lib; })
+
   # Import Ghostty terminal configuration
   (import ./ghostty.nix { inherit config pkgs lib unstable; })
 

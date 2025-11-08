@@ -20,6 +20,13 @@
       group = "staff";
     };
 
+    # OpenCode authentication
+    opencode = {
+      file = ../../secrets/auth/opencode.age;
+      mode = "0400";
+      owner = "austin";
+      group = "staff";
+    };
 
   };
 }
