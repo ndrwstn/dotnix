@@ -10,16 +10,15 @@
 inputs: final: prev:
 {
   opencode = inputs.opencode.packages.${final.system}.default.overrideAttrs (old: {
-    # Disable hash checking for non-deterministic npm dependencies
-    # The build produces different hashes on every run, making it impossible
-    # to specify a correct hash. Observed hashes include:
-    # - sha256-r3UEia5oE0EbBXmrydWlRPfWkk3W+Bqbmh7HpRKF5GM=
-    # - sha256-bSlwyL7W7RutOHdYz7cOCXXYDg7HoQmgSxLNgLsU56w=
-    # - sha256-lwIOD8TQzKd9CuhAztBVDdlWMd3Hn/vIjJdJ9W+54zY=
-    # - sha256-Mt06nci5aMsb9kkrS8tDH1n6+Fvr9RRCJgD64A90rko= (upstream hardcoded)
-
-    npmDepsHash = final.lib.fakeSha256;
-    __noChksum = true;
+    node_modules = old.node_modules.overrideAttrs (oldDeps: {
+      # The `__noChksum = true` flag was not sufficient. The flake explicitly
+      # passes a hash from hashes.json. We will force the hash attributes
+      # to be null, converting this from a fixed-output derivation into a
+      # regular one, which bypasses the hash check entirely.
+      outputHash = null;
+      outputHashMode = null;
+      outputHashAlgo = null;
+    });
   });
 }
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
