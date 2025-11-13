@@ -210,7 +210,8 @@
                 sysConfig.hmModule
                 {
                   nixpkgs.overlays = [
-                    (import ./overlays/opencode.nix inputs)
+                    # Overlay disabled 2025-11-13: upstream opencode flake now works correctly
+                    # (import ./overlays/opencode.nix inputs)
                   ];
                 }
                 ({ config, ... }: {
