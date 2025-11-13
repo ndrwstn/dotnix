@@ -210,7 +210,7 @@
                 sysConfig.hmModule
                 {
                   nixpkgs.overlays = [
-                    # Add overlays here as needed
+                    (import ./overlays/opencode.nix inputs)
                   ];
                 }
                 ({ config, ... }: {
