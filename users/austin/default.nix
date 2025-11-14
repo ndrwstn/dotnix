@@ -254,7 +254,7 @@ lib.mkMerge [
 
       ## overlays
       autopkgs.gcs
-      pkgs.opencode
+      opencode.packages.${pkgs.system}.default
       autopkgs.openspec
 
 
