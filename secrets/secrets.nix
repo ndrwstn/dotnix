@@ -38,8 +38,6 @@ in
   # Atuin shared encryption key (all machines)
   "atuin.age".publicKeys = allUsers ++ activeMachines;
 
-  # OpenCode authentication (all machines)
-  "auth/opencode.age".publicKeys = allUsers ++ activeMachines;
 
   # SSH machine-specific private keys (new pattern)
   "ssh/machine-monaco.age".publicKeys = allUsers ++ [ monaco ];
