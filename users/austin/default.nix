@@ -252,6 +252,10 @@ lib.mkMerge [
       # yt-dlp
 
 
+      ## unstable
+      unstable.tea
+
+
       ## overlays
       autopkgs.gcs
       opencode.packages.${pkgs.system}.default
