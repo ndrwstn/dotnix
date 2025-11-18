@@ -32,7 +32,10 @@
 
         sources = {
           default = [ "lsp" "path" "snippets" "buffer" ];
-          cmdline = [ "buffer" "cmdline" ];
+        };
+
+        cmdline = {
+          sources = [ "buffer" "cmdline" ];
         };
 
         completion = {
@@ -53,9 +56,11 @@
         };
 
         fuzzy = {
-          use_typo_resistance = true;
-          use_frecency = true;
-          use_proximity = true;
+          # Typo resistance is built into the Rust fuzzy algorithm (no config needed)
+          use_frecency = true; # Boosts recently/frequently used items
+          use_proximity = true; # Boosts items in current buffer
+          max_items = 200; # Limit fuzzy matches (default: 200)
+          sorts = [ "score" "label" "kind" ]; # Sort by relevance, then alpha, then type
         };
       };
     };
@@ -501,7 +506,7 @@
         copilot = {
           status = {
             enabled = true;
-            level = "WARN";
+            level.__raw = "vim.log.levels.WARN";
           };
         };
       };
