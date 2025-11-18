@@ -12,6 +12,8 @@ lib.mkMerge [
       mapleader = " ";
       maplocalleader = " ";
     };
+    # allow unfree - needed for copilot-language-server
+    nixpkgs.config.allowUnfree = true;
     extraPackages = [
       texlivePackage
       # provide correct viewer depending on environment
