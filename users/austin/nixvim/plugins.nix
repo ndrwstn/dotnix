@@ -17,27 +17,33 @@
     blink-cmp = {
       enable = true;
       settings = {
-        # TODO: Finalize blink.cmp keybindings to match old nvim-cmp
-        # Old mappings were:
-        # <C-@> = complete()
-        # <C-e> = close()
-        # <CR> = confirm()
-        # <PageDown> = scroll_docs(4)
-        # <PageUp> = scroll_docs(-4)
-        # <S-Tab> = select_prev()
-        # <Tab> = select_next()
+        # Design Decision: Using "default" preset with <C-CR> override for accept
+        # Default preset provides: <C-n>/<C-p> navigate, <C-y> accept, <C-e> cancel
+        # Override: <C-CR> for accept (preferred over <C-y>)
         keymap = {
           preset = "default";
-          # TODO: Verify which syntax works
+          # TODO: Verify which syntax works - array or __raw function
           "<C-CR>" = [ "accept" "fallback" ];
+        };
+
+        appearance = {
+          nerd_font_variant = "mono";
         };
 
         sources = {
           default = [ "lsp" "path" "snippets" "buffer" ];
+          cmdline = [ "buffer" "cmdline" ];
         };
 
         completion = {
+          list = {
+            selection = {
+              preselect = true;
+              auto_insert = true;
+            };
+          };
           menu = {
+            auto_show = true;
             border = "rounded";
           };
           documentation = {
@@ -106,7 +112,19 @@
     # ============================================================================
     # GIT INTEGRATION
     # ============================================================================
-    gitsigns.enable = true;
+    gitsigns = {
+      enable = true;
+      settings = {
+        signs = {
+          add = { text = "▎"; };
+          change = { text = "▎"; };
+          delete = { text = ""; };
+          topdelete = { text = ""; };
+          changedelete = { text = "▎"; };
+          untracked = { text = "▎"; };
+        };
+      };
+    };
 
     # Design Decision: Added diffview.nvim for advanced Git diff viewing
     # Complements gitsigns (which provides inline decorations)
@@ -128,8 +146,31 @@
     # than default f/t/search motions with labeled jumps
     flash = {
       enable = true;
-      # TODO: Configure flash.nvim keybindings in keymaps.nix
-      # Default: s for forward search, S for backward
+      settings = {
+        labels = "asdfghjklqwertyuiopzxcvbnm";
+        search = {
+          multi_window = true;
+          mode = "exact";
+        };
+        jump = {
+          jumplist = true;
+          autojump = false;
+        };
+        label = {
+          uppercase = true;
+          current = true;
+          after = true;
+          before = false;
+        };
+        modes = {
+          search = { enabled = false; };
+          char = {
+            enabled = true;
+            jump_labels = false;
+            keys = [ "f" "F" "t" "T" ";" "," ];
+          };
+        };
+      };
     };
 
     tmux-navigator.enable = true;
@@ -139,6 +180,12 @@
     # ============================================================================
     lsp = {
       enable = true;
+
+      # Integrate blink.cmp capabilities with LSP
+      capabilities = ''
+        require('blink.cmp').get_lsp_capabilities()
+      '';
+
       servers = {
         # tex
         texlab.enable = true;
@@ -175,24 +222,30 @@
         # UI Replacements (TRIAL BASIS)
         dashboard = {
           enabled = true;
-          # TODO: Configure dashboard layout and sections
-          # preset = "github";  # or "compact" or custom
+          preset = "compact";
+          # TODO: Personalize dashboard layout and sections someday
         };
 
         picker = {
           enabled = true;
-          # TODO: Configure picker keybindings in keymaps.nix
-          # Replaces: telescope.nvim (TRIAL BASIS)
+          # Flash integration for label jumping in picker
+          win = {
+            input = {
+              keys = {
+                "<a-s>" = {
+                  action = "flash";
+                  mode = [ "n" "i" ];
+                };
+              };
+            };
+          };
         };
 
         explorer = {
           enabled = true;
-          # TODO: Configure explorer keybindings in keymaps.nix
-          # Replaces: neo-tree.nvim (TRIAL BASIS)
-          # Uses picker paradigm instead of tree view
         };
 
-        # New capabilities
+        # Utilities
         words = { enabled = true; };
         gitbrowse = { enabled = true; };
         bufdelete = { enabled = true; };
@@ -206,13 +259,7 @@
         rename = { enabled = true; };
         dim = { enabled = true; };
         notifier = { enabled = true; };
-
-        # TODO: Configure styles for windows/notifications
-        styles = {
-          notification = {
-            # wo = { wrap = true };
-          };
-        };
+        zen = { enabled = true; };
       };
     };
 
@@ -222,17 +269,8 @@
     lualine.enable = true;
     noice.enable = true;
 
-    # Design Decision: dressing.nvim enhances vim.ui.select/input
-    # Integrates with snacks.picker for consistent UI
-    dressing = {
-      enable = true;
-      # TODO: Configure dressing.nvim to use snacks backend
-      # settings = {
-      #   select = {
-      #     backend = [ "snacks" "builtin" ];
-      #   };
-      # };
-    };
+    # Design Decision: REMOVED dressing.nvim - using snacks.input instead
+    # Snacks provides input/select UI that replaces dressing functionality
 
     # ============================================================================
     # TREESITTER
@@ -342,17 +380,8 @@
       };
     };
 
-    # Design Decision: zen-mode.nvim for distraction-free writing
-    # Pairs well with vimtex and render-markdown
-    zen-mode = {
-      enable = true;
-      settings = {
-        # TODO: Configure zen-mode appearance
-        # window = {
-        #   width = 120;
-        # };
-      };
-    };
+    # Design Decision: REMOVED zen-mode.nvim - using snacks.zen instead
+    # Snacks provides zen mode with better integration
 
     # ============================================================================
     # AI & ASSISTANCE - COPILOT
@@ -440,7 +469,20 @@
       enable = true;
       settings = {
         check_ts = true;
+        ts_config = {
+          lua = [ "string" ];
+          javascript = [ "template_string" ];
+        };
         disable_filetype = [ "TelescopePrompt" "vim" ];
+        fast_wrap = {
+          map = "<M-e>";
+          chars = [ "{" "[" "(" "\"" "'" ];
+          end_key = "$";
+          keys = "qwertyuiopzxcvbnmasdfghjkl";
+          check_comma = true;
+          highlight = "Search";
+          highlight_grey = "Comment";
+        };
       };
     };
 

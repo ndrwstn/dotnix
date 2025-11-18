@@ -11,7 +11,8 @@
     # ========================================================================
     { key = "<leader>bn"; mode = "n"; action = "<cmd>bnext<CR>"; options.desc = "Next Buffer"; }
     { key = "<leader>bp"; mode = "n"; action = "<cmd>bprevious<CR>"; options.desc = "Previous Buffer"; }
-    { key = "<leader>bx"; mode = "n"; action = "<cmd>bdelete<CR>"; options.desc = "Delete Buffer"; }
+    { key = "<leader>bd"; mode = "n"; action = "<cmd>lua Snacks.bufdelete()<CR>"; options.desc = "Delete Buffer"; }
+    # TODO: Audit other keymaps using 'x' suffix - may need to change to 'd' for consistency
 
     # ========================================================================
     # TAB NAVIGATION
@@ -35,104 +36,115 @@
     { key = "<leader>hp"; mode = "n"; action = "<cmd>lua require('harpoon'):list():prev()<CR>"; options.desc = "Previous Mark (Harpoon)"; }
 
     # ========================================================================
-    # TODO: SNACKS.NVIM - FILE EXPLORER
+    # LSP KEYBINDINGS
     # ========================================================================
-    # Design Decision: Migrated from neo-tree to snacks.explorer (TRIAL BASIS)
-    # snacks.explorer uses picker paradigm instead of tree view
-    #
-    # OLD neo-tree keybindings (REMOVED):
-    # <leader>ef - Show Files (Neotree)
-    # <leader>er - Reveal File (Neotree)
-    # <leader>ex - Close Files (Neotree)
-    #
-    # TODO: Add snacks.explorer keybindings:
-    # { key = "<leader>e"; mode = "n"; action = "<cmd>lua Snacks.explorer()<CR>"; options.desc = "Explorer (Snacks)"; }
-    # { key = "<leader>E"; mode = "n"; action = "<cmd>lua Snacks.explorer({ cwd = vim.fn.expand('%:p:h') })<CR>"; options.desc = "Explorer (Current Dir)"; }
+    # Design Decision: Using snacks.picker for LSP navigation (arbitrarily chosen)
+    # TODO: Evaluate snacks.picker vs native LSP (vim.lsp.buf.*) someday
+    # Snacks provides: fuzzy filtering, preview, consistent UI
+    # Native provides: faster, simpler, built-in quickfix integration
 
-    # ========================================================================
-    # TODO: SNACKS.NVIM - FUZZY FINDER / PICKER
-    # ========================================================================
-    # Design Decision: Migrated from telescope to snacks.picker (TRIAL BASIS)
-    #
-    # OLD telescope keybindings (REMOVED):
-    # <leader>f? - Find Help (Telescope)
-    # <leader>fb - Find Buffers (Telescope)
-    # <leader>ff - Find Files (Telescope)
-    # <leader>fg - Find Grep (Telescope)
-    # <leader>fh - Find Marks (Telescope)
-    # <leader>fp - Find Projects (Telescope)
-    # <leader>fr - Find Recent/Frequent (Telescope)
-    #
-    # TODO: Add snacks.picker keybindings:
-    # File Finding
-    # { key = "<leader>ff"; mode = "n"; action = "<cmd>lua Snacks.picker.files()<CR>"; options.desc = "Find Files (Snacks)"; }
-    # { key = "<leader>fr"; mode = "n"; action = "<cmd>lua Snacks.picker.recent()<CR>"; options.desc = "Recent Files (Snacks)"; }
-    # { key = "<leader>fb"; mode = "n"; action = "<cmd>lua Snacks.picker.buffers()<CR>"; options.desc = "Find Buffers (Snacks)"; }
-    # { key = "<leader>fg"; mode = "n"; action = "<cmd>lua Snacks.picker.grep()<CR>"; options.desc = "Grep (Snacks)"; }
-    # { key = "<leader>fp"; mode = "n"; action = "<cmd>lua Snacks.picker.projects()<CR>"; options.desc = "Projects (Snacks)"; }
-    # { key = "<leader>f?"; mode = "n"; action = "<cmd>lua Snacks.picker.help()<CR>"; options.desc = "Help (Snacks)"; }
-    # { key = "<leader>fh"; mode = "n"; action = "<cmd>lua Snacks.picker.harpoon()<CR>"; options.desc = "Harpoon Marks (Snacks)"; }
+    # Navigation
+    { key = "gd"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_definitions()<CR>"; options.desc = "Goto Definition"; }
+    { key = "gr"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_references()<CR>"; options.desc = "References"; }
+    { key = "gI"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_implementations()<CR>"; options.desc = "Implementations"; }
+    { key = "gy"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_type_definitions()<CR>"; options.desc = "Type Definition"; }
+
+    # Actions
+    { key = "K"; mode = "n"; action = "<cmd>lua vim.lsp.buf.hover()<CR>"; options.desc = "Hover Documentation"; }
+    { key = "<leader>ca"; mode = [ "n" "v" ]; action = "<cmd>lua vim.lsp.buf.code_action()<CR>"; options.desc = "Code Action"; }
+    { key = "<leader>rn"; mode = "n"; action = "<cmd>lua vim.lsp.buf.rename()<CR>"; options.desc = "Rename"; }
+    { key = "<leader>sh"; mode = "n"; action = "<cmd>lua vim.lsp.buf.signature_help()<CR>"; options.desc = "Signature Help"; }
+
+    # Diagnostics
+    { key = "[d"; mode = "n"; action = "<cmd>lua vim.diagnostic.goto_prev()<CR>"; options.desc = "Previous Diagnostic"; }
+    { key = "]d"; mode = "n"; action = "<cmd>lua vim.diagnostic.goto_next()<CR>"; options.desc = "Next Diagnostic"; }
+    { key = "<leader>de"; mode = "n"; action = "<cmd>lua vim.diagnostic.open_float()<CR>"; options.desc = "Diagnostic Float"; }
+    { key = "<leader>sd"; mode = "n"; action = "<cmd>lua Snacks.picker.diagnostics()<CR>"; options.desc = "Diagnostics (Picker)"; }
+    { key = "<leader>ss"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_symbols()<CR>"; options.desc = "LSP Symbols"; }
 
     # ========================================================================
-    # TODO: GIT KEYBINDINGS (SNACKS + DIFFVIEW)
+    # FLASH.NVIM - ENHANCED NAVIGATION
     # ========================================================================
-    # Design Decision: Combining snacks.picker for Git operations with
-    # diffview.nvim for advanced diff viewing
-    #
-    # TODO: Add Git keybindings:
-    # { key = "<leader>gb"; mode = "n"; action = "<cmd>lua Snacks.picker.git_branches()<CR>"; options.desc = "Git Branches"; }
-    # { key = "<leader>gl"; mode = "n"; action = "<cmd>lua Snacks.picker.git_log()<CR>"; options.desc = "Git Log"; }
-    # { key = "<leader>gs"; mode = "n"; action = "<cmd>lua Snacks.picker.git_status()<CR>"; options.desc = "Git Status"; }
-    # { key = "<leader>gd"; mode = "n"; action = "<cmd>DiffviewOpen<CR>"; options.desc = "Diff View"; }
-    # { key = "<leader>gh"; mode = "n"; action = "<cmd>DiffviewFileHistory<CR>"; options.desc = "File History"; }
-    # { key = "<leader>gB"; mode = "n"; action = "<cmd>lua Snacks.gitbrowse()<CR>"; options.desc = "Git Browse"; }
+    { key = "s"; mode = [ "n" "x" "o" ]; action = "<cmd>lua require('flash').jump()<CR>"; options.desc = "Flash Jump"; }
+    { key = "S"; mode = [ "n" "x" "o" ]; action = "<cmd>lua require('flash').treesitter()<CR>"; options.desc = "Flash Treesitter"; }
+    { key = "r"; mode = "o"; action = "<cmd>lua require('flash').remote()<CR>"; options.desc = "Remote Flash"; }
+    { key = "R"; mode = [ "o" "x" ]; action = "<cmd>lua require('flash').treesitter_search()<CR>"; options.desc = "Treesitter Search"; }
+    { key = "<c-s>"; mode = "c"; action = "<cmd>lua require('flash').toggle()<CR>"; options.desc = "Toggle Flash Search"; }
 
     # ========================================================================
-    # TODO: LSP KEYBINDINGS (SNACKS.PICKER)
+    # GITSIGNS - GIT INTEGRATION
     # ========================================================================
-    # Design Decision: Using snacks.picker for LSP operations instead of
-    # telescope or built-in LSP pickers
-    #
-    # TODO: Add LSP keybindings:
-    # { key = "gd"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_definitions()<CR>"; options.desc = "Goto Definition"; }
-    # { key = "gr"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_references()<CR>"; options.desc = "References"; }
-    # { key = "gi"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_implementations()<CR>"; options.desc = "Implementations"; }
-    # { key = "<leader>ss"; mode = "n"; action = "<cmd>lua Snacks.picker.lsp_symbols()<CR>"; options.desc = "LSP Symbols"; }
-    # { key = "<leader>sd"; mode = "n"; action = "<cmd>lua Snacks.picker.diagnostics()<CR>"; options.desc = "Diagnostics"; }
+    # Hunk Navigation (expression mappings)
+    {
+      mode = "n";
+      key = "]c";
+      action.__raw = ''
+        function()
+          if vim.wo.diff then return ']c' end
+          vim.schedule(function() require('gitsigns').nav_hunk('next') end)
+          return '<Ignore>'
+        end
+      '';
+      options = { expr = true; desc = "Next Hunk"; };
+    }
+    {
+      mode = "n";
+      key = "[c";
+      action.__raw = ''
+        function()
+          if vim.wo.diff then return '[c' end
+          vim.schedule(function() require('gitsigns').nav_hunk('prev') end)
+          return '<Ignore>'
+        end
+      '';
+      options = { expr = true; desc = "Previous Hunk"; };
+    }
+
+    # Actions
+    { key = "<leader>hs"; mode = "n"; action = "<cmd>Gitsigns stage_hunk<CR>"; options.desc = "Stage Hunk"; }
+    { key = "<leader>hr"; mode = "n"; action = "<cmd>Gitsigns reset_hunk<CR>"; options.desc = "Reset Hunk"; }
+    { key = "<leader>hs"; mode = "v"; action = ":Gitsigns stage_hunk<CR>"; options.desc = "Stage Hunk"; }
+    { key = "<leader>hr"; mode = "v"; action = ":Gitsigns reset_hunk<CR>"; options.desc = "Reset Hunk"; }
+    { key = "<leader>hS"; mode = "n"; action = "<cmd>Gitsigns stage_buffer<CR>"; options.desc = "Stage Buffer"; }
+    { key = "<leader>hu"; mode = "n"; action = "<cmd>Gitsigns undo_stage_hunk<CR>"; options.desc = "Undo Stage Hunk"; }
+    { key = "<leader>hR"; mode = "n"; action = "<cmd>Gitsigns reset_buffer<CR>"; options.desc = "Reset Buffer"; }
+    { key = "<leader>hp"; mode = "n"; action = "<cmd>Gitsigns preview_hunk<CR>"; options.desc = "Preview Hunk"; }
+    { key = "<leader>hb"; mode = "n"; action = "<cmd>Gitsigns blame_line<CR>"; options.desc = "Blame Line"; }
+    { key = "<leader>hd"; mode = "n"; action = "<cmd>Gitsigns diffthis<CR>"; options.desc = "Diff This"; }
 
     # ========================================================================
-    # TODO: NEW PLUGIN KEYBINDINGS
+    # SNACKS.NVIM - PICKER
     # ========================================================================
+    { key = "<leader><space>"; mode = "n"; action = "<cmd>lua Snacks.picker.smart()<CR>"; options.desc = "Smart Picker"; }
+    { key = "<leader>,"; mode = "n"; action = "<cmd>lua Snacks.picker.buffers()<CR>"; options.desc = "Buffers"; }
+    { key = "<leader>/"; mode = "n"; action = "<cmd>lua Snacks.picker.grep()<CR>"; options.desc = "Grep"; }
+    { key = "<leader>ff"; mode = "n"; action = "<cmd>lua Snacks.picker.files()<CR>"; options.desc = "Find Files"; }
+    { key = "<leader>fr"; mode = "n"; action = "<cmd>lua Snacks.picker.recent()<CR>"; options.desc = "Recent Files"; }
+    { key = "<leader>fb"; mode = "n"; action = "<cmd>lua Snacks.picker.buffers()<CR>"; options.desc = "Find Buffers"; }
+    { key = "<leader>fg"; mode = "n"; action = "<cmd>lua Snacks.picker.grep()<CR>"; options.desc = "Grep"; }
+    { key = "<leader>f?"; mode = "n"; action = "<cmd>lua Snacks.picker.help()<CR>"; options.desc = "Help"; }
 
-    # TODO: Codewindow (minimap)
-    # { key = "<leader>tm"; mode = "n"; action = "<cmd>lua require('codewindow').toggle_minimap()<CR>"; options.desc = "Toggle Minimap"; }
+    # ========================================================================
+    # SNACKS.NVIM - EXPLORER
+    # ========================================================================
+    { key = "<leader>e"; mode = "n"; action = "<cmd>lua Snacks.explorer()<CR>"; options.desc = "Explorer"; }
+    { key = "<leader>E"; mode = "n"; action = "<cmd>lua Snacks.explorer({ cwd = vim.fn.expand('%:p:h') })<CR>"; options.desc = "Explorer (Current Dir)"; }
 
-    # TODO: Hardtime (training)
-    # { key = "<leader>th"; mode = "n"; action = "<cmd>Hardtime toggle<CR>"; options.desc = "Toggle Hardtime"; }
-    # { key = "<leader>hr"; mode = "n"; action = "<cmd>Hardtime report<CR>"; options.desc = "Hardtime Report"; }
+    # ========================================================================
+    # SNACKS.NVIM - GIT
+    # ========================================================================
+    { key = "<leader>gB"; mode = [ "n" "v" ]; action = "<cmd>lua Snacks.gitbrowse()<CR>"; options.desc = "Git Browse"; }
 
-    # TODO: Zen Mode
-    # { key = "<leader>z"; mode = "n"; action = "<cmd>ZenMode<CR>"; options.desc = "Toggle Zen Mode"; }
-
-    # TODO: Flash (motion)
-    # { key = "s"; mode = "n"; action = "<cmd>lua require('flash').jump()<CR>"; options.desc = "Flash Jump"; }
-    # { key = "S"; mode = "n"; action = "<cmd>lua require('flash').treesitter()<CR>"; options.desc = "Flash Treesitter"; }
-
-    # TODO: Persistence (sessions)
-    # { key = "<leader>qs"; mode = "n"; action = "<cmd>lua require('persistence').load()<CR>"; options.desc = "Restore Session"; }
-    # { key = "<leader>ql"; mode = "n"; action = "<cmd>lua require('persistence').load({ last = true })<CR>"; options.desc = "Restore Last Session"; }
-    # { key = "<leader>qd"; mode = "n"; action = "<cmd>lua require('persistence').stop()<CR>"; options.desc = "Don't Save Session"; }
-
-    # TODO: Snacks utilities
-    # { key = "<leader>."; mode = "n"; action = "<cmd>lua Snacks.scratch()<CR>"; options.desc = "Scratch Buffer"; }
-    # { key = "<leader>S"; mode = "n"; action = "<cmd>lua Snacks.scratch.select()<CR>"; options.desc = "Select Scratch"; }
-    # { key = "<leader>n"; mode = "n"; action = "<cmd>lua Snacks.notifier.show_history()<CR>"; options.desc = "Notification History"; }
-    # { key = "<leader>bd"; mode = "n"; action = "<cmd>lua Snacks.bufdelete()<CR>"; options.desc = "Delete Buffer (Snacks)"; }
-    # { key = "<leader>un"; mode = "n"; action = "<cmd>lua Snacks.notifier.hide()<CR>"; options.desc = "Dismiss Notifications"; }
-
-    # TODO: Sidekick.nvim (AI assistant)
-    # Research sidekick.nvim documentation for recommended keybindings
-    # Provides: Copilot NES, OpenCode integration
+    # ========================================================================
+    # SNACKS.NVIM - UTILITIES
+    # ========================================================================
+    { key = "<leader>z"; mode = "n"; action = "<cmd>lua Snacks.zen()<CR>"; options.desc = "Zen Mode"; }
+    { key = "<leader>Z"; mode = "n"; action = "<cmd>lua Snacks.zen.zoom()<CR>"; options.desc = "Zoom"; }
+    { key = "<leader>."; mode = "n"; action = "<cmd>lua Snacks.scratch()<CR>"; options.desc = "Scratch Buffer"; }
+    { key = "<leader>S"; mode = "n"; action = "<cmd>lua Snacks.scratch.select()<CR>"; options.desc = "Select Scratch"; }
+    { key = "<leader>n"; mode = "n"; action = "<cmd>lua Snacks.notifier.show_history()<CR>"; options.desc = "Notification History"; }
+    { key = "<leader>un"; mode = "n"; action = "<cmd>lua Snacks.notifier.hide()<CR>"; options.desc = "Dismiss Notifications"; }
+    { key = "<c-/>"; mode = [ "n" "t" ]; action = "<cmd>lua Snacks.terminal()<CR>"; options.desc = "Terminal"; }
 
     # ========================================================================
     # UNDOTREE - UNDO HISTORY VISUALIZATION
@@ -168,8 +180,9 @@
     # NVIM-AUTOPAIRS (AUTOMATIC, NO KEYBINDINGS)
     # ========================================================================
     # Automatically pairs: ( ) [ ] { } " " ' ' ` `
-    # <CR> - Smart indent when pressing enter between pairs
+    # <CR> - Smart indent when pressing enter between pairs (integrated with blink.cmp in extra.nix)
     # <BS> - Delete both pairs when backspacing
+    # <M-e> - Fast wrap (surround with bracket/quote)
 
     # ========================================================================
     # MISCELLANEOUS

@@ -40,17 +40,16 @@
     -- ========================================================================
     -- BLINK.CMP INTEGRATION WITH NVIM-AUTOPAIRS
     -- ========================================================================
-    -- TODO: Integrate blink.cmp with nvim-autopairs
-    -- Design Decision: blink.cmp has different integration than nvim-cmp
-    -- Need to research blink.cmp autopairs integration method
-    --
-    -- Old nvim-cmp integration (REMOVED):
-    -- local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-    -- local cmp = require('cmp')
-    -- cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-    --
-    -- New blink.cmp integration:
-    -- Check blink.cmp documentation for autopairs integration
-    -- Placeholder for future implementation
+    -- Integrate autopairs with blink.cmp for smart <CR> behavior
+    local cmp = require('blink.cmp')
+    local npairs = require('nvim-autopairs')
+
+    vim.keymap.set('i', '<CR>', function()
+      if cmp.is_visible() then
+        return cmp.accept()
+      else
+        return npairs.autopairs_cr()
+      end
+    end, { expr = true, replace_keycodes = false })
   '';
 }
