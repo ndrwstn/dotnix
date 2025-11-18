@@ -240,17 +240,8 @@
 
         picker = {
           enabled = true;
-          # Flash integration for label jumping in picker
-          win = {
-            input = {
-              keys = {
-                "<a-s>" = {
-                  action = "flash";
-                  mode = [ "n" "i" ];
-                };
-              };
-            };
-          };
+          # Note: Flash integration disabled due to keymap configuration issues in nixvim
+          # TODO: Revisit flash integration after confirming correct nixvim syntax
         };
 
         explorer = {
