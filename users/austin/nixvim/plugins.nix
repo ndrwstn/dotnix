@@ -59,8 +59,7 @@
           # Typo resistance is built into the Rust fuzzy algorithm (no config needed)
           use_frecency = true; # Boosts recently/frequently used items
           use_proximity = true; # Boosts items in current buffer
-          max_items = 200; # Limit fuzzy matches (default: 200)
-          sorts = [ "score" "label" "kind" ]; # Sort by relevance, then alpha, then type
+          # Note: max_items and sorts may not be available in nixvim's blink.cmp version
         };
       };
     };
@@ -229,8 +228,14 @@
         # UI Replacements (TRIAL BASIS)
         dashboard = {
           enabled = true;
-          preset = "compact";
-          # TODO: Personalize dashboard layout and sections someday
+          # Note: Cannot use preset = "compact" because it includes 'startup' section
+          # which requires lazy.nvim (not available in nixvim)
+          # Custom sections that work without lazy.nvim:
+          sections = [
+            { section = "header"; }
+            { section = "keys"; gap = 1; padding = 1; }
+            # Excluded: { section = "startup"; } - requires lazy.nvim
+          ];
         };
 
         picker = {
