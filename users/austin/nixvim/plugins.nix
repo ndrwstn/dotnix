@@ -57,9 +57,9 @@
 
         fuzzy = {
           # Typo resistance is built into the Rust fuzzy algorithm (no config needed)
-          use_frecency = true; # Boosts recently/frequently used items
-          use_proximity = true; # Boosts items in current buffer
-          # Note: max_items and sorts may not be available in nixvim's blink.cmp version
+          # Updated to new API (use_frecency deprecated in v2.0.0)
+          frecency = { enabled = true; }; # Boosts recently/frequently used items
+          proximity = { enabled = true; }; # Boosts items in current buffer
         };
       };
     };
@@ -355,6 +355,8 @@
             path = "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Primary";
           }
         ];
+        # Disable legacy commands to suppress deprecation warning
+        legacy_commands = false;
       };
     };
 
