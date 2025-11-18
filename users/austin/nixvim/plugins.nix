@@ -355,10 +355,58 @@
     };
 
     # ============================================================================
-    # AI & ASSISTANCE
+    # AI & ASSISTANCE - COPILOT
+    # ============================================================================
+    # Design Decision: Using copilot-lua for GitHub Copilot integration
+    # Provides inline AI suggestions and satisfies sidekick.nvim dependency
+    # TODO: Consider adding blink-cmp-copilot integration in the future
+    #       This would show Copilot suggestions in completion menu alongside LSP
+    #       Requires: extraPlugin for blink-cmp-copilot (not in nixpkgs)
+    #       See: https://github.com/giuxtaposition/blink-cmp-copilot
+    #       Decision: Skipped for now to avoid extraPlugin maintenance burden
+    copilot-lua = {
+      enable = true;
+      settings = {
+        suggestion = {
+          enabled = true;
+          auto_trigger = true;
+          debounce = 75;
+          keymap = {
+            accept = "<Tab>";
+            accept_word = false;
+            accept_line = false;
+            next = "<M-]>";
+            prev = "<M-[>";
+            dismiss = "<C-]>";
+          };
+        };
+        panel = {
+          enabled = true;
+          auto_refresh = false;
+          keymap = {
+            jump_prev = "[[";
+            jump_next = "]]";
+            accept = "<CR>";
+            refresh = "gr";
+            open = "<M-CR>";
+          };
+        };
+        filetypes = {
+          # Minimal disable list - only help files
+          # TODO: Expand this list as needed (gitcommit, yaml, markdown, etc.)
+          help = false;
+          # Enable for all other filetypes by default
+          "*" = true;
+        };
+      };
+    };
+
+    # ============================================================================
+    # AI & ASSISTANCE - SIDEKICK
     # ============================================================================
     # Design Decision: sidekick.nvim leverages existing Copilot subscription
     # for NES (Next Edit Suggestions) and OpenCode CLI integration
+    # Requires: copilot-lua (configured above) or copilot LSP server
     sidekick = {
       enable = true;
       settings = {
