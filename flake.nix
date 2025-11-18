@@ -37,9 +37,9 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # OpenCode flake (testing PR #3924)
+    # OpenCode flake (official - PR #3924 merged)
     opencode = {
-      url = "github:Alb-O/opencode/nix-support";
+      url = "github:sst/opencode/dev";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
