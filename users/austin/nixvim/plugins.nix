@@ -28,6 +28,8 @@
         # <Tab> = select_next()
         keymap = {
           preset = "default";
+          # TODO: Verify which syntax works
+          "<C-CR>" = [ "accept" "fallback" ];
         };
 
         sources = {
