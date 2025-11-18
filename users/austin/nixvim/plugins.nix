@@ -167,7 +167,9 @@
           char = {
             enabled = true;
             jump_labels = false;
-            keys = [ "f" "F" "t" "T" ";" "," ];
+            # TODO: Consider customizing keys if non-standard motions needed
+            # Note: nixvim requires attribute set format { f = {}; F = {}; }, not list [ "f" "F" ]
+            # Default keys are: f, F, t, T, ;, , (standard vim motions)
           };
         };
       };
@@ -524,13 +526,8 @@
     # CODE OVERVIEW
     # ============================================================================
     # Design Decision: codewindow.nvim provides minimap for code overview
-    codewindow = {
-      enable = true;
-      settings = {
-        auto_enable = false; # Manual toggle only
-        minimap_width = 20;
-      };
-    };
+    # Note: Configured as extraPlugin in extra.nix (not a native nixvim module)
+    # Keybinding: <leader>tm to toggle minimap
 
     # ============================================================================
     # TEXT MANIPULATION
