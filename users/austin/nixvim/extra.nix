@@ -51,5 +51,13 @@
         return npairs.autopairs_cr()
       end
     end, { expr = true, replace_keycodes = false })
+
+    -- ========================================================================
+    -- SIDEKICK.NVIM - ENABLE COPILOT LSP
+    -- ========================================================================
+    -- Required for NES (Next Edit Suggestions) feature
+    -- Note: Requires active GitHub Copilot subscription
+    -- Sign in with: :LspCopilotSignIn
+    vim.lsp.enable("copilot")
   '';
 }

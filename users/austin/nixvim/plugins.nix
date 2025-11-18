@@ -342,13 +342,16 @@
     obsidian = {
       enable = true;
       settings = {
-        # TODO: Configure vault directory
-        # workspaces = [
-        #   {
-        #     name = "personal";
-        #     path = "~/Documents/notes";
-        #   }
-        # ];
+        # TODO: Evaluate iCloud path for vault - may want local path instead
+        # Current: iCloud sync'd vault (may have sync conflicts if editing on multiple devices)
+        # Alternative: Local vault with manual sync or git
+        # TODO: Consider enabling daily_notes, templates, completion features when workflow is established
+        workspaces = [
+          {
+            name = "Primary";
+            path = "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Primary";
+          }
+        ];
       };
     };
 
@@ -363,9 +366,14 @@
     lensline = {
       enable = true;
       settings = {
-        # TODO: Configure providers
-        # Recommended: usages (LSP references), git_blame (last author)
-        # Optional: complexity, diagnostics
+        providers = {
+          usages = {
+            enabled = true;
+          };
+          git_blame = {
+            enabled = true;
+          };
+        };
       };
     };
 
@@ -374,9 +382,10 @@
     persistence = {
       enable = true;
       settings = {
-        # TODO: Configure session directory and options
-        # dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/");
-        # options = [ "buffers" "curdir" "tabpages" "winsize" ];
+        dir = {
+          __raw = ''vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/")'';
+        };
+        options = [ "buffers" "curdir" "tabpages" "winsize" ];
       };
     };
 
@@ -439,9 +448,60 @@
     sidekick = {
       enable = true;
       settings = {
-        # TODO: Configure sidekick.nvim
-        # Requires: GitHub Copilot subscription (confirmed available)
-        # OpenCode CLI already installed via opencode.packages
+        # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
+        nes = {
+          enabled = true;
+          debounce = 100;
+          diff = {
+            inline = "words";
+          };
+          trigger = {
+            events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
+          };
+          clear = {
+            events = [ "TextChangedI" "InsertEnter" ];
+            esc = true;
+          };
+        };
+
+        # OpenCode CLI Integration
+        cli = {
+          watch = true;
+          mux = {
+            backend = "tmux";
+            enabled = true;
+            create = "terminal";
+          };
+          tools = {
+            opencode = {
+              cmd = [ "opencode" ];
+              env = {
+                OPENCODE_THEME = "system";
+              };
+            };
+          };
+          win = {
+            layout = "right";
+            split = {
+              width = 80;
+              height = 20;
+            };
+          };
+          picker = "snacks";
+          prompts = {
+            explain = "Explain {this}";
+            fix = "Can you fix {this}?";
+            tests = "Can you write tests for {this}?";
+          };
+        };
+
+        # Copilot status tracking
+        copilot = {
+          status = {
+            enabled = true;
+            level = "WARN";
+          };
+        };
       };
     };
 
@@ -457,7 +517,18 @@
         max_count = 3; # Allow 3 repetitions before blocking
         hint = true;
         notification = true;
-        # TODO: Add toggle keybinding in keymaps.nix
+      };
+    };
+
+    # ============================================================================
+    # CODE OVERVIEW
+    # ============================================================================
+    # Design Decision: codewindow.nvim provides minimap for code overview
+    codewindow = {
+      enable = true;
+      settings = {
+        auto_enable = false; # Manual toggle only
+        minimap_width = 20;
       };
     };
 

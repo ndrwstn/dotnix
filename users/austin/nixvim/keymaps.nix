@@ -185,6 +185,65 @@
     # <M-e> - Fast wrap (surround with bracket/quote)
 
     # ========================================================================
+    # TROUBLE - DIAGNOSTICS VIEWER
+    # ========================================================================
+    { key = "<leader>xx"; mode = "n"; action = "<cmd>Trouble diagnostics toggle<CR>"; options.desc = "Diagnostics (Trouble)"; }
+    { key = "<leader>xX"; mode = "n"; action = "<cmd>Trouble diagnostics toggle filter.buf=0<CR>"; options.desc = "Buffer Diagnostics (Trouble)"; }
+    { key = "<leader>cs"; mode = "n"; action = "<cmd>Trouble symbols toggle focus=false<CR>"; options.desc = "Symbols (Trouble)"; }
+    { key = "<leader>cl"; mode = "n"; action = "<cmd>Trouble lsp toggle focus=false win.position=right<CR>"; options.desc = "LSP Definitions / references / ... (Trouble)"; }
+    { key = "<leader>xL"; mode = "n"; action = "<cmd>Trouble loclist toggle<CR>"; options.desc = "Location List (Trouble)"; }
+    { key = "<leader>xQ"; mode = "n"; action = "<cmd>Trouble qflist toggle<CR>"; options.desc = "Quickfix List (Trouble)"; }
+
+    # ========================================================================
+    # DIFFVIEW - GIT DIFF VIEWER
+    # ========================================================================
+    { key = "<leader>gd"; mode = "n"; action = "<cmd>DiffviewOpen<CR>"; options.desc = "Diff View"; }
+    { key = "<leader>gh"; mode = "n"; action = "<cmd>DiffviewFileHistory %<CR>"; options.desc = "File History"; }
+    { key = "<leader>gH"; mode = "n"; action = "<cmd>DiffviewFileHistory<CR>"; options.desc = "Repo History"; }
+    { key = "<leader>gc"; mode = "n"; action = "<cmd>DiffviewClose<CR>"; options.desc = "Close Diffview"; }
+
+    # ========================================================================
+    # HARDTIME - MOTION TRAINING
+    # ========================================================================
+    # TODO: Revisit keybinding choice during keymap polish phase
+    { key = "<leader>th"; mode = "n"; action = "<cmd>Hardtime toggle<CR>"; options.desc = "Toggle Hardtime"; }
+
+    # ========================================================================
+    # PERSISTENCE - SESSION MANAGEMENT
+    # ========================================================================
+    # TODO: Revisit keybinding choices during keymap polish phase
+    { key = "<leader>qs"; mode = "n"; action = "<cmd>lua require('persistence').load()<CR>"; options.desc = "Restore Session"; }
+    { key = "<leader>ql"; mode = "n"; action = "<cmd>lua require('persistence').load({ last = true })<CR>"; options.desc = "Restore Last Session"; }
+    { key = "<leader>qd"; mode = "n"; action = "<cmd>lua require('persistence').stop()<CR>"; options.desc = "Don't Save Current Session"; }
+
+    # ========================================================================
+    # SIDEKICK - COPILOT NES + OPENCODE CLI
+    # ========================================================================
+    # NES Navigation
+    { key = "<Tab>"; mode = [ "n" "i" ]; action.__raw = "function() return require('sidekick').nes_jump_or_apply() end"; options = { expr = true; desc = "NES Jump/Apply"; }; }
+
+    # CLI Controls
+    { key = "<c-.>"; mode = [ "n" "t" "i" "x" ]; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
+    { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
+    { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('sidekick.cli').select()<CR>"; options.desc = "Select CLI Tool"; }
+    { key = "<leader>ad"; mode = "n"; action = "<cmd>lua require('sidekick.cli').close()<CR>"; options.desc = "Close CLI"; }
+
+    # Context Sending
+    { key = "<leader>at"; mode = [ "x" "n" ]; action = "<cmd>lua require('sidekick.cli').send({ msg = '{this}' })<CR>"; options.desc = "Send This"; }
+    { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{file}' })<CR>"; options.desc = "Send File"; }
+    { key = "<leader>av"; mode = "x"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{selection}' })<CR>"; options.desc = "Send Selection"; }
+    { key = "<leader>ap"; mode = [ "n" "x" ]; action = "<cmd>lua require('sidekick.cli').prompt()<CR>"; options.desc = "CLI Prompt"; }
+
+    # Direct OpenCode Access
+    { key = "<leader>ac"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle({ name = 'opencode', focus = true })<CR>"; options.desc = "OpenCode CLI"; }
+
+    # ========================================================================
+    # CODEWINDOW - MINIMAP
+    # ========================================================================
+    # TODO: Revisit keybinding choice during keymap polish phase
+    { key = "<leader>tm"; mode = "n"; action = "<cmd>lua require('codewindow').toggle_minimap()<CR>"; options.desc = "Toggle Minimap"; }
+
+    # ========================================================================
     # MISCELLANEOUS
     # ========================================================================
     { key = "<leader>qf"; mode = "n"; action = "<cmd>Format<CR>"; options.desc = "Format Buffer (Conform)"; }
