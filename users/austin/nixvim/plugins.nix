@@ -55,12 +55,9 @@
           };
         };
 
-        fuzzy = {
-          # Typo resistance is built into the Rust fuzzy algorithm (no config needed)
-          # Updated to new API (use_frecency deprecated in v2.0.0)
-          frecency = { enabled = true; }; # Boosts recently/frequently used items
-          proximity = { enabled = true; }; # Boosts items in current buffer
-        };
+        # Note: fuzzy config disabled due to version incompatibility with nixvim
+        # The Rust fuzzy matcher works great with defaults (typo resistance, etc.)
+        # Advanced options like frecency/proximity may not be available in nixvim's version
       };
     };
 
@@ -371,14 +368,16 @@
     lensline = {
       enable = true;
       settings = {
-        providers = {
-          usages = {
-            enabled = true;
-          };
-          git_blame = {
-            enabled = true;
-          };
-        };
+        # Updated to new profiles format (providers deprecated)
+        profiles = [
+          {
+            name = "default";
+            providers = {
+              usages = { enabled = true; };
+              git_blame = { enabled = true; };
+            };
+          }
+        ];
       };
     };
 
