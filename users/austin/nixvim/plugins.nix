@@ -522,8 +522,15 @@
         max_count = 3; # Allow 3 repetitions before blocking
         hint = true;
         notification = true;
+        disabled_keys = {
+          "<Up>" = [ "n" "x" ];
+          "<Down>" = [ "n" "x" ];
+          "<Left>" = [ "n" "x" ];
+          "<Right>" = [ "n" "x" ];
+        };
       };
     };
+
 
     # ============================================================================
     # CODE OVERVIEW

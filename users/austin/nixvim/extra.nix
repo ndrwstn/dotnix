@@ -52,6 +52,18 @@
       end
     end, { expr = true, replace_keycodes = false })
 
+    -- TODO: Consider moving TeX-specific autopairs rules into a dedicated module
+    local Rule = require('nvim-autopairs.rule')
+
+    -- TeX/LaTeX: asymmetric backtick/apostrophe pairing and apostrophe behavior
+    npairs.add_rule(Rule("`", "'", { "tex", "latex" }))
+    npairs.add_rule(Rule("``", string.rep("'", 2), { "tex", "latex" }))
+
+    local quote_rules = npairs.get_rules("'")
+    if quote_rules and quote_rules[1] then
+      quote_rules[1].not_filetypes = { "tex", "latex" }
+    end
+
     -- ========================================================================
     -- SIDEKICK.NVIM - ENABLE COPILOT LSP
     -- ========================================================================
