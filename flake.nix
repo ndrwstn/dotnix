@@ -23,7 +23,10 @@
     # Neovim configuration
     nixvim = {
       url = "github:nix-community/nixvim";
+      # Use unstable nixpkgs for Nixvim as recommended
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
 
     # Secrets management
     agenix = {
@@ -224,7 +227,7 @@
                     hostName = name;
                   };
                   home-manager.sharedModules = [
-                    nixvim.homeModules.default
+                    nixvim.homeModules.nixvim
                   ];
                 })
               ]
