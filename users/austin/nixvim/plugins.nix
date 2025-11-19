@@ -339,8 +339,9 @@
 
     # Design Decision: obsidian.nvim for Obsidian-style note-taking
     # Works standalone without Obsidian app, requires .obsidian/ folder
+    # TODO: Re-enable obsidian.nvim after vaults are synced across all machines
     obsidian = {
-      enable = true;
+      enable = false;
       settings = {
         # TODO: Evaluate iCloud path for vault - may want local path instead
         # Current: iCloud sync'd vault (may have sync conflicts if editing on multiple devices)
