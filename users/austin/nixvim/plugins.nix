@@ -21,10 +21,11 @@
         # Default preset provides: <C-n>/<C-p> navigate, <C-y> accept, <C-e> cancel
         # Override: <C-CR> for accept (preferred over <C-y>)
         keymap = {
-          preset = "default";
-          # TODO: Verify which syntax works - array or __raw function
+          preset = "none";
           "<C-CR>" = [ "accept" "fallback" ];
         };
+
+
 
         appearance = {
           nerd_font_variant = "mono";
@@ -415,7 +416,7 @@
           auto_trigger = true;
           debounce = 75;
           keymap = {
-            accept = "<Tab>";
+            accept = false;
             accept_word = false;
             accept_line = false;
             next = "<M-]>";
@@ -423,6 +424,7 @@
             dismiss = "<C-]>";
           };
         };
+
         panel = {
           enabled = true;
           auto_refresh = false;
