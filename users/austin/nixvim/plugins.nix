@@ -453,11 +453,11 @@
     # for NES (Next Edit Suggestions) and OpenCode CLI integration
     # Requires: copilot-lua (configured above) or copilot LSP server
     sidekick = {
-      enable = true;
+      enable = false;
       settings = {
         # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
         nes = {
-          enabled = true;
+          enabled = false;
           debounce = 100;
           diff = {
             inline = "words";
