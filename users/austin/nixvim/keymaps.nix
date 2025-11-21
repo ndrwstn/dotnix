@@ -276,22 +276,22 @@
     # SIDEKICK - COPILOT NES + OPENCODE CLI
     # ========================================================================
     # NES Navigation
-    { key = "<Tab>"; mode = [ "n" "i" ]; action.__raw = "function() return require('sidekick').nes_jump_or_apply() end"; options = { expr = true; desc = "NES Jump/Apply"; }; }
+    # { key = "<Tab>"; mode = [ "n" "i" ]; action.__raw = "function() return require('sidekick').nes_jump_or_apply() end"; options = { expr = true; desc = "NES Jump/Apply"; }; }
 
     # CLI Controls
-    { key = "<c-.>"; mode = [ "n" "t" "i" "x" ]; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
-    { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
-    { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('sidekick.cli').select()<CR>"; options.desc = "Select CLI Tool"; }
-    { key = "<leader>ad"; mode = "n"; action = "<cmd>lua require('sidekick.cli').close()<CR>"; options.desc = "Close CLI"; }
+    # { key = "<c-.>"; mode = [ "n" "t" "i" "x" ]; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
+    # { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
+    # { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('sidekick.cli').select()<CR>"; options.desc = "Select CLI Tool"; }
+    # { key = "<leader>ad"; mode = "n"; action = "<cmd>lua require('sidekick.cli').close()<CR>"; options.desc = "Close CLI"; }
 
     # Context Sending
-    { key = "<leader>at"; mode = [ "x" "n" ]; action = "<cmd>lua require('sidekick.cli').send({ msg = '{this}' })<CR>"; options.desc = "Send This"; }
-    { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{file}' })<CR>"; options.desc = "Send File"; }
-    { key = "<leader>av"; mode = "x"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{selection}' })<CR>"; options.desc = "Send Selection"; }
-    { key = "<leader>ap"; mode = [ "n" "x" ]; action = "<cmd>lua require('sidekick.cli').prompt()<CR>"; options.desc = "CLI Prompt"; }
+    # { key = "<leader>at"; mode = [ "x" "n" ]; action = "<cmd>lua require('sidekick.cli').send({ msg = '{this}' })<CR>"; options.desc = "Send This"; }
+    # { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{file}' })<CR>"; options.desc = "Send File"; }
+    # { key = "<leader>av"; mode = "x"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{selection}' })<CR>"; options.desc = "Send Selection"; }
+    # { key = "<leader>ap"; mode = [ "n" "x" ]; action = "<cmd>lua require('sidekick.cli').prompt()<CR>"; options.desc = "CLI Prompt"; }
 
     # Direct OpenCode Access
-    { key = "<leader>ac"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle({ name = 'opencode', focus = true })<CR>"; options.desc = "OpenCode CLI"; }
+    # { key = "<leader>ac"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle({ name = 'opencode', focus = true })<CR>"; options.desc = "OpenCode CLI"; }
 
     # ========================================================================
     # CODEWINDOW - MINIMAP

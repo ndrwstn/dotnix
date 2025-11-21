@@ -367,21 +367,21 @@
 
     # Design Decision: lensline.nvim shows LSP references, git blame, complexity
     # inline with code for at-a-glance context
-    lensline = {
-      enable = true;
-      settings = {
-        # Updated to new profiles format (providers deprecated)
-        profiles = [
-          {
-            name = "default";
-            providers = {
-              usages = { enabled = true; };
-              git_blame = { enabled = true; };
-            };
-          }
-        ];
-      };
-    };
+    # lensline = {
+    #   enable = true;
+    #   settings = {
+    #     # Updated to new profiles format (providers deprecated)
+    #     profiles = [
+    #       {
+    #         name = "default";
+    #         providers = {
+    #           usages = { enabled = true; };
+    #           git_blame = { enabled = true; };
+    #         };
+    #       }
+    #     ];
+    #   };
+    # };
 
     # Design Decision: persistence.nvim for automatic session management
     # Complements snacks.picker.projects() for project switching
@@ -431,9 +431,9 @@
           keymap = {
             jump_prev = "[[";
             jump_next = "]]";
-            accept = "<CR>";
+            accept = "<CR"; # NB: this is from f776e2e; adjust if needed
             refresh = "gr";
-            open = "<M-CR>";
+            open = "<M-CR";
           };
         };
         filetypes = {
@@ -452,65 +452,65 @@
     # Design Decision: sidekick.nvim leverages existing Copilot subscription
     # for NES (Next Edit Suggestions) and OpenCode CLI integration
     # Requires: copilot-lua (configured above) or copilot LSP server
-    sidekick = {
-      enable = false;
-      settings = {
-        # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
-        nes = {
-          enabled = false;
-          debounce = 100;
-          diff = {
-            inline = "words";
-          };
-          trigger = {
-            events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
-          };
-          clear = {
-            events = [ "TextChangedI" "InsertEnter" ];
-            esc = true;
-          };
-        };
+    # sidekick = {
+    #   enable = false;
+    #   settings = {
+    #     # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
+    #     nes = {
+    #       enabled = false;
+    #       debounce = 100;
+    #       diff = {
+    #         inline = "words";
+    #       };
+    #       trigger = {
+    #         events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
+    #       };
+    #       clear = {
+    #         events = [ "TextChangedI" "InsertEnter" ];
+    #         esc = true;
+    #       };
+    #     };
 
-        # OpenCode CLI Integration
-        cli = {
-          watch = true;
-          mux = {
-            backend = "tmux";
-            enabled = true;
-            create = "terminal";
-          };
-          tools = {
-            opencode = {
-              cmd = [ "opencode" ];
-              env = {
-                OPENCODE_THEME = "system";
-              };
-            };
-          };
-          win = {
-            layout = "right";
-            split = {
-              width = 80;
-              height = 20;
-            };
-          };
-          picker = "snacks";
-          prompts = {
-            explain = "Explain {this}";
-            fix = "Can you fix {this}?";
-            tests = "Can you write tests for {this}?";
-          };
-        };
+    #     # OpenCode CLI Integration
+    #     cli = {
+    #       watch = true;
+    #       mux = {
+    #         backend = "tmux";
+    #         enabled = true;
+    #         create = "terminal";
+    #       };
+    #       tools = {
+    #         opencode = {
+    #           cmd = [ "opencode" ];
+    #           env = {
+    #             OPENCODE_THEME = "system";
+    #           };
+    #         };
+    #       };
+    #       win = {
+    #         layout = "right";
+    #         split = {
+    #           width = 80;
+    #           height = 20;
+    #         };
+    #       };
+    #       picker = "snacks";
+    #       prompts = {
+    #         explain = "Explain {this}";
+    #         fix = "Can you fix {this}?";
+    #         tests = "Can you write tests for {this}?";
+    #       };
+    #     };
 
-        # Copilot status tracking
-        copilot = {
-          status = {
-            enabled = true;
-            level.__raw = "vim.log.levels.WARN";
-          };
-        };
-      };
-    };
+    #     # Copilot status tracking
+    #     copilot = {
+    #       status = {
+    #         enabled = true;
+    #         level.__raw = "vim.log.levels.WARN";
+    #       };
+    #     };
+    #   };
+    # };
 
     # ============================================================================
     # TRAINING & MOTION IMPROVEMENT

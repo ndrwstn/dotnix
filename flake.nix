@@ -22,9 +22,9 @@
 
     # Neovim configuration
     nixvim = {
-      url = "github:nix-community/nixvim";
-      # Use unstable nixpkgs for Nixvim as recommended
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # Use the nixos-25.05 branch of Nixvim to match the stable nixpkgs channel
+      url = "github:nix-community/nixvim/nixos-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
 
