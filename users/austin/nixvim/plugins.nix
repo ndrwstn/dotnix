@@ -409,41 +409,7 @@
     #       See: https://github.com/giuxtaposition/blink-cmp-copilot
     #       Decision: Skipped for now to avoid extraPlugin maintenance burden
     copilot-lua = {
-      enable = true;
-      settings = {
-        suggestion = {
-          enabled = false;
-          auto_trigger = false;
-          debounce = 75;
-          keymap = {
-            accept = false;
-            accept_word = false;
-            accept_line = false;
-            next = "<M-]>";
-            prev = "<M-[>";
-            dismiss = "<C-]>";
-          };
-        };
-
-        panel = {
-          enabled = false;
-          auto_refresh = false;
-          keymap = {
-            jump_prev = "[[";
-            jump_next = "]]";
-            accept = "<CR"; # NB: this is from f776e2e; adjust if needed
-            refresh = "gr";
-            open = "<M-CR";
-          };
-        };
-        filetypes = {
-          # Minimal disable list - only help files
-          # TODO: Expand this list as needed (gitcommit, yaml, markdown, etc.)
-          help = false;
-          # Enable for all other filetypes by default
-          "*" = true;
-        };
-      };
+      enable = false;
     };
 
     # ============================================================================
@@ -546,24 +512,7 @@
     # ============================================================================
     # Auto-pairs for automatic bracket/quote closing
     nvim-autopairs = {
-      enable = true;
-      settings = {
-        check_ts = true;
-        ts_config = {
-          lua = [ "string" ];
-          javascript = [ "template_string" ];
-        };
-        disable_filetype = [ "TelescopePrompt" "vim" ];
-        fast_wrap = {
-          map = "<M-e>";
-          chars = [ "{" "[" "(" "\"" "'" ];
-          end_key = "$";
-          keys = "qwertyuiopzxcvbnmasdfghjkl";
-          check_comma = true;
-          highlight = "Search";
-          highlight_grey = "Comment";
-        };
-      };
+      enable = false;
     };
 
     # Highlight and search TODO/FIXME comments
