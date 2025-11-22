@@ -42,7 +42,8 @@
 
     # OpenCode flake (official - PR #3924 merged)
     opencode = {
-      url = "github:sst/opencode/dev";
+      url = "github:sst/opencode/v1.0.89"; # currently broken nix package
+      # url = "github:sst/opencode/dev";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
@@ -104,10 +105,9 @@
               config.allowUnfree = true;
             };
             autopkgs = nixautopkgs.packages.${pkgs.system};
-            opencode = inputs.opencode;
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable autopkgs opencode nur; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs nur; };
           })
       ];
 
@@ -170,7 +170,6 @@
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
-          opencode = inputs.opencode;
 
           # Discover valid user directories
           validUsers = autoDiscovery.discoverDirectories {
@@ -182,7 +181,7 @@
           buildUserConfig = user: {
             name = user;
             value = { config, pkgs, lib, hostName, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs opencode hostName; };
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs hostName; };
           };
 
           # Create attrset of user configs
@@ -213,8 +212,7 @@
                 sysConfig.hmModule
                 {
                   nixpkgs.overlays = [
-                    # Overlay disabled 2025-11-13: upstream opencode flake now works correctly
-                    # (import ./overlays/opencode.nix inputs)
+                    (import ./overlays/opencode.nix inputs)
                   ];
                 }
                 ({ config, ... }: {
@@ -223,7 +221,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs opencode;
+                    inherit unstable autopkgs;
                     hostName = name;
                   };
                   home-manager.sharedModules = [
