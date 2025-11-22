@@ -412,8 +412,8 @@
       enable = true;
       settings = {
         suggestion = {
-          enabled = true;
-          auto_trigger = true;
+          enabled = false;
+          auto_trigger = false;
           debounce = 75;
           keymap = {
             accept = false;
@@ -426,7 +426,7 @@
         };
 
         panel = {
-          enabled = true;
+          enabled = false;
           auto_refresh = false;
           keymap = {
             jump_prev = "[[";
