@@ -42,7 +42,7 @@
 
     # OpenCode flake (official - PR #3924 merged)
     opencode = {
-      url = "github:sst/opencode/v1.0.124";
+      url = "github:sst/opencode/v1.0.126";
       # url = "github:sst/opencode/dev";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
