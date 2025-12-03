@@ -17,11 +17,13 @@
     blink-cmp = {
       enable = true;
       settings = {
-        # Design Decision: Using "default" preset with <C-CR> override for accept
-        # Default preset provides: <C-n>/<C-p> navigate, <C-y> accept, <C-e> cancel
-        # Override: <C-CR> for accept (preferred over <C-y>)
+        # Design Decision: Using "enter" preset with overrides for exclusive blink control
+        # Enter preset provides: <C-n>/<C-p> navigate, <CR> accept, <C-e> cancel
+        # Overrides: <C-CR> for accept (preferred), no fallback on navigation
         keymap = {
-          preset = "none";
+          preset = "enter";
+          "<C-n>" = [ "select_next" ];
+          "<C-p>" = [ "select_prev" ];
           "<C-CR>" = [ "accept" "fallback" ];
         };
 
@@ -43,7 +45,7 @@
           list = {
             selection = {
               preselect = true;
-              auto_insert = true;
+              auto_insert = false;
             };
           };
           menu = {
@@ -53,6 +55,9 @@
           documentation = {
             auto_show = true;
             auto_show_delay_ms = 500;
+          };
+          ghost_text = {
+            enabled = false;
           };
         };
 
@@ -188,6 +193,13 @@
       # Integrate blink.cmp capabilities with LSP
       capabilities = ''
         require('blink.cmp').get_lsp_capabilities()
+      '';
+
+      # Clear omnifunc to prevent native LSP completion from competing with blink
+      onAttach = ''
+        return function(client, bufnr)
+          vim.bo[bufnr].omnifunc = nil
+        end
       '';
 
       servers = {
@@ -512,7 +524,10 @@
     # ============================================================================
     # Auto-pairs for automatic bracket/quote closing
     nvim-autopairs = {
-      enable = false;
+      enable = true;
+      settings = {
+        map_cr = false; # Disable autopairs' own <CR> mapping to avoid conflicts
+      };
     };
 
     # Highlight and search TODO/FIXME comments
