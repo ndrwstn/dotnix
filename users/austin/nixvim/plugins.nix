@@ -18,10 +18,9 @@
       enable = true;
       settings = {
         # Design Decision: Using "enter" preset with overrides for exclusive blink control
-        # Enter preset provides: <C-n>/<C-p> navigate, <CR> accept, <C-e> cancel
-        # Overrides: <C-CR> for accept (preferred), no fallback on navigation
+        # No preset - Enter always inserts newline, Ctrl+Enter accepts completion
         keymap = {
-          preset = "enter";
+          preset = "none";
           "<C-n>" = [ "select_next" ];
           "<C-p>" = [ "select_prev" ];
           "<C-CR>" = [ "accept" "fallback" ];

@@ -9,7 +9,7 @@
     luasnip # Snippet engine for blink.cmp
   ];
 
-  extraConfigLua = builtins.readFile ./blink_wrapper.lua;
+
 }
 
 
