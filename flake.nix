@@ -40,12 +40,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # OpenCode flake (official - PR #3924 merged)
-    opencode = {
-      url = "github:sst/opencode/v1.0.131";
-      # url = "github:sst/opencode/dev";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+
 
     # NUR repository for Firefox extensions
     nur = {
@@ -63,7 +58,6 @@
     , nixvim
     , agenix
     , nixautopkgs
-    , opencode
     , nur
     , ...
     }:
@@ -210,11 +204,6 @@
                 ./systems/common
                 sysConfig.systemModule
                 sysConfig.hmModule
-                {
-                  nixpkgs.overlays = [
-                    (import ./overlays/opencode.nix inputs)
-                  ];
-                }
                 ({ config, ... }: {
                   home-manager.useGlobalPkgs = true;
                   home-manager.useUserPackages = true;

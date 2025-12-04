@@ -257,7 +257,7 @@ lib.mkMerge [
 
       ## overlays
       autopkgs.gcs
-      opencode
+      autopkgs.opencode
       autopkgs.openspec
 
 
