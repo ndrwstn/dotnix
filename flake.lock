@@ -223,11 +223,11 @@
         "opencode": "opencode"
       },
       "locked": {
-        "lastModified": 1765301219,
-        "narHash": "sha256-m4qehyxOuR/qj6pb2jjd3GJs692O1wsgKFDitu/6cPM=",
+        "lastModified": 1765314267,
+        "narHash": "sha256-xklJOssSLZwq6V7dJnMcLCBgxWK2Gifhz26FPN5Ll3I=",
         "owner": "ndrwstn",
         "repo": "nixautopkgs",
-        "rev": "62eceeea0100523e1f2c644afb55c815801f7535",
+        "rev": "2a13239fe67e2fcb58d8d1e46afb28024dabcdb8",
         "type": "github"
       },
       "original": {
@@ -285,11 +285,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1764947035,
-        "narHash": "sha256-EYHSjVM4Ox4lvCXUMiKKs2vETUSL5mx+J2FfutM7T9w=",
+        "lastModified": 1765270179,
+        "narHash": "sha256-g2a4MhRKu4ymR4xwo+I+auTknXt/+j37Lnf0Mvfl1rE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a672be65651c80d3f592a89b3945466584a22069",
+        "rev": "677fbe97984e7af3175b6c121f3c39ee5c8d62c9",
         "type": "github"
       },
       "original": {
@@ -347,11 +347,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1765299360,
-        "narHash": "sha256-hbCddez7Dyo/fcWaQjmxziSfV4pRpA4UK95COwYQoD4=",
+        "lastModified": 1765309499,
+        "narHash": "sha256-j4Hhsz6nEjzgE5hKRoFCKpdU6910VXJBVDvoyJ8dGOU=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "98add72e7f2aa332dfc820b7ed613500859b30b1",
+        "rev": "8c49eaef198c50b37304adbc0de5592073fe9743",
         "type": "github"
       },
       "original": {
@@ -388,16 +388,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1765249250,
-        "narHash": "sha256-ONZymVq0IwcOrD/0C7TqK+37S0wjQW10yiij61RlqwM=",
+        "lastModified": 1765303521,
+        "narHash": "sha256-PdxkJXG+GYVpzChhUdgSUejrCg6yGY1R29BQfvByxYo=",
         "owner": "sst",
         "repo": "opencode",
-        "rev": "0569e8652c22cc58f2ddca698b02d5e7bdecf368",
+        "rev": "76f4803d8d83d32bfaf55d8e4d388b627a94dfd8",
         "type": "github"
       },
       "original": {
         "owner": "sst",
-        "ref": "v1.0.137",
+        "ref": "v1.0.138",
         "repo": "opencode",
         "type": "github"
       }
