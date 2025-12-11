@@ -217,6 +217,7 @@ lib.mkMerge [
       nodejs_22
       nodePackages.prettier
       nvd
+      pandoc
       pluto
       # printrun
       # python3
