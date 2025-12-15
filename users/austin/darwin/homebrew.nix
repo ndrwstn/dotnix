@@ -58,7 +58,7 @@
       # "numi"
       "obs"
       "obsidian"
-      "ollamac"
+      # "ollamac" # not being actively used; consider using llama.cpp
       "orcaslicer"
       # "pdf-expert"
       "pearcleaner"
@@ -88,7 +88,7 @@
       "tag"
       # "m1ddc"
       "mas"
-      "ollama"
+      # "ollama" # not being actively used; consider using llama.cpp
     ];
     masApps = {
       # NOTE - homebrew.masApps does not remove apps
