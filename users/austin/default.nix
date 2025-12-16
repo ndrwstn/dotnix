@@ -3,6 +3,7 @@
 , pkgs
 , unstable
 , autopkgs
+, mcppkgs
 , lib
 , hostName ? "unknown"
 , nur ? null
@@ -260,6 +261,9 @@ lib.mkMerge [
       autopkgs.gcs
       autopkgs.opencode
       autopkgs.openspec
+
+      ## mcppkgs
+      mcppkgs.playwright-mcp
 
 
       ## fonts

@@ -47,6 +47,12 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # MCP servers for AI tooling
+    mcp-servers-nix = {
+      url = "github:natsukium/mcp-servers-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -58,6 +64,7 @@
     , nixvim
     , agenix
     , nixautopkgs
+    , mcp-servers-nix
     , nur
     , ...
     }:
@@ -99,9 +106,14 @@
               config.allowUnfree = true;
             };
             autopkgs = nixautopkgs.packages.${pkgs.system};
+            mcppkgs = mcp-servers-nix.packages.${pkgs.system} // {
+              playwright-mcp = mcp-servers-nix.packages.${pkgs.system}.playwright-mcp.overrideAttrs (old: {
+                versionCheckProgram = "${placeholder "out"}/bin/mcp-server-playwright";
+              });
+            };
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable autopkgs nur; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs mcppkgs nur; };
           })
       ];
 
@@ -164,6 +176,11 @@
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
+          mcppkgs = mcp-servers-nix.packages.${systemType} // {
+            playwright-mcp = mcp-servers-nix.packages.${systemType}.playwright-mcp.overrideAttrs (old: {
+              versionCheckProgram = "${placeholder "out"}/bin/mcp-server-playwright";
+            });
+          };
 
           # Discover valid user directories
           validUsers = autoDiscovery.discoverDirectories {
@@ -175,7 +192,7 @@
           buildUserConfig = user: {
             name = user;
             value = { config, pkgs, lib, hostName, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs hostName; };
+              import (usersDir + "/${user}") { inherit config pkgs lib unstable autopkgs mcppkgs hostName; };
           };
 
           # Create attrset of user configs
@@ -210,7 +227,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs;
+                    inherit unstable autopkgs mcppkgs;
                     hostName = name;
                   };
                   home-manager.sharedModules = [
