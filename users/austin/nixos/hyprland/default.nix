@@ -82,14 +82,6 @@
         "4,monitor:HDMI-A-1,default"
         "5,monitor:HDMI-A-1,default"
       ];
-
-      # Autostart applications
-      exec-once = [
-        "waybar"
-        "mako"
-        "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-        "systemctl --user start 1password"
-      ];
     };
   };
 }

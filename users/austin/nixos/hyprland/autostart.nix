@@ -24,7 +24,7 @@
     "mako"
 
     # Polkit authentication agent
-    "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+    "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
     # 1Password (already configured in systems/nixos/1password.nix)
     "systemctl --user start 1password"
