@@ -48,6 +48,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Hyprland Wayland compositor
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+    };
+
     # MCP servers for AI tooling
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
@@ -66,6 +71,7 @@
     , nixautopkgs
     , mcp-servers-nix
     , nur
+    , hyprland
     , ...
     }:
     let

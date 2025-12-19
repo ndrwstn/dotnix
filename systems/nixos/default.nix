@@ -8,6 +8,7 @@
   imports = [
     ./agenix.nix
     ./1password.nix
+    ./hyprland.nix
   ];
 
   # Allow unfree packages (required for copilot-language-server)
