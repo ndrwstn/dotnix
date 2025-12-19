@@ -33,19 +33,6 @@
     vscodium-fhs
     wl-clipboard
     zathura
-    ## Hyprland and Wayland utilities
-    hyprland
-    wofi
-    mako
-    waybar
-    polkit_gnome
-    greetd.tuigreet
-    swaylock
-    swayidle
-    grim
-    slurp
-    light
-    pulseaudio
     ## unstable
     unstable.ghostty
   ];

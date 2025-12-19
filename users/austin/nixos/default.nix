@@ -23,10 +23,4 @@ lib.mkMerge [
 
   # nixos packages
   (import ./packages.nix { inherit config pkgs unstable; })
-
-  # hyprland configuration
-  (import ./hyprland/default.nix { inherit pkgs; })
-  (import ./hyprland/keymaps.nix { inherit pkgs; })
-  (import ./hyprland/waybar.nix { inherit pkgs; })
-  (import ./hyprland/autostart.nix { inherit pkgs; })
 ]

@@ -5,7 +5,6 @@
 }: {
   imports = [
     ./secrets.nix
-    ../../systems/nixos/hyprland.nix
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";

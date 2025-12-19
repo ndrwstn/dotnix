@@ -1,73 +1,44 @@
 # systems/nixos/hyprland.nix
 # Hyprland configuration for NixOS systems
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
-  # Enable Hyprland compositor
+  # Hyprland and Wayland support
   programs.hyprland = {
     enable = true;
-    xwayland.enable = true; # For X11 applications
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
 
-  # Display manager - greetd for Hyprland session
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland --cmd GNOME";
-        user = "greeter";
-      };
-    };
-  };
+  # Use GDM as the display manager (already enabled in systems/nixos/default.nix)
+  # GDM will automatically detect and show Hyprland as a session option
 
-  # Polkit authentication will be configured in user home-manager
+  # Polkit authentication agent will be handled in user config
+  security.polkit.enable = true;
 
-  # Notification daemon will be configured in user home-manager
-
-  # XDG Desktop Portal for Wayland
+  # XDG portals for file pickers, screenshots, etc.
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+    extraPortals = [ inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland ];
   };
 
   # Environment variables for Wayland
   environment.variables = {
-    # Force GTK apps to use Wayland
+    # Force GTK to use Wayland backend
     GDK_BACKEND = "wayland";
-    # Qt Wayland support
+
+    # Qt Wayland backend
     QT_QPA_PLATFORM = "wayland";
     QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-    # SDL Wayland support
-    SDL_VIDEODRIVER = "wayland";
-    # XDG Session type
+
+    # XDG session type
     XDG_SESSION_TYPE = "wayland";
+
     # Cursor theme for Wayland
     XCURSOR_THEME = "breeze_cursors";
     XCURSOR_SIZE = "24";
   };
 
-  # Additional Wayland utilities
-  environment.systemPackages = with pkgs; [
-    # Clipboard support
-    wl-clipboard
-    # Screenshot tool
-    grim
-    # Screen area selection
-    slurp
-    # Screen locker
-    swaylock
-    # Idle management
-    swayidle
-  ];
-
-  # Swayidle configuration for screen locking
-  systemd.user.services.swayidle = {
-    description = "Swayidle - Idle management daemon";
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 300 '${pkgs.swaylock}/bin/swaylock -f'";
-      Restart = "on-failure";
-    };
-  };
+  # Required for some Wayland applications
+  hardware.opengl.enable = true;
 }
