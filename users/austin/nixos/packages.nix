@@ -43,6 +43,7 @@
     grim
     slurp
     light
+    swww
     ## unstable
     unstable.ghostty
   ];
