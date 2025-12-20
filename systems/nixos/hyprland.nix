@@ -45,4 +45,7 @@
 
   # Required for some Wayland applications
   hardware.graphics.enable = true;
+
+  # Allow swaylock to unlock the screen
+  security.pam.services.swaylock = { };
 }

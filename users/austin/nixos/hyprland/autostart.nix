@@ -17,6 +17,9 @@
   };
 
   wayland.windowManager.hyprland.settings.exec-once = [
+    # Update systemd environment variables (fix for Waybar/systemd services not starting)
+    "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
     # Polkit authentication agent
     "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
