@@ -19,7 +19,10 @@
   # XDG portals for file pickers, screenshots, etc.
   xdg.portal = {
     enable = true;
-    extraPortals = [ inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland ];
+    extraPortals = [
+      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland
+      pkgs.xdg-desktop-portal-gtk
+    ];
   };
 
   # Environment variables for Wayland
