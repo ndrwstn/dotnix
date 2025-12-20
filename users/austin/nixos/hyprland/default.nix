@@ -89,5 +89,11 @@ lib.mkMerge [
         ];
       };
     };
+
+    # Fix for XDG portal warning in Home Manager
+    xdg.portal = {
+      enable = true;
+      config.common.default = "*";
+    };
   }
 ]
