@@ -74,12 +74,12 @@ lib.mkMerge [
         };
 
         # Window rules
-        windowrule = [
-          "float,^(pavucontrol)$"
-          "float,^(blueman-manager)$"
-          "float,^(nm-connection-editor)$"
-          "float,^(gnome-disks)$"
-          "float,^(gparted)$"
+        windowrulev2 = [
+          "float,class:^(pavucontrol)$"
+          "float,class:^(blueman-manager)$"
+          "float,class:^(nm-connection-editor)$"
+          "float,class:^(gnome-disks)$"
+          "float,class:^(gparted)$"
         ];
 
         # Workspace configuration
