@@ -20,6 +20,9 @@
     # Update systemd environment variables (fix for Waybar/systemd services not starting)
     "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 
+    # Start Waybar
+    "${pkgs.waybar}/bin/waybar"
+
     # Polkit authentication agent
     "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
