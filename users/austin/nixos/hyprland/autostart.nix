@@ -17,12 +17,6 @@
   };
 
   wayland.windowManager.hyprland.settings.exec-once = [
-    # Start Waybar
-    "${pkgs.waybar}/bin/waybar"
-
-    # Start notification daemon
-    "${pkgs.mako}/bin/mako"
-
     # Polkit authentication agent
     "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 

@@ -9,6 +9,7 @@ lib.mkMerge [
   {
     wayland.windowManager.hyprland = {
       enable = true;
+      package = null; # Use system-installed Hyprland to avoid conflicts
 
       settings = {
         # Monitor configuration
