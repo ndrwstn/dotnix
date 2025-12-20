@@ -23,6 +23,7 @@
       inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland
       pkgs.xdg-desktop-portal-gtk
     ];
+    config.common.default = "*";
   };
 
   # Environment variables for Wayland
@@ -43,5 +44,5 @@
   };
 
   # Required for some Wayland applications
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
 }
