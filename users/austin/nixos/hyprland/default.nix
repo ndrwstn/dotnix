@@ -4,6 +4,7 @@
 
 lib.mkMerge [
   (import ./autostart.nix { inherit pkgs unstable lib config; })
+  (import ./gestures.nix { inherit pkgs unstable lib config; })
   (import ./keymaps.nix { inherit pkgs unstable lib config; })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
   {
