@@ -40,8 +40,8 @@ lib.mkMerge [
           gaps_in = 5;
           gaps_out = 10;
           border_size = 2;
-          col.active_border = "rgba(94,129,172,1)";
-          col.inactive_border = "rgba(46,52,64,1)";
+          "col.active_border" = "rgba(94,129,172,1)";
+          "col.inactive_border" = "rgba(46,52,64,1)";
           resize_on_border = true;
         };
 
@@ -53,10 +53,13 @@ lib.mkMerge [
             size = 3;
             passes = 2;
           };
-          drop_shadow = true;
-          shadow_range = 4;
-          shadow_render_power = 3;
-          col.shadow = "rgba(0,0,0,0.3)";
+
+          shadow = {
+            enabled = true;
+            range = 4;
+            render_power = 3;
+            color = "rgba(0,0,0,0.3)";
+          };
         };
 
         # Animation settings
