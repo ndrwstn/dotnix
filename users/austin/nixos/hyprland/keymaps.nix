@@ -1,6 +1,6 @@
 # users/austin/nixos/hyprland/keymaps.nix
 # Hyprland keybindings configuration
-{ pkgs, ... }:
+{ pkgs, unstable, ... }:
 
 let
   mod = "SUPER";
@@ -9,7 +9,7 @@ in
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Terminal
-      "${mod},Return,exec,${pkgs.ghostty}/bin/ghostty"
+      "${mod},Return,exec,${unstable.ghostty}/bin/ghostty"
 
       # Application launcher
       "${mod},Space,exec,${pkgs.wofi}/bin/wofi --show drun"

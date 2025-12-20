@@ -23,4 +23,7 @@ lib.mkMerge [
 
   # nixos packages
   (import ./packages.nix { inherit config pkgs unstable; })
+
+  # Hyprland configuration
+  (import ./hyprland { inherit config pkgs unstable lib; })
 ]
