@@ -11,6 +11,8 @@ lib.mkMerge [
     wayland.windowManager.hyprland = {
       enable = true;
       package = null; # Use system-installed Hyprland to avoid conflicts
+      portalPackage = null; # Use system-installed portal to avoid conflicts
+      systemd.variables = [ "--all" ]; # Export all env vars to systemd user session
 
       settings = {
         # Monitor configuration
@@ -94,10 +96,5 @@ lib.mkMerge [
       };
     };
 
-    # Fix for XDG portal warning in Home Manager
-    xdg.portal = {
-      enable = true;
-      config.common.default = "*";
-    };
   }
 ]

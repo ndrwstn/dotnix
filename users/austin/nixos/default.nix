@@ -19,6 +19,14 @@ lib.mkMerge [
       # Force SSH to use 1Password agent socket
       SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
     };
+
+    # Cursor theme configuration (unified across Wayland/X11/GTK)
+    home.pointerCursor = {
+      name = "breeze_cursors";
+      size = 24;
+      package = pkgs.kdePackages.breeze;
+      gtk.enable = true;
+    };
   }
 
   # nixos packages

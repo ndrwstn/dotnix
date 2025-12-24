@@ -38,8 +38,6 @@
     waybar
     wofi
     polkit_gnome
-    swaylock
-    swayidle
     grim
     slurp
     light
