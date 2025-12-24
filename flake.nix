@@ -40,17 +40,10 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-
-
     # NUR repository for Firefox extensions
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Hyprland Wayland compositor
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
     };
 
     # MCP servers for AI tooling
@@ -71,7 +64,7 @@
     , nixautopkgs
     , mcp-servers-nix
     , nur
-    , hyprland
+
     , ...
     }:
     let
