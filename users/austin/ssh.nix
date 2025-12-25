@@ -352,6 +352,7 @@ in
   };
 
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
+  # force = true prevents backup conflicts when activation scripts convert symlinks to regular files
   home.file.".ssh/authorized_keys" = {
     text = lib.concatStringsSep "\n" authorizedKeys;
     force = true;
@@ -372,6 +373,7 @@ in
 
   # Deploy public keys for external services with fingerprint filenames for 1Password compatibility
   # These are used with IdentitiesOnly to ensure only the correct key is tried
+  # force = true prevents backup conflicts when activation scripts convert symlinks to regular files
   home.file.".ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
     force = true;
