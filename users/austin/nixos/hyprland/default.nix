@@ -31,11 +31,14 @@ lib.mkMerge [
 
           follow_mouse = 1;
           sensitivity = 0;
-          accel_profile = "flat";
+          accel_profile = "adaptive"; # GNOME-style speed-dependent acceleration
 
           touchpad = {
             natural_scroll = true;
             disable_while_typing = true;
+            clickfinger_behavior = true; # Enable finger-count-based clicking
+            tap-to-click = true; # Tap to click (1-tap=left, 2-tap=right, 3-tap=middle)
+            drag_lock = true; # Can lift finger briefly during drag without dropping
           };
         };
 
