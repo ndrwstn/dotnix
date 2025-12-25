@@ -17,7 +17,6 @@ in
       # Window management
       "${mod},Q,killactive,"
       "${mod},F,fullscreen,"
-      "${mod},C,exec,${pkgs.swaylock}/bin/swaylock -f"
 
       # Workspace navigation
       "${mod},1,workspace,1"
