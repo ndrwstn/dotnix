@@ -123,7 +123,7 @@ lib.mkMerge [
       # pay-respects (replacement for thefuck)
       pay-respects = {
         enable = true;
-        # TODO - 'esc' alias
+        enableZshIntegration = true;
       };
 
       # Note: Tmux configuration moved to tmux.nix
@@ -239,6 +239,7 @@ lib.mkMerge [
       # stern
       talosctl
       taplo
+      pay-respects
       tlrc
       tree-sitter
       typescript-language-server
