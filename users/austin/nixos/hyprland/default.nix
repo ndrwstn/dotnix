@@ -12,6 +12,7 @@ lib.mkMerge [
       enable = true;
       package = null; # Use system-installed Hyprland to avoid conflicts
       portalPackage = null; # Use system-installed portal to avoid conflicts
+      systemd.enable = true; # Enable systemd integration for proper graphical-session.target activation
       systemd.variables = [ "--all" ]; # Export all env vars to systemd user session
 
       settings = {

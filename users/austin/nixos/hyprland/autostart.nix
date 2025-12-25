@@ -86,8 +86,8 @@
     # Polkit authentication agent
     "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
-    # 1Password (already configured in systems/nixos/1password.nix)
-    "systemctl --user start 1password"
+    # Note: 1Password starts via systemd user service (WantedBy=graphical-session.target)
+    # No manual start needed - systemd.enable = true in default.nix handles session target
 
     # Set background wallpaper using swww
     "${pkgs.swww}/bin/swww init"
