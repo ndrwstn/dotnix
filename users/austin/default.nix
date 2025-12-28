@@ -120,8 +120,8 @@ lib.mkMerge [
         enable = true;
       };
 
-      # thefuck
-      thefuck = {
+      # pay-respects (replacement for thefuck)
+      pay-respects = {
         enable = true;
         # TODO - 'esc' alias
       };
@@ -239,7 +239,6 @@ lib.mkMerge [
       # stern
       talosctl
       taplo
-      thefuck
       tlrc
       tree-sitter
       typescript-language-server
