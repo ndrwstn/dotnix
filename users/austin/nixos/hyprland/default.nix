@@ -87,6 +87,10 @@ lib.mkMerge [
           "float,class:^(nm-connection-editor)$"
           "float,class:^(gnome-disks)$"
           "float,class:^(gparted)$"
+
+          # GCS - GURPS Character Sheet (XWayland/GLFW application)
+          "tile,class:^(GCS)$"
+          "nomaxsize,class:^(GCS)$"
         ];
 
         # Workspace configuration
