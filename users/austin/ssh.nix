@@ -354,11 +354,13 @@ in
   # Deploy authorized_keys via home-manager (works on both Darwin and NixOS)
   home.file.".ssh/authorized_keys" = {
     text = lib.concatStringsSep "\n" authorizedKeys;
+    force = true;
   };
 
   # Create Nix-managed known_hosts file (read-only)
   home.file.".ssh/known_hosts_nix" = {
     text = generateKnownHosts knownHosts;
+    force = true;
   };
 
   # Deploy current machine's public key for SSH authentication  
@@ -372,20 +374,24 @@ in
   # These are used with IdentitiesOnly to ensure only the correct key is tried
   home.file.".ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
+    force = true;
   };
 
   home.file.".ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
+    force = true;
   };
 
   # Deploy nietzsche-monaco public key with fingerprint filename
   home.file.".ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" = {
     text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIETrnFlZK34DorsbbetCJoRtEHS3r7yAUI5EcSP1hX0y";
+    force = true;
   };
 
   # Deploy current machine's public key with fingerprint filename
   home.file.".ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}" = lib.mkIf (currentMachine != null) {
     text = currentMachine.key;
+    force = true;
   };
 
   # Create symlink to setup key for machines that have it deployed via agenix
