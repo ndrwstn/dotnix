@@ -211,6 +211,7 @@ lib.mkMerge [
       nil
       nix-diff
       nix-prefetch-scripts
+      nix-search-cli
       nix-tree
       nix-update
       nixpkgs-fmt
@@ -220,6 +221,7 @@ lib.mkMerge [
       nvd
       pandoc
       pluto
+      poppler-utils
       # printrun
       # python3
       pyright
