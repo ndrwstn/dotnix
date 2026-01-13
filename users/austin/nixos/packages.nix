@@ -25,7 +25,7 @@
     obsidian
     openscad
     orca-slicer
-    # plex-media-player  # removed from nixpkgs
+    # plex-desktop
     python313
     rtl-sdr
     ungoogled-chromium
