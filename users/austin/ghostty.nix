@@ -14,8 +14,14 @@
       # Enable CSI u protocol support for modified keys
       term = "xterm-256color";
 
-      # Map Shift+Enter to send CSI u sequence that tmux can recognize
-      keybind = "shift+enter=csi:13;2u";
+      # Keybinding configurations
+      keybind = [
+        # Unbind Ghostty's Ctrl+Enter fullscreen binding to allow it to pass through to nvim
+        "ctrl+enter=unbind"
+
+        # Map Shift+Enter to send CSI u sequence that tmux can recognize
+        "shift+enter=csi:13;2u"
+      ];
 
       # Additional tmux-friendly settings
       shell-integration = "detect";
