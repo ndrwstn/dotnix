@@ -19,29 +19,30 @@ pkgs.texlive.combine {
     texcount
     # Document elements
     amsmath
-    enumitem
-    nth
-    footmisc
-    hyperref
-    extsizes
-    geometry
-    titlesec
-    xcolor
-    setspace
-    fancyhdr
-    pdfpages
     datetime2
     datetime2-english
-    fmtcount
-    pgfopts
-    multirow
-    makecell
-    nowidow
-    xpeek
-    xurl
-    pdflscape
+    enumitem
     epstopdf
     epstopdf-pkg
+    extsizes
+    fancyhdr
+    fmtcount
+    footmisc
+    geometry
+    hyperref
+    lipsum
+    makecell
+    multirow
+    nowidow
+    nth
+    pdflscape
+    pdfpages
+    pgfopts
+    setspace
+    titlesec
+    xcolor
+    xpeek
+    xurl
     # Resume
     moderncv
     luatexbase
