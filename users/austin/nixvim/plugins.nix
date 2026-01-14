@@ -214,7 +214,8 @@
         marksman = {
           enable = true;
           # Use marksman binary from user packages (already installed via default.nix)
-          packageFallback = true;
+          package = null;
+          cmd = [ "/etc/profiles/per-user/austin/bin/marksman" ];
         };
         # sql
         sqlls = {
