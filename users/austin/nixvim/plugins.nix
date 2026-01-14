@@ -211,7 +211,11 @@
         # lua
         lua_ls.enable = true;
         # markdown
-        # marksman.enable = true; # Disabled - using external marksman binary from user packages instead
+        marksman = {
+          enable = true;
+          # Use marksman binary from user packages (already installed via default.nix)
+          packageFallback = true;
+        };
         # sql
         sqlls = {
           enable = true;
