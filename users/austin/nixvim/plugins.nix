@@ -141,9 +141,8 @@
     diffview = {
       enable = true;
       settings = {
-        # Disable mercurial to avoid health check warnings (don't use hg)
-        hg_cmd = false;
         use_icons = true; # Requires nvim-web-devicons (already enabled)
+        # Note: Let diffview handle missing mercurial gracefully with expected warning
       };
       # TODO: Configure diffview keybindings in keymaps.nix
       # Provides: :DiffviewOpen, :DiffviewFileHistory
