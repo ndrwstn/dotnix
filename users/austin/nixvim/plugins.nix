@@ -568,4 +568,31 @@
       };
     };
   };
+
+  # Configure noice and treesitter directly via Lua to bypass nixvim validation
+  extraConfigLua = ''
+    -- Configure LSP markdown conversion functions
+    require("noice").setup({
+      lsp = {
+        override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
+          },
+        },
+        presets = {
+          lsp_doc_border = true;
+        },
+      })
+      
+      -- Auto-enable treesitter highlighting for markdown buffers
+      vim.api.nvim_create_autocmd("BufRead", {
+        pattern = { "*.md", "*.markdown" },
+        callback = function()
+          if vim.treesitter.highlighter.active then
+            vim.treesitter.start()
+          end
+        end,
+      })
+  '';
 }
