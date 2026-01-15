@@ -94,9 +94,13 @@
           nixpkgs-fmt = {
             command = "nixpkgs-fmt";
           };
+          # Override sqlfluff to fix root detection issues
           sqlfluff = {
             command = "sqlfluff";
-            args = [ "format" "--dialect" "postgres" "-" ];
+            args = [ "fix" "--dialect" "postgres" "-" ];
+            stdin = true;
+            # Only require cwd if config file is found
+            require_cwd = false;
           };
         };
         formatters_by_ft = {
@@ -221,6 +225,7 @@
         sqlls = {
           enable = true;
           package = pkgs.sqls;
+          cmd = [ "${pkgs.sqls}/bin/sqls" ];
         };
       };
     };
@@ -277,6 +282,7 @@
         dim = { enabled = true; };
         notifier = { enabled = true; };
         zen = { enabled = true; };
+        image = { enabled = true; };
       };
     };
 
@@ -284,7 +290,9 @@
     # STATUSLINE & UI
     # ============================================================================
     lualine.enable = true;
-    noice.enable = true;
+    noice = {
+      enable = true;
+    };
 
     # Design Decision: REMOVED dressing.nvim - using snacks.input instead
     # Snacks provides input/select UI that replaces dressing functionality
@@ -308,6 +316,7 @@
           "yaml"
           "diff"
           "toml"
+          "norg" # For snacks.image documentation
         ];
       };
     };
@@ -329,6 +338,10 @@
       settings = {
         preset = "none";
         enabled = true;
+        # Disable latex support to avoid missing tools warning
+        latex = {
+          enabled = false;
+        };
       };
     };
 
