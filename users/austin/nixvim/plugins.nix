@@ -46,17 +46,17 @@
               preselect = true;
               auto_insert = false;
             };
-            menu = {
-              auto_show = true;
-              border = "rounded";
-            };
-            documentation = {
-              auto_show = true;
-              auto_show_delay_ms = 500;
-            };
-            ghost_text = {
-              enabled = false;
-            };
+          };
+          menu = {
+            auto_show = true;
+            border = "rounded";
+          };
+          documentation = {
+            auto_show = true;
+            auto_show_delay_ms = 500;
+          };
+          ghost_text = {
+            enabled = false;
           };
         };
 
@@ -343,6 +343,7 @@
       settings = {
         preset = "none";
         enabled = true;
+        restart_highlighter = true;
         # Disable latex support to avoid missing tools warning
         latex = {
           enabled = false;
@@ -572,7 +573,7 @@
   # Configure early diffview setting and clean up redundant configurations
   extraConfigLua = ''
     -- Set diffview configuration early before plugin loads
-    vim.g.diffview_hg_cmd = nil
+    vim.g.diffview_hg_cmd = ""
     
     -- Configure LSP markdown conversion functions
     require("noice").setup({
