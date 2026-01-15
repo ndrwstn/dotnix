@@ -1,7 +1,7 @@
 # users/austin/nixvim/plugins.nix
 { pkgs
 , texlivePackage
-,
+, ...
 }: {
   clipboard = { register = "unnamedplus"; };
   plugins = {
@@ -46,17 +46,17 @@
               preselect = true;
               auto_insert = false;
             };
-          };
-          menu = {
-            auto_show = true;
-            border = "rounded";
-          };
-          documentation = {
-            auto_show = true;
-            auto_show_delay_ms = 500;
-          };
-          ghost_text = {
-            enabled = false;
+            menu = {
+              auto_show = true;
+              border = "rounded";
+            };
+            documentation = {
+              auto_show = true;
+              auto_show_delay_ms = 500;
+            };
+            ghost_text = {
+              enabled = false;
+            };
           };
         };
 
@@ -140,6 +140,11 @@
     # Complements gitsigns (which provides inline decorations)
     diffview = {
       enable = true;
+      settings = {
+        # Disable mercurial to avoid health check warnings (don't use hg)
+        hg_cmd = [ ];
+        use_icons = true; # Requires nvim-web-devicons (already enabled)
+      };
       # TODO: Configure diffview keybindings in keymaps.nix
       # Provides: :DiffviewOpen, :DiffviewFileHistory
     };
@@ -302,6 +307,7 @@
     # ============================================================================
     treesitter = {
       enable = true;
+
       settings = {
         ensure_installed = [
           "nix"
@@ -320,7 +326,6 @@
         ];
       };
     };
-    treesitter-context.enable = true;
 
     # ============================================================================
     # DIAGNOSTICS & TROUBLE
@@ -394,24 +399,6 @@
     web-devicons.enable = true;
     which-key.enable = true;
 
-    # Design Decision: lensline.nvim shows LSP references, git blame, complexity
-    # inline with code for at-a-glance context
-    # lensline = {
-    #   enable = true;
-    #   settings = {
-    #     # Updated to new profiles format (providers deprecated)
-    #     profiles = [
-    #       {
-    #         name = "default";
-    #         providers = {
-    #           usages = { enabled = true; };
-    #           git_blame = { enabled = true; };
-    #         };
-    #       }
-    #     ];
-    #   };
-    # };
-
     # Design Decision: persistence.nvim for automatic session management
     # Complements snacks.picker.projects() for project switching
     persistence = {
@@ -461,11 +448,11 @@
     #         events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
     #       };
     #       clear = {
-    #         events = [ "TextChangedI" "InsertEnter" ];
+    #         events = [ "TextChangedI" "InsertEnter" "esc" ];
     #         esc = true;
     #       };
     #     };
-
+    # 
     #     # OpenCode CLI Integration
     #     cli = {
     #       watch = true;
@@ -481,7 +468,6 @@
     #             OPENCODE_THEME = "system";
     #           };
     #         };
-    #       };
     #       win = {
     #         layout = "right";
     #         split = {
@@ -495,8 +481,7 @@
     #         fix = "Can you fix {this}?";
     #         tests = "Can you write tests for {this}?";
     #       };
-    #     };
-
+    # 
     #     # Copilot status tracking
     #     copilot = {
     #       status = {
@@ -528,7 +513,6 @@
       };
     };
 
-
     # ============================================================================
     # CODE OVERVIEW
     # ============================================================================
@@ -555,7 +539,7 @@
         keywords = {
           FIX = { icon = " "; color = "error"; alt = [ "FIXME" "BUG" "FIXIT" "ISSUE" ]; };
           TODO = { icon = " "; color = "info"; };
-          HACK = { icon = " "; color = "warning"; };
+          HACK = { icon = " "; color = "warning"; alt = [ "WARNING" "XXX" ]; };
           WARN = { icon = " "; color = "warning"; alt = [ "WARNING" "XXX" ]; };
           PERF = { icon = " "; alt = [ "OPTIM" "PERFORMANCE" "OPTIMIZE" ]; };
           NOTE = { icon = " "; color = "hint"; alt = [ "INFO" ]; };
@@ -574,12 +558,12 @@
           normal = "ys";
           normal_cur = "yss";
           normal_line = "yS";
-          normal_cur_line = "ySS";
           visual = "S";
           visual_line = "gS";
           delete = "ds";
           change = "cs";
           change_line = "cS";
+          f_change_line = "cS";
         };
       };
     };
