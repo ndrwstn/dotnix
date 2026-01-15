@@ -569,8 +569,11 @@
     };
   };
 
-  # Configure noice and treesitter directly via Lua to bypass nixvim validation
+  # Configure early diffview setting and clean up redundant configurations
   extraConfigLua = ''
+    -- Set diffview configuration early before plugin loads
+    vim.g.diffview_hg_cmd = nil
+    
     -- Configure LSP markdown conversion functions
     require("noice").setup({
       lsp = {
@@ -583,16 +586,6 @@
         presets = {
           lsp_doc_border = true;
         },
-      })
-      
-      -- Auto-enable treesitter highlighting for markdown buffers
-      vim.api.nvim_create_autocmd("BufRead", {
-        pattern = { "*.md", "*.markdown" },
-        callback = function()
-          if vim.treesitter.highlighter.active then
-            vim.treesitter.start()
-          end
-        end,
       })
   '';
 }
