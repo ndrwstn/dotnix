@@ -142,7 +142,7 @@
       enable = true;
       settings = {
         # Disable mercurial to avoid health check warnings (don't use hg)
-        hg_cmd = [ ];
+        hg_cmd = false;
         use_icons = true; # Requires nvim-web-devicons (already enabled)
       };
       # TODO: Configure diffview keybindings in keymaps.nix
@@ -572,8 +572,8 @@
 
   # Configure early diffview setting and clean up redundant configurations
   extraConfigLua = ''
-    -- Set diffview configuration early before plugin loads
-    vim.g.diffview_hg_cmd = ""
+    -- Set diffview configuration early before plugin loads (removed - using plugin settings instead)
+    -- vim.g.diffview_hg_cmd = false  -- Moved to plugin.diffview.settings
     
     -- Configure LSP markdown conversion functions
     require("noice").setup({
