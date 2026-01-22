@@ -15,6 +15,22 @@
   boot.kernelModules = [ "kvm-intel" "wl" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
+  # Blacklist b43 driver to prevent race condition with wl (broadcom_sta)
+  # BCM4360 is not supported by b43, which causes intermittent WiFi failures
+  # when b43 attempts to claim the device first and blocks wl from loading
+  boot.blacklistedKernelModules = [ "b43" "b43legacy" "ssb" "bcma" ];
+
+  # Modprobe configuration to ensure wl driver is preferred
+  boot.extraModprobeConfig = ''
+    # Blacklist b43 and related modules for BCM4360 WiFi chip
+    # The b43 driver does not support BCM4360 (802.11ac) and creates
+    # a race condition with the wl (broadcom_sta) driver
+    blacklist b43
+    blacklist b43legacy
+    blacklist ssb
+    blacklist bcma
+  '';
+
   fileSystems."/" =
     {
       device = "/dev/disk/by-uuid/1b161ea5-49c8-4b4a-a6f5-960662c8e000";
