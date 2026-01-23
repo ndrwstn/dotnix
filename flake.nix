@@ -15,10 +15,7 @@
     };
 
     # Darwin login items management
-    darwin-login-items = {
-      url = "github:uncenter/nix-darwin-login-items";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
+    darwin-login-items.url = "github:uncenter/nix-darwin-login-items";
 
     # Home Manager
     home-manager = {
