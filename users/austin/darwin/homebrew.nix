@@ -99,7 +99,7 @@
       "Banktivity" = 1480779512;
       # "GarageBand" = 682658836;
       "Goodnotes" = 1444383602;
-      "Grab2Text" = 6475956137;
+      # "Grab2Text" = 6475956137; # removed from mac apple store?
       "Home Assistant" = 1099568401;
       # "iMovie" = 408981434;
       # "Keynote" = 409183694;
