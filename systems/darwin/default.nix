@@ -42,6 +42,7 @@ in
     ./apps
     ./agenix.nix
     ./login-items.nix
+    ./disable-background-services.nix
   ];
 
   # any GUI apps must be added system-wide
