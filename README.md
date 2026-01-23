@@ -9,7 +9,7 @@ NixOS and nix-darwin configurations using agenix for secret management.
 ```bash
 # Clone repo
 git clone https://github.com/ndrwstn/dotnix
-cd nx-nix
+cd dotnix
 
 # Create machine configuration (if new machine)
 mkdir -p machines/<hostname>
@@ -23,19 +23,41 @@ nixos-rebuild switch --flake .#<hostname>
 
 ### Darwin (macOS)
 
-```bash
-# Install Nix
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+#### Quick Start
 
-# Set hostname for auto-discovery
+```bash
+# 1. Install Homebrew (required for nix-darwin configuration)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 2. Install standard Nix
+sh <(curl -L https://nixos.org/nix/install) --daemon
+
+# 3. Set hostname
 sudo scutil --set ComputerName <hostname>
 sudo scutil --set LocalHostName <hostname>
 sudo scutil --set HostName <hostname>
 
-# Clone and build
-git clone https://github.com/ndrwstn/dotnix
-cd nx-nix
-darwin-rebuild switch --flake .#<hostname>
+# 4. Bootstrap nix-darwin (requires sudo for system.defaults)
+sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake github:ndrwstn/dotnix#<hostname>
+```
+
+**⚠️ Important:**
+
+- Do NOT use Determinate Nix installer
+- Your macOS username must be `austin` or `jessica` (or create a new user config)
+- See **[DARWIN.md](DARWIN.md)** for detailed installation instructions and troubleshooting
+
+#### Supported Machines
+
+- **Monaco** - aarch64-darwin (Apple Silicon)
+- **Plutonium** - x86_64-darwin (Intel)
+- **Silver** - x86_64-darwin (Intel)
+
+#### Updates
+
+```bash
+# After initial setup (use sudo for system.defaults)
+sudo darwin-rebuild switch --flake ~/.config/nix#<hostname>
 ```
 
 ## Secret Management with agenix
