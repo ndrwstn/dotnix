@@ -39,16 +39,16 @@
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # Disable user-level services (can be done without sudo)
-    launchctl disable gui/$(id -u)/us.zoom.updater 2>/dev/null && \
+    launchctl disable "gui/$(id -u)/us.zoom.updater" 2>/dev/null && \
       echo "✓ Disabled: us.zoom.updater" || echo "  (us.zoom.updater already disabled or not found)"
     
-    launchctl disable gui/$(id -u)/us.zoom.updater.login.check 2>/dev/null && \
+    launchctl disable "gui/$(id -u)/us.zoom.updater.login.check" 2>/dev/null && \
       echo "✓ Disabled: us.zoom.updater.login.check" || echo "  (us.zoom.updater.login.check already disabled or not found)"
     
-    launchctl disable gui/$(id -u)/com.google.keystone.agent 2>/dev/null && \
+    launchctl disable "gui/$(id -u)/com.google.keystone.agent" 2>/dev/null && \
       echo "✓ Disabled: com.google.keystone.agent" || echo "  (com.google.keystone.agent already disabled or not found)"
     
-    launchctl disable gui/$(id -u)/com.google.keystone.xpcservice 2>/dev/null && \
+    launchctl disable "gui/$(id -u)/com.google.keystone.xpcservice" 2>/dev/null && \
       echo "✓ Disabled: com.google.keystone.xpcservice" || echo "  (com.google.keystone.xpcservice already disabled or not found)"
     
     echo ""
