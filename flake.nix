@@ -14,6 +14,12 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    # Darwin login items management
+    darwin-login-items = {
+      url = "github:uncenter/nix-darwin-login-items";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
     # Home Manager
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
@@ -58,6 +64,7 @@
     , nixpkgs
     , nixpkgs-unstable
     , nix-darwin
+    , darwin-login-items
     , home-manager
     , nixvim
     , agenix
@@ -220,6 +227,12 @@
                 ./systems/common
                 sysConfig.systemModule
                 sysConfig.hmModule
+              ]
+              # Add darwin-login-items module for Darwin systems only
+              ++ lib.optionals (osType == "darwin") [
+                darwin-login-items.darwinModules.default
+              ]
+              ++ [
                 ({ config, ... }: {
                   home-manager.useGlobalPkgs = true;
                   home-manager.useUserPackages = true;

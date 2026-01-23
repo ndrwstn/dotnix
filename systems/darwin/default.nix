@@ -41,6 +41,7 @@ in
   imports = [
     ./apps
     ./agenix.nix
+    ./login-items.nix
   ];
 
   # any GUI apps must be added system-wide
