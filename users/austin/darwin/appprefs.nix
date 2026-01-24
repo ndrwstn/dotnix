@@ -15,19 +15,21 @@ let
       (builtins.readDir prefsDir)
   );
 
-  # Load and parse each JSON file
+  # Load and parse each JSON file, tracking source paths
   prefConfigs = map
-    (filename:
-      builtins.fromJSON (builtins.readFile (prefsDir + "/${filename}"))
-    )
+    (filename: {
+      config = builtins.fromJSON (builtins.readFile (prefsDir + "/${filename}"));
+      sourcePath = prefsDir + "/${filename}";
+    })
     prefFiles;
 
   # Generate deployment script for all preference files
   deploymentScript = lib.concatMapStringsSep "\n"
-    (jsonConfig:
+    (item:
       plistGen.generateAllPlistScripts {
         inherit config;
-        inherit jsonConfig;
+        jsonConfig = item.config;
+        jsonFilePath = toString item.sourcePath;
       }
     )
     prefConfigs;

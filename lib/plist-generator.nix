@@ -28,7 +28,7 @@ rec {
     5. Deploys to target location with correct permissions
     6. Conditionally restarts app if it was running
   */
-  generatePlistScript = { config, fileConfig }:
+  generatePlistScript = { config, fileConfig, jsonFilePath }:
     pkgs.writeShellScript "deploy-plist-${fileConfig.filename}" ''
             set -euo pipefail
       
@@ -66,9 +66,12 @@ rec {
           else:
               return obj
 
-      # Load JSON data (passed as string literal from Nix)
-      json_data = """${builtins.toJSON fileConfig.data}"""
-      plist_data = json.loads(json_data)
+      # Read JSON directly from source file (avoids Nix serialization issues)
+      with open("${jsonFilePath}", 'r') as f:
+          config_data = json.load(f)
+      
+      # Extract plist data from the first file entry
+      plist_data = config_data['files'][0]['data']
 
       # Convert with type handling
       converted_data = convert_json_to_plist(plist_data)
@@ -135,13 +138,13 @@ rec {
   /*
     Generate deployment scripts for all plist files in a JSON config
     
-    Input: Full JSON config with "files" array
+    Input: Full JSON config with "files" array, and source JSON file path
     Returns: Concatenated shell script for all files
   */
-  generateAllPlistScripts = { config, jsonConfig }:
+  generateAllPlistScripts = { config, jsonConfig, jsonFilePath }:
     lib.concatMapStringsSep "\n"
       (fileConfig: ''
-        ${generatePlistScript { inherit config fileConfig; }}
+        ${generatePlistScript { inherit config fileConfig jsonFilePath; }}
       '')
       jsonConfig.files;
 }
