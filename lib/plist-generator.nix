@@ -67,7 +67,7 @@ rec {
               return obj
 
       # Load JSON data (passed as string literal from Nix)
-      json_data = '''${builtins.toJSON fileConfig.data}'''
+      json_data = """${builtins.toJSON fileConfig.data}"""
       plist_data = json.loads(json_data)
 
       # Convert with type handling
