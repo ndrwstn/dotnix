@@ -7,6 +7,147 @@ let
   # Current timestamp for backup operations
   currentTimestamp = backupManager.generateTimestamp;
 
+  # Batch processing functionality (inline for Phase 2)
+  batchPlistProcessor = { jsonConfigs, jsonFilePaths }:
+    pkgs.writeScript "batch-plist-processor" ''
+      #!/usr/bin/env python3
+      """
+      Batch Plist Processor - Phase 2 Enhancement
+      Processes multiple JSON configuration files efficiently
+      """
+      
+      import json
+      import plistlib
+      import os
+      import sys
+      import base64
+      from datetime import datetime
+      from pathlib import Path
+      import hashlib
+      
+      def convert_json_to_plist(obj):
+          """Enhanced type conversion for plist compatibility"""
+          if isinstance(obj, dict):
+              if "__type" in obj and "value" in obj:
+                  type_handler = obj["__type"]
+                  value = obj["value"]
+                  
+                  if type_handler == "date":
+                      return datetime.fromisoformat(value.replace('Z', '+00:00'))
+                  elif type_handler == "data":
+                      return base64.b64decode(value)
+                  elif type_handler == "bool":
+                      return value.lower() in ("true", "1", "yes") if isinstance(value, str) else bool(value)
+                  elif type_handler == "int":
+                      return int(value)
+                  elif type_handler == "float":
+                      return float(value)
+                  else:
+                      return value
+              return {k: convert_json_to_plist(v) for k, v in obj.items()}
+          elif isinstance(obj, list):
+              return [convert_json_to_plist(item) for item in obj]
+          else:
+              return obj
+      
+      def compute_file_checksum(file_path):
+          """Compute SHA256 checksum of file"""
+          hasher = hashlib.sha256()
+          with open(file_path, 'rb') as f:
+              for chunk in iter(lambda: f.read(4096), b""):
+                  hasher.update(chunk)
+          return hasher.hexdigest()
+      
+      def process_json_file(json_path, temp_dir):
+          """Process a single JSON configuration file"""
+          try:
+              with open(json_path, 'r') as f:
+                  config_data = json.load(f)
+              
+              results = []
+              for file_entry in config_data.get('files', []):
+                  if file_entry.get('type') != 'plist':
+                      continue
+                  
+                  filename = file_entry.get('filename')
+                  if not filename:
+                      continue
+                  
+                  plist_data = file_entry.get('data')
+                  if plist_data is None:
+                      continue
+                  
+                  converted_data = convert_json_to_plist(plist_data)
+                  plist_format = file_entry.get('format', 'xml1')
+                  fmt = plistlib.FMT_BINARY if plist_format == "binary1" else plistlib.FMT_XML
+                  output_path = Path(temp_dir) / f"{filename}.tmp"
+                  
+                  with open(output_path, 'wb') as f:
+                      plistlib.dump(converted_data, f, fmt=fmt)
+                  
+                  checksum = compute_file_checksum(output_path)
+                  results.append({
+                      'filename': filename,
+                      'output_path': str(output_path),
+                      'format': plist_format,
+                      'checksum': checksum,
+                      'size': output_path.stat().st_size,
+                      'success': True
+                  })
+                  
+                  print(f"✓ Generated plist: {filename}")
+              
+              return {
+                  'json_file': str(json_path),
+                  'success': True,
+                  'results': results,
+                  'total_files': len(results)
+              }
+          except Exception as e:
+              print(f"❌ Error processing {json_path}: {e}")
+              return {
+                  'json_file': str(json_path),
+                  'success': False,
+                  'error': str(e),
+                  'results': [],
+                  'total_files': 0
+              }
+      
+      def main():
+          if len(sys.argv) < 3:
+              print("Usage: batch-plist-processor <temp_dir> <json_file1> [json_file2] ...")
+              sys.exit(1)
+          
+          temp_dir = sys.argv[1]
+          json_files = sys.argv[2:]
+          
+          all_results = []
+          total_files_processed = 0
+          
+          for json_file in json_files:
+              result = process_json_file(json_file, temp_dir)
+              all_results.append(result)
+              total_files_processed += result['total_files']
+          
+          summary = {
+              'temp_dir': temp_dir,
+              'json_files_processed': len(json_files),
+              'total_plist_files': total_files_processed,
+              'success': all(r['success'] for r in all_results),
+              'results': all_results
+          }
+          
+          summary_path = Path(temp_dir) / 'batch_summary.json'
+          with open(summary_path, 'w') as f:
+              json.dump(summary, f, indent=2)
+          
+          print(f"Batch processing complete: {total_files_processed} files")
+          sys.exit(0 if summary['success'] else 1)
+      
+      if __name__ == "__main__":
+          main()
+    '';
+
 in
 rec {
   /*
@@ -327,23 +468,42 @@ rec {
     '';
 
   /*
-    Generate deployment scripts for all plist files in a JSON config
-    with batch processing and shared backup timestamp
+    Enhanced batch processing for all plist files with shared infrastructure
     
-    Input: Full JSON config with "files" array, and source JSON file path
-    Returns: Concatenated shell script for all files with shared infrastructure
+    Input: 
+    - config: Nix configuration
+    - jsonConfigs: Array of JSON configs (for multiple files)
+    - jsonFilePaths: Array of corresponding JSON file paths
+    - useBatchProcessing: Whether to use batch processing (default: true)
+    
+    Returns: Optimized shell script with batch processing and shared backup
   */
-  generateAllPlistScripts = { config, jsonConfig, jsonFilePath }:
+  generateAllPlistScripts =
+    { config
+    , jsonConfigs ? [ jsonConfig ]
+    , jsonFilePaths ? [ jsonFilePath ]
+    , jsonConfig ? { }
+    , jsonFilePath ? ""
+    , useBatchProcessing ? true
+    }:
     let
-      # Check if any file needs backup
+      # Support both single and multiple config formats
+      actualConfigs = if jsonConfigs == [ jsonConfig ] && jsonConfig != { } then [ jsonConfig ] else jsonConfigs;
+      actualPaths = if jsonFilePaths == [ jsonFilePath ] && jsonFilePath != "" then [ jsonFilePath ] else jsonFilePaths;
+
+      # Check if any file needs backup across all configs
       anyBackupNeeded = lib.any
-        (fileConfig:
-          if fileConfig ? backup then
-            (fileConfig.backup.enabled or true) &&
-            ((fileConfig.backup.strategy or "smart") != "never")
-          else true
+        (config:
+          lib.any
+            (fileConfig:
+              if fileConfig ? backup then
+                (fileConfig.backup.enabled or true) &&
+                ((fileConfig.backup.strategy or "smart") != "never")
+              else true
+            )
+            config.files
         )
-        jsonConfig.files;
+        actualConfigs;
 
       # Generate backup setup script if needed
       backupSetup =
@@ -362,16 +522,181 @@ rec {
           echo ""
         '' else "";
 
-      # Generate individual file scripts
-      fileScripts = map
-        (fileConfig:
-          generatePlistScript { inherit config fileConfig jsonFilePath; }
-        )
-        jsonConfig.files;
+      # Batch processing approach (Phase 2 enhancement)
+      batchProcessingScript =
+        if useBatchProcessing && (lib.length actualConfigs) > 0 then ''
+                    # Batch processing using enhanced Python processor
+                    echo "🚀 Using batch processing for ${toString (lib.length actualConfigs)} configuration files..."
+        
+                                # Create temporary directory for batch processing
+                                TEMP_BATCH_DIR=$(mktemp -d -t plist-batch.XXXXXX)
+                                echo "📁 Batch temp directory: $TEMP_BATCH_DIR"
+        
+          # Run batch processor for all JSON files
+                  echo "⚙️  Generating plists in batch..."
+                  ${batchPlistProcessor { 
+                    jsonConfigs = actualConfigs; 
+                    jsonFilePaths = actualPaths;
+                  }} "$TEMP_BATCH_DIR" ${lib.concatStringsSep " " (map (path: "\"${path}\"") actualPaths)}
+        
+                                # Check batch processing results
+                                BATCH_SUMMARY="$TEMP_BATCH_DIR/batch_summary.json"
+                                if [[ ! -f "$BATCH_SUMMARY" ]]; then
+                                  echo "❌ Batch processing failed - no summary found"
+                                  rm -rf "$TEMP_BATCH_DIR"
+                                  exit 1
+                                fi
+        
+                                # Extract statistics from batch summary
+                                TOTAL_PLIST_FILES=$(jq -r '.total_plist_files' "$BATCH_SUMMARY")
+                                BATCH_SUCCESS=$(jq -r '.success' "$BATCH_SUMMARY")
+        
+                                echo "📊 Batch processing results:"
+                                echo "   Plist files generated: $TOTAL_PLIST_FILES"
+                                echo "   Success: $BATCH_SUCCESS"
+        
+                                if [[ "$BATCH_SUCCESS" != "true" ]]; then
+                                  echo "❌ Some files failed to process - check logs above"
+                                  rm -rf "$TEMP_BATCH_DIR"
+                                  exit 1
+                                fi
+        
+                                # Now deploy files with backup and app management
+                                echo "🔄 Deploying plist files with enhanced management..."
+        
+                                # Process each file config individually for deployment (backup + app management)
+                                ${lib.concatMapStringsSep "\n" (jsonConfig: 
+                                  lib.concatMapStringsSep "\n" (fileConfig: ''
+                                    echo "📤 Processing deployment for: ${fileConfig.filename}"
+            
+                                    # Find the corresponding generated plist
+                                    GENERATED_PLIST="$TEMP_BATCH_DIR/${fileConfig.filename}.tmp"
+                                    TARGET_PATH="${config.home.homeDirectory}/${lib.removePrefix "~/" fileConfig.filepath}/${fileConfig.filename}"
+            
+                                    if [[ -f "$GENERATED_PLIST" ]]; then
+                                      # Enhanced change detection with backup integration
+                                      NEEDS_DEPLOY=0
+                                      DEPLOY_REASON=""
+                                      BACKUP_DIR=""
+              
+                                      if [[ -f "$TARGET_PATH" ]]; then
+                                        # Quick size check
+                                        local old_size=$(stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
+                                        local new_size=$(stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
+                
+                                        if [[ $old_size -ne $new_size ]]; then
+                                          NEEDS_DEPLOY=1
+                                          DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
+                                        else
+                                          # Content check via checksum
+                                          local old_checksum=$(sha256sum "$TARGET_PATH" | cut -d' ' -f1)
+                                          local new_checksum=$(jq -r --arg fn "${fileConfig.filename}" '.results[].results[]? | select(.filename == $fn) | .checksum' "$BATCH_SUMMARY")
+                  
+                                          if [[ "$old_checksum" != "$new_checksum" ]]; then
+                                            NEEDS_DEPLOY=1
+                                            DEPLOY_REASON="content changed"
+                                          fi
+                                        fi
+                
+                                        # Smart backup if changes detected and backup enabled
+                                        if [[ $NEEDS_DEPLOY -eq 1 ]] && [[ "${lib.boolToString (if fileConfig ? backup then (fileConfig.backup.enabled or true) else true)}" == "true" ]] && [[ "${if fileConfig ? backup then fileConfig.backup.strategy or "smart" else "smart"}" != "never" ]]; then
+                                          BACKUP_DIR="$HOME/Library/Preferences/backups/$(date +%Y-%m-%d-%H%M%S)"
+                                          mkdir -p "$BACKUP_DIR"
+                                          echo "💾 Backing up: ${fileConfig.filename} -> $BACKUP_DIR/"
+                  
+                                          local backup_path="$BACKUP_DIR/${fileConfig.filename}.backup"
+                                          cp -p "$TARGET_PATH" "$backup_path"
+                  
+                                          echo "  ✓ Backed up: $backup_path"
+                                        fi
+                                      else
+                                        NEEDS_DEPLOY=1
+                                        DEPLOY_REASON="new file"
+                                      fi
+              
+                                      # Enhanced app management with timeout and health checks
+                                      APP_WAS_RUNNING=0
+                                      PROCESS_NAME="${fileConfig.appControl.processName}"
+                                      TIMEOUT=${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}
+              
+                                      if [[ $NEEDS_DEPLOY -eq 1 ]]; then
+                                        # Check if app is running
+                                        if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
+                                          APP_WAS_RUNNING=1
+                                          echo "⏹️  Stopping $PROCESS_NAME..."
+                  
+                                          # Try graceful shutdown with timeout
+                                          if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$(${fileConfig.appControl.quitCommand} 2>/dev/null || true)"; then
+                                            echo "  ✓ Gracefully stopped"
+                                          else
+                                            echo "  ⚠️  Force stopping after timeout"
+                                            pkill -x "$PROCESS_NAME" 2>/dev/null || true
+                                            sleep 1
+                                          fi
+                                        fi
+                
+                                        # Deploy file
+                                        echo "📤 Deploying: ${fileConfig.filename} ($DEPLOY_REASON)"
+                                        mkdir -p "$(dirname "$TARGET_PATH")"
+                                        mv "$GENERATED_PLIST" "$TARGET_PATH"
+                                        chmod ${fileConfig.permissions} "$TARGET_PATH"
+                
+                                        # Clear preferences cache
+                                        killall cfprefsd 2>/dev/null || true
+                                        sleep 1
+                
+                                        echo "✅ Deployed successfully: ${fileConfig.filename}"
+                
+                                        # Restart with health check
+                                        if [[ $APP_WAS_RUNNING -eq 1 ]] && [[ "${lib.boolToString fileConfig.appControl.requiresRestart}" == "true" ]]; then
+                                          echo "🚀 Restarting $PROCESS_NAME..."
+                                          ${fileConfig.appControl.restartCommand} 2>/dev/null || true
+                  
+                                          if ${lib.boolToString (fileConfig.appControl.healthCheck or true)}; then
+                                            sleep 3
+                                            if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
+                                              echo "  ✓ Health check passed"
+                                            else
+                                              echo "  ⚠️  Health check failed - app may not have started"
+                                            fi
+                                          fi
+                                        fi
+                
+                                        # Recovery info if backup was made
+                                        if [[ -n "$BACKUP_DIR" ]]; then
+                                          echo "💡 Recovery: cp '$BACKUP_DIR/${fileConfig.filename}.backup' '$TARGET_PATH'"
+                                        fi
+                                      else
+                                        echo "✓ No changes needed: ${fileConfig.filename}"
+                                        # Clean up temp file
+                                        rm -f "$GENERATED_PLIST"
+                                      fi
+                                    else
+                                      echo "❌ Generated plist not found: ${fileConfig.filename}"
+                                    fi
+                                  '') jsonConfig.files
+                                ) actualConfigs}
+        
+                                # Cleanup
+                                rm -rf "$TEMP_BATCH_DIR"
+                                echo "🧹 Batch processing complete"
+        
+        '' else "";
+
+      # Fallback to individual processing (original approach)
+      individualProcessingScript =
+        if !useBatchProcessing then ''
+          # Using individual file processing (legacy mode)
+          ${lib.concatMapStringsSep "\n\n" (jsonConfig:
+            lib.concatMapStringsSep "\n\n" (fileConfig:
+              generatePlistScript { inherit config fileConfig; jsonFilePath = ""; }
+            ) jsonConfig.files
+          ) actualConfigs}
+        '' else "";
 
     in
-    # Combine backup setup with individual file scripts
-    backupSetup + lib.concatStringsSep "\n\n" fileScripts;
+    # Combine backup setup with processing script
+    backupSetup + (if useBatchProcessing then batchProcessingScript else individualProcessingScript);
 }
 
 
