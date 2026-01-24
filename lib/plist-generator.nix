@@ -291,11 +291,11 @@ rec {
               if [[ "$BACKUP_STRATEGY" == "always" ]] || [[ "$BACKUP_STRATEGY" == "smart" ]]; then
                 if [[ -f "$PLIST_FILE" ]]; then
                   # Get current file metadata
-                  local file_mtime=$(${pkgs.coreutils}/bin/stat -f %m "$PLIST_FILE" 2>/dev/null || echo "0")
-                  local current_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
+                  file_mtime=$(${pkgs.coreutils}/bin/stat -f %m "$PLIST_FILE" 2>/dev/null || echo "0")
+                  current_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
             
                   # Check if we have a last checksum for comparison
-                  local last_checksum="${if fileConfig ? backup && fileConfig.backup ? lastChecksum then fileConfig.backup.lastChecksum else ""}"
+                  last_checksum="${if fileConfig ? backup && fileConfig.backup ? lastChecksum then fileConfig.backup.lastChecksum else ""}"
             
                   if [[ "$BACKUP_STRATEGY" == "always" ]]; then
                     NEEDS_BACKUP=1
@@ -414,8 +414,8 @@ rec {
             DEPLOY_REASON=""
             if [[ -f "$PLIST_FILE" ]]; then
               # Quick size check first (faster than content comparison)
-              local old_size=$(${pkgs.coreutils}/bin/stat -f %z "$PLIST_FILE" 2>/dev/null || echo "0")
-              local new_size=$(${pkgs.coreutils}/bin/stat -f %z "$TEMP_PLIST" 2>/dev/null || echo "0")
+              old_size=$(${pkgs.coreutils}/bin/stat -f %z "$PLIST_FILE" 2>/dev/null || echo "0")
+              new_size=$(${pkgs.coreutils}/bin/stat -f %z "$TEMP_PLIST" 2>/dev/null || echo "0")
         
               if [[ $old_size -ne $new_size ]]; then
                 NEEDS_DEPLOY=1
@@ -446,16 +446,16 @@ rec {
               echo "💾 Backing up existing preferences..."
               if [[ -f "$PLIST_FILE" ]]; then
                 # Create backup with metadata
-                local backup_path="$BACKUP_DIR/$FILENAME.backup"
+                backup_path="$BACKUP_DIR/$FILENAME.backup"
                 cp -p "$PLIST_FILE" "$backup_path"
           
                 # Get file metadata for manifest
-                local file_perms=$(${pkgs.coreutils}/bin/stat -f "%Lp" "$PLIST_FILE")
-                local file_uid=$(${pkgs.coreutils}/bin/stat -f "%u" "$PLIST_FILE")
-                local file_gid=$(${pkgs.coreutils}/bin/stat -f "%g" "$PLIST_FILE")
-                local file_size=$(${pkgs.coreutils}/bin/stat -f "%z" "$PLIST_FILE")
-                local file_mtime=$(${pkgs.coreutils}/bin/stat -f "%m" "$PLIST_FILE")
-                local file_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
+                file_perms=$(${pkgs.coreutils}/bin/stat -f "%Lp" "$PLIST_FILE")
+                file_uid=$(${pkgs.coreutils}/bin/stat -f "%u" "$PLIST_FILE")
+                file_gid=$(${pkgs.coreutils}/bin/stat -f "%g" "$PLIST_FILE")
+                file_size=$(${pkgs.coreutils}/bin/stat -f "%z" "$PLIST_FILE")
+                file_mtime=$(${pkgs.coreutils}/bin/stat -f "%m" "$PLIST_FILE")
+                file_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
           
                 echo "  ✓ Backed up to: $backup_path"
           
