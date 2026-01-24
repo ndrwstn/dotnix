@@ -95,13 +95,14 @@ rec {
       print(f"Generated plist: {output_file}")
       PYTHON_EOF
       
-                  # Validate generated plist
-                  if ! plutil -lint "$TEMP_PLIST" >/dev/null 2>&1; then
-                    echo "ERROR: Generated plist is invalid: ${fileConfig.filename}"
-                    cat "$TEMP_PLIST"
-                    rm -f "$TEMP_PLIST"
-                    exit 1
-                  fi
+      # Validate generated plist
+      if ! plutil -lint "$TEMP_PLIST" 2>&1; then
+        echo "ERROR: Generated plist failed validation: ${fileConfig.filename}"
+        echo "Temp file preserved at: $TEMP_PLIST"
+        echo "First 100 lines of generated plist:"
+        head -100 "$TEMP_PLIST"
+        exit 1
+      fi
       
                   # Check if plist changed (change detection)
                   NEEDS_DEPLOY=0
