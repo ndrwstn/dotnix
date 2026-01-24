@@ -43,6 +43,9 @@ in
       echo "Deploying application preferences..."
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       
+      # Ensure Python is available for batch processing
+      export PATH="${pkgs.python3}/bin:$PATH"
+      
       ${deploymentScript}
       
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
