@@ -41,7 +41,7 @@ rec {
             mkdir -p "$PLIST_DIR"
       
             # Generate plist from JSON data using Python plistlib
-            ${pkgs.python3}/bin/python3 <<'PYTHON_EOF'
+            ${pkgs.python3}/bin/python3 <<PYTHON_EOF
       import json
       import plistlib
       import sys
