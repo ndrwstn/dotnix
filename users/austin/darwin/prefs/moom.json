@@ -2,7 +2,7 @@
   "files": [
     {
       "type": "plist",
-      "format": "binary1",
+      "format": "xml1",
       "filename": "com.manytricks.Moom.plist",
       "filepath": "~/Library/Preferences",
       "permissions": "600",
@@ -2196,4 +2196,3 @@
     }
   ]
 }
-
