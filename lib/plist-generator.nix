@@ -7,13 +7,13 @@ let
   # Current timestamp for backup operations
   currentTimestamp = backupManager.generateTimestamp;
 
-  # Batch processing functionality (inline for Phase 2)
+  # Batch processing functionality (enhanced for Phase 3 with inline type system)
   batchPlistProcessor = { jsonConfigs, jsonFilePaths }:
     pkgs.writeScript "batch-plist-processor" ''
       #!/usr/bin/env python3
       """
-      Batch Plist Processor - Phase 2 Enhancement
-      Processes multiple JSON configuration files efficiently
+      Enhanced Batch Plist Processor - Phase 3 Enhancement
+      Processes multiple JSON configuration files with enhanced type system
       """
       
       import json
@@ -21,34 +21,108 @@ let
       import os
       import sys
       import base64
+      import re
       from datetime import datetime
       from pathlib import Path
       import hashlib
       
-      def convert_json_to_plist(obj):
-          """Enhanced type conversion for plist compatibility"""
+      # Enhanced type handlers with validation (Phase 3)
+      TYPE_HANDLERS = {
+          "date": {
+              "converter": lambda v: datetime.fromisoformat(v.replace('Z', '+00:00')),
+              "validator": lambda v: isinstance(v, str),
+              "description": "ISO 8601 date string to datetime object"
+          },
+          "data": {
+              "converter": lambda v: base64.b64decode(v),
+              "validator": lambda v: isinstance(v, str),
+              "description": "Base64-encoded binary data"
+          },
+          "bool": {
+              "converter": lambda v: v.lower() in ('true', '1', 'yes') if isinstance(v, str) else bool(v),
+              "validator": lambda v: True,
+              "description": "Boolean value"
+          },
+          "int": {
+              "converter": lambda v: int(v),
+              "validator": lambda v: isinstance(v, (int, str)),
+              "description": "Integer number"
+          },
+          "float": {
+              "converter": lambda v: float(v),
+              "validator": lambda v: isinstance(v, (int, float, str)),
+              "description": "Floating point number"
+          },
+          "url": {
+              "converter": lambda v: str(v),
+              "validator": lambda v: isinstance(v, str),
+              "description": "URL object (as string)"
+          },
+          "uuid": {
+              "converter": lambda v: str(v),
+              "validator": lambda v: isinstance(v, str),
+              "description": "UUID object (as string)"
+          },
+          "string": {
+              "converter": lambda v: str(v),
+              "validator": lambda v: True,
+              "description": "Explicit string conversion"
+          }
+      }
+      
+      def convert_with_validation(type_name, value):
+          """Convert value with validation"""
+          if type_name not in TYPE_HANDLERS:
+              raise ValueError(f"Unknown type: {type_name}")
+          
+          handler = TYPE_HANDLERS[type_name]
+          
+          # Validate input
+          try:
+              if not handler["validator"](value):
+                  raise ValueError(f"Invalid value for type {type_name}: {value}")
+          except Exception as e:
+              print(f"⚠️  Validation warning for {type_name}: {e}")
+          
+          # Convert value
+          try:
+              return handler["converter"](value)
+          except Exception as e:
+              print(f"⚠️  Conversion warning for {type_name}: {e}")
+              return value
+      
+      def enhanced_convert_json_to_plist(obj, depth=0, max_depth=50):
+          """Enhanced type conversion for plist with depth protection and validation"""
+          if depth > max_depth:
+              raise ValueError(f"Maximum recursion depth ({max_depth}) exceeded")
+          
           if isinstance(obj, dict):
+              # Check for explicit type annotations
               if "__type" in obj and "value" in obj:
-                  type_handler = obj["__type"]
+                  type_name = obj["__type"]
                   value = obj["value"]
                   
-                  if type_handler == "date":
-                      return datetime.fromisoformat(value.replace('Z', '+00:00'))
-                  elif type_handler == "data":
-                      return base64.b64decode(value)
-                  elif type_handler == "bool":
-                      return value.lower() in ("true", "1", "yes") if isinstance(value, str) else bool(value)
-                  elif type_handler == "int":
-                      return int(value)
-                  elif type_handler == "float":
-                      return float(value)
-                  else:
+                  try:
+                      return convert_with_validation(type_name, value)
+                  except Exception as e:
+                      print(f"⚠️  Type conversion failed: {type_name}: {e}")
                       return value
-              return {k: convert_json_to_plist(v) for k, v in obj.items()}
+              
+              # Recursively process dict
+              result = {}
+              for k, v in obj.items():
+                  result[k] = enhanced_convert_json_to_plist(v, depth + 1, max_depth)
+              return result
+          
           elif isinstance(obj, list):
-              return [convert_json_to_plist(item) for item in obj]
+              return [enhanced_convert_json_to_plist(item, depth + 1, max_depth) for item in obj]
+          
           else:
               return obj
+      
+      def convert_json_to_plist(obj):
+          """Enhanced type conversion using Phase 3 type system"""
+          return enhanced_convert_json_to_plist(obj)
       
       def compute_file_checksum(file_path):
           """Compute SHA256 checksum of file"""
