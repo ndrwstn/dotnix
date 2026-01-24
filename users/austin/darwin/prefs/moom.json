@@ -1,0 +1,2199 @@
+{
+  "files": [
+    {
+      "type": "plist",
+      "format": "binary1",
+      "filename": "com.manytricks.Moom.plist",
+      "filepath": "~/Library/Preferences",
+      "permissions": "600",
+      "appControl": {
+        "processName": "Moom",
+        "quitCommand": "killall Moom",
+        "restartCommand": "open -a Moom",
+        "requiresRestart": true
+      },
+      "data": {
+        "Key Control: Space": 0,
+        "Application Mode: Temporary Dock Icon": false,
+        "Local Hot Key Filter Mask": 1835008,
+        "Keyboard Controls Grid": true,
+        "Configuration Grid: Rows": 7,
+        "Mouse Controls": true,
+        "Application Mode": 1,
+        "Mouse Controls Grid: Mode: Show Dialog": false,
+        "Custom Controls (4001)": [
+          {
+            "Children Expanded": true,
+            "Identifier": "EBE2306F-A30C-4AA4-9D16-4C0C278C7414",
+            "Children": [
+              {
+                "Activate Applications": false,
+                "Stubborn": false,
+                "Auto-Trigger Display Count": 1,
+                "Action": 1001,
+                "Apply to Overlapping Windows": true,
+                "Snapshot": [
+                  {
+                    "Window Frame": "{{840, 33}, {1680, 1832}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{0, 0}, {3360, 1890}}",
+                    "Window Title": "Neovide",
+                    "Application Name": "Neovide",
+                    "Available Screen Frame": "{{0, 33}, {3360, 1832}}",
+                    "Bundle Identifier": "com.neovide.neovide"
+                  },
+                  {
+                    "Window Frame": "{{2521, 33}, {839, 1832}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{0, 0}, {3360, 1890}}",
+                    "Window Title": "Document.pdf",
+                    "Application Name": "Skim",
+                    "Available Screen Frame": "{{0, 33}, {3360, 1832}}",
+                    "Bundle Identifier": "net.sourceforge.skim-app.skim"
+                  },
+                  {
+                    "Window Frame": "{{0, 33}, {1119, 785}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{0, 0}, {3360, 1890}}",
+                    "Window Title": "Terminal",
+                    "Application Name": "Ghostty",
+                    "Available Screen Frame": "{{0, 33}, {3360, 1832}}",
+                    "Bundle Identifier": "com.mitchellh.ghostty"
+                  },
+                  {
+                    "Window Frame": "{{0, 819}, {1119, 1046}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{0, 0}, {3360, 1890}}",
+                    "Window Title": "Documents",
+                    "Application Name": "Finder",
+                    "Available Screen Frame": "{{0, 33}, {3360, 1832}}",
+                    "Bundle Identifier": "com.apple.finder"
+                  },
+                  {
+                    "Window Frame": "{{-1119, 0}, {1119, 1865}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Mail",
+                    "Application Name": "Mail",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.apple.mail"
+                  },
+                  {
+                    "Window Frame": "{{3920, 0}, {2240, 1865}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{3360, 0}, {3360, 1890}}",
+                    "Window Title": "AI Chat",
+                    "Application Name": "Raycast",
+                    "Available Screen Frame": "{{3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.raycast.macos"
+                  },
+                  {
+                    "Window Frame": "{{-3360, 0}, {839, 798}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Reminders",
+                    "Application Name": "Reminders",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.apple.reminders"
+                  },
+                  {
+                    "Window Frame": "{{-3360, 799}, {839, 1066}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Today",
+                    "Application Name": "Things",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.culturedcode.thingsmac"
+                  },
+                  {
+                    "Window Frame": "{{-2520, 0}, {1400, 1066}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Calendar",
+                    "Application Name": "Calendar",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.apple.ical"
+                  },
+                  {
+                    "Window Frame": "{{-2520, 1067}, {1400, 798}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Contact",
+                    "Application Name": "Messages",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.apple.mobilesms"
+                  },
+                  {
+                    "Window Frame": "{{-2520, 0}, {1400, 1066}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3360, 0}, {3360, 1890}}",
+                    "Window Title": "Across",
+                    "Application Name": "Across",
+                    "Available Screen Frame": "{{-3360, 0}, {3360, 1865}}",
+                    "Bundle Identifier": "com.daymore.across"
+                  }
+                ],
+                "Apply to Active Display": false,
+                "Generic": false,
+                "Snapshot Screens": [
+                  "{{0, 0}, {3360, 1890}}",
+                  "{{3360, 0}, {3360, 1890}}",
+                  "{{-3360, 0}, {3360, 1890}}"
+                ],
+                "Auto-Trigger": false,
+                "Title": "Legal Drafting",
+                "Identifier": "D75A47CF-41D5-466D-9420-5F6A33316012"
+              },
+              {
+                "Activate Applications": false,
+                "Stubborn": false,
+                "Auto-Trigger Display Count": 1,
+                "Action": 1001,
+                "Apply to Overlapping Windows": true,
+                "Snapshot": [
+                  {
+                    "Window Frame": "{{-3840, 915}, {959, 1220}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Today",
+                    "Application Name": "Things",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.culturedcode.thingsmac"
+                  },
+                  {
+                    "Window Frame": "{{-3840, 0}, {959, 914}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Reminders",
+                    "Application Name": "Reminders",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.apple.reminders"
+                  },
+                  {
+                    "Window Frame": "{{-2880, 1221}, {1600, 914}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Contact",
+                    "Application Name": "Messages",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.apple.mobilesms"
+                  },
+                  {
+                    "Window Frame": "{{-1279, 0}, {1279, 2135}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Mail",
+                    "Application Name": "Mail",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.apple.mail"
+                  },
+                  {
+                    "Window Frame": "{{-3822, 1954}, {315, 163}}",
+                    "Window Subrole": "AXUnknown",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "",
+                    "Application Name": "Calendar",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.apple.ical"
+                  },
+                  {
+                    "Window Frame": "{{-2880, 0}, {1600, 1220}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Calendar",
+                    "Application Name": "Calendar",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.apple.ical"
+                  },
+                  {
+                    "Window Frame": "{{-2880, 0}, {1600, 1220}}",
+                    "Window Subrole": "AXStandardWindow",
+                    "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                    "Window Title": "Across",
+                    "Application Name": "Across",
+                    "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                    "Bundle Identifier": "com.daymore.across"
+                  }
+                ],
+                "Apply to Active Display": false,
+                "Generic": false,
+                "Snapshot Screens": [
+                  "{{0, 0}, {3840, 2160}}",
+                  "{{3840, 0}, {3840, 2160}}",
+                  "{{-3840, 0}, {3840, 2160}}"
+                ],
+                "Auto-Trigger": false,
+                "Title": "Apps Layout",
+                "Identifier": "C8F7331C-C44A-4F8B-A4BB-4F1F016AD9F0"
+              }
+            ],
+            "Action": 10001,
+            "Title": "Applications",
+            "Chain Mode": 0
+          },
+          {
+            "Children Expanded": true,
+            "Identifier": "A517C1A9-6019-47DA-B599-8B37AFF3EBE0",
+            "Children": [
+              {
+                "Window Description": {
+                  "Window Frame": "{{1597, 1507}, {800, 628}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Terminal",
+                  "Application Name": "Ghostty",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.mitchellh.ghostty"
+                },
+                "Identifier": "D7C298F3-FB96-451E-BB63-E9BB1829F6A9",
+                "Hot Key": {
+                  "Visual Representation": "\\",
+                  "Identifier": "D7C298F3-FB96-451E-BB63-E9BB1829F6A9",
+                  "Key Code": 42,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.29166666666666663, 0.3571428571428571}, {0.41666666666666652, 0.57142857142857117}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{1597, 1507}, {800, 628}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Terminal",
+                  "Application Name": "Ghostty",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.mitchellh.ghostty"
+                },
+                "Identifier": "456F5A51-700B-45E4-975A-57A54A014BEE",
+                "Hot Key": {
+                  "Visual Representation": "\u21e7\\",
+                  "Identifier": "456F5A51-700B-45E4-975A-57A54A014BEE",
+                  "Key Code": 42,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.16666666666666666, 0.14285714285714285}, {0.66666666666666674, 0.78571428571428537}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "452AB4A0-A6D9-4763-990A-5A96C6E6FCEA",
+                "Hot Key": {
+                  "Visual Representation": "Space",
+                  "Identifier": "452AB4A0-A6D9-4763-990A-5A96C6E6FCEA",
+                  "Key Code": 49,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.25, 0}, {0.5, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "ED3ABA19-7A4D-4DBD-A276-25D875366224",
+                "Hot Key": {
+                  "Visual Representation": "[",
+                  "Identifier": "ED3ABA19-7A4D-4DBD-A276-25D875366224",
+                  "Key Code": 33,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0, 0}, {0.49999999999999994, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 6,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "72B882D2-8E73-46DF-918D-BA0C8BE21650",
+                "Hot Key": {
+                  "Visual Representation": "]",
+                  "Identifier": "72B882D2-8E73-46DF-918D-BA0C8BE21650",
+                  "Key Code": 30,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.49999999999999994, 0}, {0.5, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 6,
+                  "Configuration Grid: Columns": 12
+                }
+              }
+            ],
+            "Action": 10001,
+            "Title": "General",
+            "Chain Mode": 0
+          },
+          {
+            "Children Expanded": true,
+            "Identifier": "BCFFC0CF-8559-4BE3-B986-77A50E6BB170",
+            "Children": [
+              {
+                "Action": 19,
+                "Relative Frame": "{{0, 0}, {0.33333333333333331, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Left One Third",
+                "Identifier": "85767356-80E9-4F31-8C46-847D14F05D02",
+                "Hot Key": {
+                  "Visual Representation": "A",
+                  "Identifier": "85767356-80E9-4F31-8C46-847D14F05D02",
+                  "Key Code": 0,
+                  "Modifier Flags": 256
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              },
+              {
+                "Action": 19,
+                "Relative Frame": "{{0, 0}, {0.66666666666666663, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Left Two Thirds",
+                "Identifier": "2DC27414-1EB1-4935-8933-204B5499E55A",
+                "Hot Key": {
+                  "Visual Representation": "\u21e7A",
+                  "Identifier": "2DC27414-1EB1-4935-8933-204B5499E55A",
+                  "Key Code": 0,
+                  "Modifier Flags": 131330
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              },
+              {
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Center One Third",
+                "Identifier": "B67F99FE-B142-45A7-BF5D-6C3F1EB0E419",
+                "Hot Key": {
+                  "Visual Representation": "S",
+                  "Identifier": "B67F99FE-B142-45A7-BF5D-6C3F1EB0E419",
+                  "Key Code": 1,
+                  "Modifier Flags": 256
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              },
+              {
+                "Action": 19,
+                "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Center Two Thirds",
+                "Identifier": "F801C2C2-6837-4765-B2FE-D232D8756153",
+                "Hot Key": {
+                  "Visual Representation": "\u21e7S",
+                  "Identifier": "F801C2C2-6837-4765-B2FE-D232D8756153",
+                  "Key Code": 1,
+                  "Modifier Flags": 131330
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              },
+              {
+                "Action": 19,
+                "Relative Frame": "{{0.66666666666666663, 0}, {0.33333333333333337, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Right One Third",
+                "Identifier": "C86D1688-2F19-4436-8135-522A0D10FB9C",
+                "Hot Key": {
+                  "Visual Representation": "D",
+                  "Identifier": "C86D1688-2F19-4436-8135-522A0D10FB9C",
+                  "Key Code": 2,
+                  "Modifier Flags": 256
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              },
+              {
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0}, {0.66666666666666674, 1}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                },
+                "Title": "Right Two Thirds",
+                "Identifier": "D14F6103-D5AB-4892-83B9-0A9A44C3FD75",
+                "Hot Key": {
+                  "Visual Representation": "\u21e7D",
+                  "Identifier": "D14F6103-D5AB-4892-83B9-0A9A44C3FD75",
+                  "Key Code": 2,
+                  "Modifier Flags": 131330
+                },
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                }
+              }
+            ],
+            "Action": 10001,
+            "Title": "Thirds",
+            "Chain Mode": 0
+          },
+          {
+            "Children Expanded": true,
+            "Identifier": "F448878F-A848-4C14-BAB2-9F8D5408EC0F",
+            "Children": [
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "80B9E1EE-274D-48CE-ABB8-B2BD165F877B",
+                "Hot Key": {
+                  "Visual Representation": "1",
+                  "Identifier": "80B9E1EE-274D-48CE-ABB8-B2BD165F877B",
+                  "Key Code": 18,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0, 0.42857142857142855}, {0.33333333333333331, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "C75EF418-970B-4960-9A30-3D200C6164DF",
+                "Hot Key": {
+                  "Visual Representation": "\u21e71",
+                  "Identifier": "C75EF418-970B-4960-9A30-3D200C6164DF",
+                  "Key Code": 18,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0, 0.42857142857142855}, {0.66666666666666663, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "71585B1F-A488-4854-966C-E5D3EA4AD6A5",
+                "Hot Key": {
+                  "Visual Representation": "2",
+                  "Identifier": "71585B1F-A488-4854-966C-E5D3EA4AD6A5",
+                  "Key Code": 19,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0.42857142857142855}, {0.33333333333333331, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "DF0ED6B2-3B95-48C7-8048-41148150EBDD",
+                "Hot Key": {
+                  "Visual Representation": "\u21e72",
+                  "Identifier": "DF0ED6B2-3B95-48C7-8048-41148150EBDD",
+                  "Key Code": 19,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.16666666666666666, 0.42857142857142855}, {0.66666666666666674, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "A3DAE017-AC02-410B-9BE4-DD32BBA1210E",
+                "Hot Key": {
+                  "Visual Representation": "3",
+                  "Identifier": "A3DAE017-AC02-410B-9BE4-DD32BBA1210E",
+                  "Key Code": 20,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.66666666666666663, 0.42857142857142855}, {0.33333333333333337, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "854CC4FD-48E3-4863-8927-970779A9C410",
+                "Hot Key": {
+                  "Visual Representation": "\u21e73",
+                  "Identifier": "854CC4FD-48E3-4863-8927-970779A9C410",
+                  "Key Code": 20,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0.42857142857142855}, {0.66666666666666674, 0.5714285714285714}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "46E74016-5CC7-4350-B0B2-6C1D2EAEE5C6",
+                "Hot Key": {
+                  "Visual Representation": "4",
+                  "Identifier": "46E74016-5CC7-4350-B0B2-6C1D2EAEE5C6",
+                  "Key Code": 21,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0, 0}, {0.33333333333333331, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "9EDC3ADC-FA06-439F-A185-E90009EDD289",
+                "Hot Key": {
+                  "Visual Representation": "\u21e74",
+                  "Identifier": "9EDC3ADC-FA06-439F-A185-E90009EDD289",
+                  "Key Code": 21,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0, 0}, {0.66666666666666663, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "09123ED9-6AB3-4729-BC4F-AD27DB4D53BA",
+                "Hot Key": {
+                  "Visual Representation": "5",
+                  "Identifier": "09123ED9-6AB3-4729-BC4F-AD27DB4D53BA",
+                  "Key Code": 23,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "AE4D1FF1-E201-4D59-B969-ACE59F6AA169",
+                "Hot Key": {
+                  "Visual Representation": "\u21e75",
+                  "Identifier": "AE4D1FF1-E201-4D59-B969-ACE59F6AA169",
+                  "Key Code": 23,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "4DCBBFD5-0C8A-483F-99CB-2D7B9921C3F6",
+                "Hot Key": {
+                  "Visual Representation": "6",
+                  "Identifier": "4DCBBFD5-0C8A-483F-99CB-2D7B9921C3F6",
+                  "Key Code": 22,
+                  "Modifier Flags": 256
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.66666666666666663, 0}, {0.33333333333333337, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              },
+              {
+                "Window Description": {
+                  "Window Frame": "{{2372, 1061}, {920, 492}}",
+                  "Window Subrole": "AXStandardWindow",
+                  "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                  "Window Title": "Folder",
+                  "Application Name": "Finder",
+                  "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                  "Bundle Identifier": "com.apple.finder"
+                },
+                "Identifier": "02D7584D-02D5-4084-A4BB-6E25058A7180",
+                "Hot Key": {
+                  "Visual Representation": "\u21e76",
+                  "Identifier": "02D7584D-02D5-4084-A4BB-6E25058A7180",
+                  "Key Code": 22,
+                  "Modifier Flags": 131330
+                },
+                "Action": 19,
+                "Relative Frame": "{{0.33333333333333331, 0}, {0.66666666666666674, 0.42857142857142855}}",
+                "Configuration Grid": {
+                  "Configuration Grid: Rows": 7,
+                  "Configuration Grid: Columns": 12
+                }
+              }
+            ],
+            "Action": 10001,
+            "Title": "Sixths",
+            "Chain Mode": 0
+          },
+          {
+            "Children Expanded": true,
+            "Identifier": "8EA86D04-F9B1-456F-BCB6-E0AE795D754A",
+            "Children": [
+              {
+                "Identifier": "6E524364-545F-48BC-86EE-15FD673B6626",
+                "Hot Key": {
+                  "Visual Representation": "\u2193",
+                  "Identifier": "6E524364-545F-48BC-86EE-15FD673B6626",
+                  "Key Code": 125,
+                  "Modifier Flags": 10486016
+                },
+                "Action": 21,
+                "Center Mode": 0
+              },
+              {
+                "Action": 41,
+                "Move Direction": 5,
+                "Resize Proportionally": false,
+                "Loop Through Displays": false,
+                "Identifier": "F198802A-79F9-4DAA-A1FF-27CE1636FD23",
+                "Hot Key": {
+                  "Visual Representation": "\u2192",
+                  "Identifier": "F198802A-79F9-4DAA-A1FF-27CE1636FD23",
+                  "Key Code": 124,
+                  "Modifier Flags": 10486016
+                },
+                "Title": "Move to Right Display"
+              },
+              {
+                "Action": 41,
+                "Move Direction": 9,
+                "Resize Proportionally": false,
+                "Loop Through Displays": false,
+                "Identifier": "7CB1132C-6F08-4600-A4F2-65D14C5E7C5D",
+                "Hot Key": {
+                  "Visual Representation": "\u2190",
+                  "Identifier": "7CB1132C-6F08-4600-A4F2-65D14C5E7C5D",
+                  "Key Code": 123,
+                  "Modifier Flags": 10486016
+                },
+                "Title": "Move to Left Display"
+              }
+            ],
+            "Action": 10001,
+            "Title": "Movement",
+            "Chain Mode": 0
+          },
+          {
+            "Children Expanded": true,
+            "Identifier": "11EA6B86-987F-4604-9458-EDB46FCB58BC",
+            "Children": [
+              {
+                "Identifier": "FCBD0896-9022-4C4D-892D-43AF27615719",
+                "Hot Key": {
+                  "Visual Representation": "\u21b5",
+                  "Identifier": "FCBD0896-9022-4C4D-892D-43AF27615719",
+                  "Key Code": 36,
+                  "Modifier Flags": 256
+                },
+                "Action": 54
+              },
+              {
+                "Identifier": "D6A066B7-B93B-4F68-8943-B28C11B614BF",
+                "Hot Key": {
+                  "Visual Representation": "\u232b",
+                  "Identifier": "D6A066B7-B93B-4F68-8943-B28C11B614BF",
+                  "Key Code": 51,
+                  "Modifier Flags": 256
+                },
+                "Action": 1
+              }
+            ],
+            "Action": 10001,
+            "Title": "Other",
+            "Chain Mode": 0
+          },
+          {
+            "Identifier": "7DA11001-9672-4E48-A195-69C1E077F2C9",
+            "Children": [
+              {
+                "Identifier": "E0673B00-BF11-42B5-9EA7-DDC8BE8D33F4",
+                "Children": [
+                  {
+                    "Identifier": "48CD8069-7E3E-4A9E-95D0-CE99BA593EAB",
+                    "Loop Through Displays": true,
+                    "Action": 41,
+                    "Title": "Move to Left Display",
+                    "Move Direction": 9,
+                    "Resize Proportionally": false
+                  },
+                  {
+                    "Window Description": {
+                      "Window Frame": "{{2372, 1061}, {920, 492}}",
+                      "Window Subrole": "AXStandardWindow",
+                      "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                      "Window Title": "Folder",
+                      "Application Name": "Finder",
+                      "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                      "Bundle Identifier": "com.apple.finder"
+                    },
+                    "Identifier": "3115F1A9-E7B7-462D-A6FD-3174B52A460B",
+                    "Action": 19,
+                    "Title": "Left One Third",
+                    "Relative Frame": "{{0, 0}, {0.33333333333333331, 1}}",
+                    "Configuration Grid": {
+                      "Configuration Grid: Rows": 7,
+                      "Configuration Grid: Columns": 12
+                    }
+                  }
+                ],
+                "Action": 10001,
+                "Title": "\ud83d\udda5\ufe0f\u2190 \ufe62\u2153 L",
+                "Chain": true,
+                "Chain Mode": 0
+              },
+              {
+                "Identifier": "8A66B715-BE6A-4C7C-9F6E-ADCE7E338E13",
+                "Children": [
+                  {
+                    "Identifier": "5A7E6977-20B9-4C7D-9272-EDF6EBBB0BC6",
+                    "Loop Through Displays": true,
+                    "Action": 41,
+                    "Title": "Move to Left Display",
+                    "Move Direction": 9,
+                    "Resize Proportionally": false
+                  },
+                  {
+                    "Window Description": {
+                      "Window Frame": "{{2372, 1061}, {920, 492}}",
+                      "Window Subrole": "AXStandardWindow",
+                      "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                      "Window Title": "Folder",
+                      "Application Name": "Finder",
+                      "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                      "Bundle Identifier": "com.apple.finder"
+                    },
+                    "Identifier": "B9BE1F6A-198D-43F6-8AE7-EE233BA6606B",
+                    "Action": 19,
+                    "Title": "Center One Third",
+                    "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 1}}",
+                    "Configuration Grid": {
+                      "Configuration Grid: Rows": 7,
+                      "Configuration Grid: Columns": 12
+                    }
+                  }
+                ],
+                "Action": 10001,
+                "Title": "\ud83d\udda5\ufe0f\u2190 \ufe62\u2153 C",
+                "Chain": true,
+                "Chain Mode": 0
+              },
+              {
+                "Identifier": "F552B2C1-5CDC-485F-BF76-544A023D68AD",
+                "Children": [
+                  {
+                    "Identifier": "B6EC946E-AA5F-4E50-8616-F3D949820CEA",
+                    "Loop Through Displays": true,
+                    "Action": 41,
+                    "Title": "Move to Left Display",
+                    "Move Direction": 9,
+                    "Resize Proportionally": false
+                  },
+                  {
+                    "Window Description": {
+                      "Window Frame": "{{2372, 1061}, {920, 492}}",
+                      "Window Subrole": "AXStandardWindow",
+                      "Screen Frame": "{{0, 0}, {3840, 2160}}",
+                      "Window Title": "Folder",
+                      "Application Name": "Finder",
+                      "Available Screen Frame": "{{0, 33}, {3840, 2102}}",
+                      "Bundle Identifier": "com.apple.finder"
+                    },
+                    "Identifier": "FBC18AB9-0EB6-4C12-9E1A-0411D5429EC1",
+                    "Action": 19,
+                    "Title": "Center One Third",
+                    "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 1}}",
+                    "Configuration Grid": {
+                      "Configuration Grid: Rows": 7,
+                      "Configuration Grid: Columns": 12
+                    }
+                  }
+                ],
+                "Action": 10001,
+                "Title": "\ud83d\udda5\ufe0f\u2190 \ufe62\u2153 R",
+                "Chain": true,
+                "Chain Mode": 0
+              }
+            ],
+            "Action": 10001,
+            "Title": "Multimonitor Thirds",
+            "Chain Mode": 0
+          }
+        ],
+        "Snap": false,
+        "Mouse Controls Include Custom Controls": false,
+        "Grid Spacing": true,
+        "Palette": {
+          "5-3": 5,
+          "6-3": 3,
+          "3-4": "85767356-80E9-4F31-8C46-847D14F05D02",
+          "7-3": 7,
+          "3-3": 2,
+          "6-2": "D75A47CF-41D5-466D-9420-5F6A33316012",
+          "4-4": "B67F99FE-B142-45A7-BF5D-6C3F1EB0E419",
+          "7-2": "C8F7331C-C44A-4F8B-A4BB-4F1F016AD9F0",
+          "4-3": 9,
+          "5-4": "C86D1688-2F19-4436-8135-522A0D10FB9C"
+        },
+        "Mouse Controls: Zoom Button Behavior": 0,
+        "Automatic News Updates: Popped Up Once": true,
+        "Mouse Controls Grid: Rows": 7,
+        "SUEnableAutomaticChecks": true,
+        "WebKitCacheModelPreferenceKey": 1,
+        "NSToolbar Configuration Preferences (App Store) 3174": {
+          "TB Is Shown": 1,
+          "TB Icon Size Mode": 1,
+          "TB Size Mode": 1,
+          "TB Display Mode": 1
+        },
+        "Palette: Hidden Items": [],
+        "Grid Spacing: Gap": 1,
+        "Custom Controls": [
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": -101,
+            "Title": "Snapshots",
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "3E104B76-D0E3-42F0-BC40-6B8E3C6CBBFE",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0.42863827795975668}, {0.66666666666666663, 0.57136172204024338}}",
+            "Confine to Display": false,
+            "Resize Size": "{2560, 1221}"
+          },
+          {
+            "Confine to Display": false,
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Title": "Daily Apps",
+            "Resize Proportionally": false,
+            "Action": 1001,
+            "Auto-Trigger": false,
+            "Move to Edge/Corner Direction": 5,
+            "Snapshot": [
+              {
+                "Window Frame": "{{-1280, 0}, {1280, 2135}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Mail",
+                "Application Name": "Mail",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.apple.mail"
+              },
+              {
+                "Window Frame": "{{-2880, 0}, {1600, 1220}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Across",
+                "Application Name": "Across",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.daymore.across"
+              },
+              {
+                "Window Frame": "{{-3840, 915}, {960, 1220}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Today",
+                "Application Name": "Things",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.culturedcode.thingsmac"
+              },
+              {
+                "Window Frame": "{{-2880, 1220}, {1600, 915}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Contact",
+                "Application Name": "Messages",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.apple.mobilesms"
+              },
+              {
+                "Window Frame": "{{-3840, 0}, {960, 915}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Reminders",
+                "Application Name": "Reminders",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.apple.reminders"
+              },
+              {
+                "Window Frame": "{{-2880, 0}, {1600, 1220}}",
+                "Window Subrole": "AXStandardWindow",
+                "Screen Frame": "{{-3840, 0}, {3840, 2160}}",
+                "Window Title": "Calendar",
+                "Application Name": "Calendar",
+                "Available Screen Frame": "{{-3840, 0}, {3840, 2135}}",
+                "Bundle Identifier": "com.apple.ical"
+              }
+            ],
+            "Generic": false,
+            "Identifier": "BD3210F2-2B7E-4698-8342-4BF106A92824",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Collapsed": false,
+            "Auto-Trigger Display Count": 1,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": true,
+            "Resize Size": "{2560, 1221}",
+            "Snapshot Screens": [
+              "{{0, 0}, {3840, 2160}}",
+              "{{-3840, 0}, {3840, 2160}}",
+              "{{3840, 0}, {3840, 2160}}"
+            ],
+            "Relative Frame": "{{0, 0.42863827795975668}, {0.66666666666666663, 0.57136172204024338}}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 0,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "888AD4BB-2F98-41EF-B49A-1D02BDBE8F64",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0.42863827795975668}, {0.66666666666666663, 0.57136172204024338}}",
+            "Confine to Display": false,
+            "Resize Size": "{2560, 1221}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": -101,
+            "Title": "Main Working Area",
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "B6148B31-F934-4582-8B57-14E4EC9BE568",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.7142857142857143, 0.62506695232994103}, {0.2857142857142857, 0.37493304767005892}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 700}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "A2492421-2360-435C-B0EA-AC29DDB4E79C",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "Space",
+              "Identifier": "A2492421-2360-435C-B0EA-AC29DDB4E79C",
+              "Key Code": 49,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.083333333333333329, 0}, {0.83333333333333337, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 54,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "264198F3-BEAF-44B7-84D0-D791E2397CB3",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21b5",
+              "Identifier": "264198F3-BEAF-44B7-84D0-D791E2397CB3",
+              "Key Code": 36,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.25, 0}, {0.5, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{876, 1097}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "E5DA69C9-F2DA-4AF7-846C-1266BACF3137",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e5",
+              "Identifier": "E5DA69C9-F2DA-4AF7-846C-1266BACF3137",
+              "Key Code": 48,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.25, 0.14285714285714285}, {0.5, 0.71428571428571419}}",
+            "Confine to Display": false,
+            "Resize Size": "{1920, 1401}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 0,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "12934870-3027-4255-B63C-EC659E5681BE",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.5, 0}, {0.2857142857142857, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 1867}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": -101,
+            "Title": "Multiple Displays",
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "ED428ECD-257A-4EB6-947D-BB01CA7075CA",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.5, 0.50026780931976433}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "5FE29A6F-C16B-4853-94FC-5ED735E8E035",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "A",
+              "Identifier": "5FE29A6F-C16B-4853-94FC-5ED735E8E035",
+              "Key Code": 0,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.33333333333333331, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "0FF9EED3-3D12-41CA-AE26-4A14CCFBEFBE",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7A",
+              "Identifier": "0FF9EED3-3D12-41CA-AE26-4A14CCFBEFBE",
+              "Key Code": 0,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.66666666666666663, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "FA0063A3-FA7B-4FAF-ACE5-853B46AA48F2",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "S",
+              "Identifier": "FA0063A3-FA7B-4FAF-ACE5-853B46AA48F2",
+              "Key Code": 1,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "ABC2272A-AA1A-4493-BAD7-BE18BE741304",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7S",
+              "Identifier": "ABC2272A-AA1A-4493-BAD7-BE18BE741304",
+              "Key Code": 1,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{800, 600}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "677997D4-D3CD-466F-BBC1-16A14F05C40B",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "D",
+              "Identifier": "677997D4-D3CD-466F-BBC1-16A14F05C40B",
+              "Key Code": 2,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.66666666666666663, 0}, {0.33333333333333337, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "E8085E57-006F-401F-81A8-35971A02C9EF",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7D",
+              "Identifier": "E8085E57-006F-401F-81A8-35971A02C9EF",
+              "Key Code": 2,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.66666666666666674, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "7824661D-DB6A-4A6C-94F8-928E4B5091D3",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "F",
+              "Identifier": "7824661D-DB6A-4A6C-94F8-928E4B5091D3",
+              "Key Code": 3,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.33333333333333331, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "1AECB80E-E659-4487-B5B0-DDD093A4B1D9",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7F",
+              "Identifier": "1AECB80E-E659-4487-B5B0-DDD093A4B1D9",
+              "Key Code": 3,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{800, 600}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "3964C654-E7F2-4B76-8C55-7887A4312956",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "G",
+              "Identifier": "3964C654-E7F2-4B76-8C55-7887A4312956",
+              "Key Code": 5,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "43C225B7-6106-447E-9EBC-959BB7C6293C",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7G",
+              "Identifier": "43C225B7-6106-447E-9EBC-959BB7C6293C",
+              "Key Code": 5,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{2560, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "9A74E725-C981-48FF-B4A8-DEB761DDE5FC",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "H",
+              "Identifier": "9A74E725-C981-48FF-B4A8-DEB761DDE5FC",
+              "Key Code": 4,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.66666666666666663, 0}, {0.33333333333333337, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 2137}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "526F7834-9EB1-4F79-BAB5-16C79753FABC",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7H",
+              "Identifier": "526F7834-9EB1-4F79-BAB5-16C79753FABC",
+              "Key Code": 4,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.66666666666666674, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1280, 916}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 0,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "21960BCC-A4BD-4EE0-975D-03B0B3E20157",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.5, 0}, {0.2857142857142857, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 1867}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": -101,
+            "Title": "Windowpanes",
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "32CFA47D-FD5A-4FCC-9BF6-486291321FB7",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.5, 0.50026780931976433}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "A6920139-E8E6-4B65-9F7D-BEED034D5BB2",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "1",
+              "Identifier": "A6920139-E8E6-4B65-9F7D-BEED034D5BB2",
+              "Key Code": 18,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0.42857142857142855}, {0.33333333333333331, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "09D5A42C-CFEC-4F85-816C-97ED9EBE0B9B",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e71",
+              "Identifier": "09D5A42C-CFEC-4F85-816C-97ED9EBE0B9B",
+              "Key Code": 18,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0.42857142857142855}, {0.66666666666666663, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{1269, 1220}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "78EE3991-5BB2-443E-B764-873DEDFFA15C",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "2",
+              "Identifier": "78EE3991-5BB2-443E-B764-873DEDFFA15C",
+              "Key Code": 19,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0.42857142857142855}, {0.33333333333333331, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "65A9E46E-B4A8-4ADD-811D-F403D8CFE011",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e72",
+              "Identifier": "65A9E46E-B4A8-4ADD-811D-F403D8CFE011",
+              "Key Code": 19,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.16666666666666666, 0.42857142857142855}, {0.66666666666666674, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{2537, 1220}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "175F7C39-8F30-41A9-90EF-74D47E2B22C3",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "3",
+              "Identifier": "175F7C39-8F30-41A9-90EF-74D47E2B22C3",
+              "Key Code": 20,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.66666666666666663, 0.42857142857142855}, {0.33333333333333337, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{1918, 701}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "7CAE9C66-5C60-4505-98B1-AAC4F97AC9CE",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e73",
+              "Identifier": "7CAE9C66-5C60-4505-98B1-AAC4F97AC9CE",
+              "Key Code": 20,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0.42857142857142855}, {0.66666666666666674, 0.5714285714285714}}",
+            "Confine to Display": false,
+            "Resize Size": "{1003, 953}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "897C16E7-0E45-4451-998E-09F04E0138D1",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "4",
+              "Identifier": "897C16E7-0E45-4451-998E-09F04E0138D1",
+              "Key Code": 21,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.33333333333333331, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 700}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "C3AFAE03-E4B3-4518-9B70-056FC449F7F3",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e74",
+              "Identifier": "C3AFAE03-E4B3-4518-9B70-056FC449F7F3",
+              "Key Code": 21,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.66666666666666663, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{920, 464}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "4D252F9A-52D6-4669-9C61-8C750E16AD60",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "5",
+              "Identifier": "4D252F9A-52D6-4669-9C61-8C750E16AD60",
+              "Key Code": 23,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.33333333333333331, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 700}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "59277D48-8954-4A7D-834C-28E33CED00DE",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e75",
+              "Identifier": "59277D48-8954-4A7D-834C-28E33CED00DE",
+              "Key Code": 23,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.16666666666666666, 0}, {0.66666666666666674, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{920, 464}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "0FFD8602-C360-4B2B-8EEE-81B087B9107A",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "6",
+              "Identifier": "0FFD8602-C360-4B2B-8EEE-81B087B9107A",
+              "Key Code": 22,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.66666666666666663, 0}, {0.33333333333333337, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{960, 700}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "F7D0D6F8-A3B2-4518-9D16-0E1F9EB2F98E",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e76",
+              "Identifier": "F7D0D6F8-A3B2-4518-9D16-0E1F9EB2F98E",
+              "Key Code": 22,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.33333333333333331, 0}, {0.66666666666666674, 0.42857142857142855}}",
+            "Confine to Display": false,
+            "Resize Size": "{920, 464}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 0,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "C7A13952-3B33-4C28-915D-D03EF17973F4",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": false,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.5, 0.50026780931976433}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": -101,
+            "Title": "Small Screen",
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "E780B2FE-5F00-4A38-BA98-44C8F495B1FC",
+            "Resize Anchor": 10,
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.5, 0.50026780931976433}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "FA0F429C-2BDC-444B-AD26-56EA8CDC4651",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "\u21e7\\",
+              "Identifier": "FA0F429C-2BDC-444B-AD26-56EA8CDC4651",
+              "Key Code": 42,
+              "Modifier Flags": 131330
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.25, 0}, {0.5, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{650, 452}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "54423DE9-2272-4841-B13E-4F3853DF70D4",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "[",
+              "Identifier": "54423DE9-2272-4841-B13E-4F3853DF70D4",
+              "Key Code": 33,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0, 0}, {0.49999999999999989, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          },
+          {
+            "Move Delta Unit": 0,
+            "Resize Width Unit": 0,
+            "Auto-Trigger": false,
+            "Resize Proportionally": false,
+            "Action": 19,
+            "Move to Edge/Corner Direction": 5,
+            "Generic": false,
+            "Identifier": "885782DA-8E9F-4BA8-A67A-B0607B9996DA",
+            "Resize Anchor": 10,
+            "Hot Key": {
+              "Visual Representation": "]",
+              "Identifier": "885782DA-8E9F-4BA8-A67A-B0607B9996DA",
+              "Key Code": 30,
+              "Modifier Flags": 256
+            },
+            "Move Delta": 50,
+            "Auto-Trigger Display Count": 1,
+            "Collapsed": true,
+            "Loop Through Displays": false,
+            "Center Mode": 0,
+            "Resize Height Unit": 0,
+            "Move Direction": 5,
+            "Apply to Overlapping Windows": false,
+            "Relative Frame": "{{0.49999999999999989, 0}, {0.50000000000000011, 1}}",
+            "Confine to Display": false,
+            "Resize Size": "{1680, 934}"
+          }
+        ],
+        "Mouse Controls Auto-Activate Window": true,
+        "SUSendProfileInfo": false,
+        "Key Control: Arrow: Command": 0,
+        "Key Control: Escape": 1,
+        "Stealth Mode": true,
+        "Key Control: Arrow: Control": 0,
+        "Key Control: Return": 0,
+        "Keyboard Controls": {
+          "Visual Representation": "\u2303\u2325D",
+          "Identifier": "Keyboard Controls",
+          "Key Code": 2,
+          "Modifier Flags": 786721
+        },
+        "Dismiss After Moving": true,
+        "Automatic News Updates: Version": 7,
+        "Configuration Grid: Columns": 12,
+        "Mouse Controls Grid: Columns": 12,
+        "Grid Spacing: Auto-Enabled Default Spacing": true,
+        "Key Control: Arrow": 41,
+        "Hide Keyboard Controls Logo": true,
+        "Key Control: Tab": 0,
+        "Allow For Drawers": false,
+        "Dismiss After Filling": true,
+        "Ignore Dock": false,
+        "Mouse Controls Grid": false
+      }
+    }
+  ]
+}
+
