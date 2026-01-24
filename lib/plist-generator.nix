@@ -655,16 +655,16 @@ rec {
               
                                       if [[ -f "$TARGET_PATH" ]]; then
                                         # Quick size check
-                                        local old_size=$(stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
-                                        local new_size=$(stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
+                                        old_size=$(stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
+                                        new_size=$(stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
                 
                                         if [[ $old_size -ne $new_size ]]; then
                                           NEEDS_DEPLOY=1
                                           DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
                                         else
                                           # Content check via checksum
-                                          local old_checksum=$(sha256sum "$TARGET_PATH" | cut -d' ' -f1)
-                                          local new_checksum=$(jq -r --arg fn "${fileConfig.filename}" '.results[].results[]? | select(.filename == $fn) | .checksum' "$BATCH_SUMMARY")
+                                          old_checksum=$(sha256sum "$TARGET_PATH" | cut -d' ' -f1)
+                                          new_checksum=$(jq -r --arg fn "${fileConfig.filename}" '.results[].results[]? | select(.filename == $fn) | .checksum' "$BATCH_SUMMARY")
                   
                                           if [[ "$old_checksum" != "$new_checksum" ]]; then
                                             NEEDS_DEPLOY=1
@@ -678,7 +678,7 @@ rec {
                                           mkdir -p "$BACKUP_DIR"
                                           echo "💾 Backing up: ${fileConfig.filename} -> $BACKUP_DIR/"
                   
-                                          local backup_path="$BACKUP_DIR/${fileConfig.filename}.backup"
+                                          backup_path="$BACKUP_DIR/${fileConfig.filename}.backup"
                                           cp -p "$TARGET_PATH" "$backup_path"
                   
                                           echo "  ✓ Backed up: $backup_path"
