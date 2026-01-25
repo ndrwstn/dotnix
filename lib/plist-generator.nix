@@ -489,7 +489,8 @@ rec {
           
                 # Try graceful shutdown first
                 QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
-                if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$($QUIT_COMMAND 2>/dev/null || true)"; then
+                eval "$QUIT_COMMAND" 2>/dev/null || true
+                if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
                   echo "  ✓ Gracefully stopped"
                 else
                   echo "  ⚠️  Force stopping after timeout"
@@ -702,7 +703,8 @@ rec {
                   
                                            # Try graceful shutdown with timeout
                                            QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
-                                           if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$($QUIT_COMMAND 2>/dev/null || true)"; then
+                                           eval "$QUIT_COMMAND" 2>/dev/null || true
+                                           if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
                                             echo "  ✓ Gracefully stopped"
                                           else
                                             echo "  ⚠️  Force stopping after timeout"
