@@ -82,13 +82,13 @@ let
               if not handler["validator"](value):
                   raise ValueError(f"Invalid value for type {type_name}: {value}")
           except Exception as e:
-              print(f"⚠️  Validation warning for {type_name}: {e}")
+              print(f"warning: validation issue for {type_name}: {e}", file=sys.stderr)
           
           # Convert value
           try:
               return handler["converter"](value)
           except Exception as e:
-              print(f"⚠️  Conversion warning for {type_name}: {e}")
+              print(f"warning: conversion issue for {type_name}: {e}", file=sys.stderr)
               return value
       
       def enhanced_convert_json_to_plist(obj, depth=0, max_depth=50):
@@ -105,7 +105,7 @@ let
                   try:
                       return convert_with_validation(type_name, value)
                   except Exception as e:
-                      print(f"⚠️  Type conversion failed: {type_name}: {e}")
+                      print(f"warning: type conversion failed for {type_name}: {e}", file=sys.stderr)
                       return value
               
               # Recursively process dict
@@ -169,8 +169,6 @@ let
                       'success': True
                   })
                   
-                  print(f"✓ Generated plist: {filename}")
-              
               return {
                   'json_file': str(json_path),
                   'success': True,
@@ -178,7 +176,7 @@ let
                   'total_files': len(results)
               }
           except Exception as e:
-              print(f"❌ Error processing {json_path}: {e}")
+              print(f"warning: error processing {json_path}: {e}", file=sys.stderr)
               return {
                   'json_file': str(json_path),
                   'success': False,
@@ -215,7 +213,6 @@ let
           with open(summary_path, 'w') as f:
               json.dump(summary, f, indent=2)
           
-          print(f"Batch processing complete: {total_files_processed} files")
           sys.exit(0 if summary['success'] else 1)
       
       if __name__ == "__main__":
@@ -278,11 +275,17 @@ rec {
             BACKUP_STRATEGY="${if fileConfig ? backup then fileConfig.backup.strategy or "smart" else "smart"}"
             PROCESS_NAME="${fileConfig.appControl.processName}"
             TIMEOUT=${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}
+            DEPLOY_HEADER_PRINTED=0
+
+            print_deploy_header() {
+              if [[ $DEPLOY_HEADER_PRINTED -eq 0 ]]; then
+                echo "Deploying macOS preferences..."
+                DEPLOY_HEADER_PRINTED=1
+              fi
+            }
 
             # Ensure target directory exists
             mkdir -p "$FILEPATH"
-
-            echo "🔍 Analyzing $FILENAME..."
 
             # Smart backup logic - only backup if local changes detected
             BACKUP_DIR=""
@@ -305,16 +308,15 @@ rec {
                   fi
             
                   if [[ $NEEDS_BACKUP -eq 1 ]]; then
-                    BACKUP_DIR="$HOME/Library/Preferences/backups/$(date +%Y-%m-%d-%H%M%S)"
+                    BACKUP_DIR="$HOME/Desktop/$(date +%Y%m%d-%H%M%S) nix-backups"
                     mkdir -p "$BACKUP_DIR"
-                    echo "📦 Preparing backup directory: $BACKUP_DIR"
+                    echo "Backing up overwritten macOS preferences to $BACKUP_DIR..."
                   fi
                 fi
               fi
             fi
 
             # Generate plist from JSON data using Python plistlib (pass vars as env)
-            echo "⚙️  Generating plist from JSON..."
             PLIST_OUTPUT_FILE="$TEMP_PLIST" \
             PLIST_JSON_SOURCE="${jsonFilePath}" \
             PLIST_FORMAT="${fileConfig.format}" \
@@ -339,13 +341,13 @@ rec {
                             try:
                                 return datetime.fromisoformat(value.replace('Z', '+00:00'))
                             except ValueError:
-                                print(f"⚠️  Warning: Invalid date format: {value}", file=sys.stderr)
+                                print(f"warning: invalid date format: {value}", file=sys.stderr)
                                 return value
                         elif type_handler == "data":
                             try:
                                 return base64.b64decode(value)
                             except ValueError:
-                                print(f"⚠️  Warning: Invalid base64 data", file=sys.stderr)
+                                print("warning: invalid base64 data", file=sys.stderr)
                                 return value
                         elif type_handler == "bool":
                             if isinstance(value, str):
@@ -362,7 +364,7 @@ rec {
                             # For future UUID object support
                             return str(value)
                         else:
-                            print(f"⚠️  Warning: Unknown type handler: {type_handler}", file=sys.stderr)
+                            print(f"warning: unknown type handler: {type_handler}", file=sys.stderr)
                             return value
                     # Recursively process dict
                     return {k: convert_json_to_plist(v) for k, v in obj.items()}
@@ -402,10 +404,8 @@ rec {
                 with open(output_file, 'wb') as f:
                     plistlib.dump(converted_data, f, fmt=fmt)
 
-                print(f"✓ Generated plist: {os.path.basename(output_file)}")
-
             except Exception as e:
-                print(f"❌ Error generating plist: {e}", file=sys.stderr)
+                print(f"warning: error generating plist: {e}", file=sys.stderr)
                 sys.exit(1)
             PYTHON_EOF
 
@@ -429,21 +429,28 @@ rec {
               fi
         
               if [[ $NEEDS_DEPLOY -eq 1 ]]; then
-                echo "📝 Changes detected: $FILENAME ($DEPLOY_REASON)"
+                if [[ -n "$DEPLOY_REASON" ]]; then
+                  print_deploy_header
+                  echo "- $FILENAME ($DEPLOY_REASON)"
+                else
+                  print_deploy_header
+                  echo "- $FILENAME"
+                fi
               else
-                echo "✓ No changes needed: $FILENAME"
+                print_deploy_header
+                echo "- $FILENAME (no changes)"
                 rm -f "$TEMP_PLIST"
                 exit 0
               fi
             else
               NEEDS_DEPLOY=1
               DEPLOY_REASON="new file"
-              echo "🆕 New plist file: $FILENAME"
+              print_deploy_header
+              echo "- $FILENAME ($DEPLOY_REASON)"
             fi
 
             # Perform backup if needed (after we know changes exist)
             if [[ $NEEDS_BACKUP -eq 1 ]] && [[ $NEEDS_DEPLOY -eq 1 ]]; then
-              echo "💾 Backing up existing preferences..."
               if [[ -f "$PLIST_FILE" ]]; then
                 # Create backup with metadata
                 backup_path="$BACKUP_DIR/$FILENAME.backup"
@@ -456,8 +463,6 @@ rec {
                 file_size=$(/usr/bin/stat -f "%z" "$PLIST_FILE")
                 file_mtime=$(/usr/bin/stat -f "%m" "$PLIST_FILE")
                 file_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
-          
-                echo "  ✓ Backed up to: $backup_path"
           
                 # Create manifest entry (simplified JSON)
                 cat >> "$BACKUP_DIR/manifest.json" <<MANIFEST_EOF
@@ -475,8 +480,6 @@ rec {
           "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         }
       MANIFEST_EOF
-              else
-                echo "  ℹ️  No existing file to backup"
               fi
             fi
 
@@ -485,47 +488,39 @@ rec {
             if [[ $NEEDS_DEPLOY -eq 1 ]]; then
               if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
                 APP_WAS_RUNNING=1
-                echo "⏹️  Stopping $PROCESS_NAME..."
           
                 # Try graceful shutdown first
                 QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
                 eval "$QUIT_COMMAND" 2>/dev/null || true
                 if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
-                  echo "  ✓ Gracefully stopped"
+                  :
                 else
-                  echo "  ⚠️  Force stopping after timeout"
+                  echo "warning: forced stop of $PROCESS_NAME after timeout"
                   pkill -x "$PROCESS_NAME" 2>/dev/null || true
                   sleep 1
                 fi
               fi
 
               # Deploy new plist with atomic move
-              echo "📤 Deploying $FILENAME..."
               mv "$TEMP_PLIST" "$PLIST_FILE"
               chmod ${fileConfig.permissions} "$PLIST_FILE"
   
               # Clear macOS preferences cache to force reload
-              echo "🔄 Clearing preferences cache..."
               killall cfprefsd 2>/dev/null || true
               sleep 1
-  
-              echo "✅ Deployed successfully: $FILENAME"
         
               # Restart app with health check if it was running
               if [[ $APP_WAS_RUNNING -eq 1 ]] && [[ "${lib.boolToString fileConfig.appControl.requiresRestart}" == "true" ]]; then
-                echo "🚀 Restarting $PROCESS_NAME..."
                 ${fileConfig.appControl.restartCommand} 2>/dev/null || true
           
                 # Health check if enabled
                 if ${lib.boolToString (fileConfig.appControl.healthCheck or true)}; then
                   sleep 3
                   if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
-                    echo "  ✓ Health check passed - app is running"
+                    :
                   else
-                    echo "  ⚠️  Health check failed - app may not have started properly"
+                    echo "warning: health check failed for $PROCESS_NAME"
                   fi
-                else
-                  echo "  ✓ Restart command executed"
                 fi
               fi
             fi
@@ -533,14 +528,6 @@ rec {
             # Final cleanup
             rm -f "$TEMP_PLIST"
       
-            # Provide recovery information if backup was made
-            if [[ -n "$BACKUP_DIR" ]] && [[ $NEEDS_BACKUP -eq 1 ]]; then
-              echo ""
-              echo "💡 Recovery information:"
-              echo "   Backup directory: $BACKUP_DIR"
-              echo "   To restore: cp '$BACKUP_DIR/$FILENAME.backup' '$PLIST_FILE'"
-              echo "   To view all backups: ls -la '$HOME/Library/Preferences/backups/'"
-            fi
     '';
 
   /*
@@ -582,182 +569,156 @@ rec {
         actualConfigs;
 
       # Generate backup setup script if needed
-      backupSetup =
-        if anyBackupNeeded then ''
-          # Setup backup infrastructure
-          echo "🏗️  Setting up backup infrastructure for preference files..."
-      
-          # Create backup directory exclusion from Time Machine (optional)
-          if command -v tmutil >/dev/null 2>&1; then
-            # Only add exclusion if not already present
-            if ! tmutil isexcluded "$HOME/Library/Preferences/backups" 2>/dev/null | grep -q "Included"; then
-              tmutil addexclusion "$HOME/Library/Preferences/backups" 2>/dev/null || true
-            fi
-          fi
-      
-          echo ""
-        '' else "";
+      backupSetup = "";
 
       # Batch processing approach (Phase 2 enhancement)
       batchProcessingScript =
         if useBatchProcessing && (lib.length actualConfigs) > 0 then ''
-                    # Batch processing using enhanced Python processor
-                    echo "🚀 Using batch processing for ${toString (lib.length actualConfigs)} configuration files..."
+                  # Batch processing using enhanced Python processor
+                              TEMP_BATCH_DIR=$(mktemp -d -t plist-batch.XXXXXX)
+                              DEPLOY_HEADER_PRINTED=0
+
+                              print_deploy_header() {
+                                if [[ $DEPLOY_HEADER_PRINTED -eq 0 ]]; then
+                                  echo "Deploying macOS preferences..."
+                                  DEPLOY_HEADER_PRINTED=1
+                                fi
+                              }
+                ${batchPlistProcessor { 
+                  jsonConfigs = actualConfigs; 
+                  jsonFilePaths = actualPaths;
+                }} "$TEMP_BATCH_DIR" ${lib.concatStringsSep " " (map (path: "\"${path}\"") actualPaths)}
         
-                                # Create temporary directory for batch processing
-                                TEMP_BATCH_DIR=$(mktemp -d -t plist-batch.XXXXXX)
-                                echo "📁 Batch temp directory: $TEMP_BATCH_DIR"
-        
-          # Run batch processor for all JSON files
-                  echo "⚙️  Generating plists in batch..."
-                  ${batchPlistProcessor { 
-                    jsonConfigs = actualConfigs; 
-                    jsonFilePaths = actualPaths;
-                  }} "$TEMP_BATCH_DIR" ${lib.concatStringsSep " " (map (path: "\"${path}\"") actualPaths)}
-        
-                                # Check batch processing results
-                                BATCH_SUMMARY="$TEMP_BATCH_DIR/batch_summary.json"
+                              # Check batch processing results
+                              BATCH_SUMMARY="$TEMP_BATCH_DIR/batch_summary.json"
                                 if [[ ! -f "$BATCH_SUMMARY" ]]; then
-                                  echo "❌ Batch processing failed - no summary found"
+                                  echo "warning: batch processing failed - no summary found"
                                   rm -rf "$TEMP_BATCH_DIR"
                                   exit 1
                                 fi
-        
-                                # Extract statistics from batch summary
-                                TOTAL_PLIST_FILES=$(jq -r '.total_plist_files' "$BATCH_SUMMARY")
+
                                 BATCH_SUCCESS=$(jq -r '.success' "$BATCH_SUMMARY")
-        
-                                echo "📊 Batch processing results:"
-                                echo "   Plist files generated: $TOTAL_PLIST_FILES"
-                                echo "   Success: $BATCH_SUCCESS"
-        
                                 if [[ "$BATCH_SUCCESS" != "true" ]]; then
-                                  echo "❌ Some files failed to process - check logs above"
+                                  echo "warning: some files failed to process"
                                   rm -rf "$TEMP_BATCH_DIR"
                                   exit 1
                                 fi
-        
-                                # Now deploy files with backup and app management
-                                echo "🔄 Deploying plist files with enhanced management..."
-        
+
+                                BACKUP_ROOT=""
+
                                 # Process each file config individually for deployment (backup + app management)
-                                ${lib.concatMapStringsSep "\n" (jsonConfig: 
-                                  lib.concatMapStringsSep "\n" (fileConfig: ''
-                                    echo "📤 Processing deployment for: ${fileConfig.filename}"
-            
+                              ${lib.concatMapStringsSep "\n" (jsonConfig: 
+                                lib.concatMapStringsSep "\n" (fileConfig: ''
                                     # Find the corresponding generated plist
                                     GENERATED_PLIST="$TEMP_BATCH_DIR/${fileConfig.filename}.tmp"
                                     TARGET_PATH="${config.home.homeDirectory}/${lib.removePrefix "~/" fileConfig.filepath}/${fileConfig.filename}"
             
-                                    if [[ -f "$GENERATED_PLIST" ]]; then
-                                      # Enhanced change detection with backup integration
-                                      NEEDS_DEPLOY=0
-                                      DEPLOY_REASON=""
-                                      BACKUP_DIR=""
+                                  if [[ -f "$GENERATED_PLIST" ]]; then
+                                    # Enhanced change detection with backup integration
+                                    NEEDS_DEPLOY=0
+                                    DEPLOY_REASON=""
+                                    BACKUP_DIR=""
               
-                                      if [[ -f "$TARGET_PATH" ]]; then
-                                        # Quick size check
-                                        old_size=$(/usr/bin/stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
-                                        new_size=$(/usr/bin/stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
+                                    if [[ -f "$TARGET_PATH" ]]; then
+                                      # Quick size check
+                                      old_size=$(/usr/bin/stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
+                                      new_size=$(/usr/bin/stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
                 
-                                        if [[ ''${old_size:-0} -ne ''${new_size:-0} ]]; then
-                                          NEEDS_DEPLOY=1
-                                          DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
-                                        else
-                                          # Content check via checksum
-                                          old_checksum=$(sha256sum "$TARGET_PATH" | cut -d' ' -f1)
-                                          new_checksum=$(jq -r --arg fn "${fileConfig.filename}" '.results[].results[]? | select(.filename == $fn) | .checksum' "$BATCH_SUMMARY")
-                  
-                                          if [[ "$old_checksum" != "$new_checksum" ]]; then
-                                            NEEDS_DEPLOY=1
-                                            DEPLOY_REASON="content changed"
-                                          fi
-                                        fi
-                
-                                        # Smart backup if changes detected and backup enabled
-                                        if [[ $NEEDS_DEPLOY -eq 1 ]] && [[ "${lib.boolToString (if fileConfig ? backup then (fileConfig.backup.enabled or true) else true)}" == "true" ]] && [[ "${if fileConfig ? backup then fileConfig.backup.strategy or "smart" else "smart"}" != "never" ]]; then
-                                          BACKUP_DIR="$HOME/Library/Preferences/backups/$(date +%Y-%m-%d-%H%M%S)"
-                                          mkdir -p "$BACKUP_DIR"
-                                          echo "💾 Backing up: ${fileConfig.filename} -> $BACKUP_DIR/"
-                  
-                                          backup_path="$BACKUP_DIR/${fileConfig.filename}.backup"
-                                          cp -p "$TARGET_PATH" "$backup_path"
-                  
-                                          echo "  ✓ Backed up: $backup_path"
-                                        fi
-                                      else
+                                      if [[ ''${old_size:-0} -ne ''${new_size:-0} ]]; then
                                         NEEDS_DEPLOY=1
-                                        DEPLOY_REASON="new file"
+                                        DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
+                                      else
+                                        # Content check via checksum
+                                        old_checksum=$(sha256sum "$TARGET_PATH" | cut -d' ' -f1)
+                                        new_checksum=$(jq -r --arg fn "${fileConfig.filename}" '.results[].results[]? | select(.filename == $fn) | .checksum' "$BATCH_SUMMARY")
+                  
+                                        if [[ "$old_checksum" != "$new_checksum" ]]; then
+                                          NEEDS_DEPLOY=1
+                                          DEPLOY_REASON="content changed"
+                                        fi
                                       fi
+                
+                                      # Smart backup if changes detected and backup enabled
+                                      if [[ $NEEDS_DEPLOY -eq 1 ]] && [[ "${lib.boolToString (if fileConfig ? backup then (fileConfig.backup.enabled or true) else true)}" == "true" ]] && [[ "${if fileConfig ? backup then fileConfig.backup.strategy or "smart" else "smart"}" != "never" ]]; then
+                                          if [[ -z "$BACKUP_ROOT" ]]; then
+                                            BACKUP_ROOT="$HOME/Desktop/$(date +%Y%m%d-%H%M%S) nix-backups"
+                                            mkdir -p "$BACKUP_ROOT"
+                                            echo "Backing up overwritten macOS preferences to $BACKUP_ROOT..."
+                                          fi
+
+                                          BACKUP_DIR="$BACKUP_ROOT"
+                  
+                                        backup_path="$BACKUP_DIR/${fileConfig.filename}.backup"
+                                        cp -p "$TARGET_PATH" "$backup_path"
+                  
+                                        fi
+                                    else
+                                      NEEDS_DEPLOY=1
+                                      DEPLOY_REASON="new file"
+                                    fi
               
-                                      # Enhanced app management with timeout and health checks
-                                      APP_WAS_RUNNING=0
-                                      PROCESS_NAME="${fileConfig.appControl.processName}"
-            TIMEOUT="${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}"
+                                    # Enhanced app management with timeout and health checks
+                                    APP_WAS_RUNNING=0
+                                    PROCESS_NAME="${fileConfig.appControl.processName}"
+          TIMEOUT="${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}"
               
                                       if [[ $NEEDS_DEPLOY -eq 1 ]]; then
+                                        if [[ -n "$DEPLOY_REASON" ]]; then
+                                          print_deploy_header
+                                          echo "- ${fileConfig.filename} ($DEPLOY_REASON)"
+                                        else
+                                          print_deploy_header
+                                          echo "- ${fileConfig.filename}"
+                                        fi
                                         # Check if app is running
                                         if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
                                           APP_WAS_RUNNING=1
-                                          echo "⏹️  Stopping $PROCESS_NAME..."
                   
-                                           # Try graceful shutdown with timeout
-                                           QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
-                                           eval "$QUIT_COMMAND" 2>/dev/null || true
-                                           if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
-                                            echo "  ✓ Gracefully stopped"
-                                          else
-                                            echo "  ⚠️  Force stopping after timeout"
-                                            pkill -x "$PROCESS_NAME" 2>/dev/null || true
-                                            sleep 1
+                                         # Try graceful shutdown with timeout
+                                         QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
+                                         eval "$QUIT_COMMAND" 2>/dev/null || true
+                                            if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
+                                            else
+                                              echo "warning: forced stop of $PROCESS_NAME after timeout"
+                                              pkill -x "$PROCESS_NAME" 2>/dev/null || true
+                                              sleep 1
+                                            fi
                                           fi
-                                        fi
                 
                                         # Deploy file
-                                        echo "📤 Deploying: ${fileConfig.filename} ($DEPLOY_REASON)"
                                         mkdir -p "$(dirname "$TARGET_PATH")"
                                         mv "$GENERATED_PLIST" "$TARGET_PATH"
                                         chmod ${fileConfig.permissions} "$TARGET_PATH"
                 
-                                        # Clear preferences cache
-                                        killall cfprefsd 2>/dev/null || true
-                                        sleep 1
-                
-                                        echo "✅ Deployed successfully: ${fileConfig.filename}"
+                                      # Clear preferences cache
+                                      killall cfprefsd 2>/dev/null || true
+                                      sleep 1
                 
                                         # Restart with health check
                                         if [[ $APP_WAS_RUNNING -eq 1 ]] && [[ "${lib.boolToString fileConfig.appControl.requiresRestart}" == "true" ]]; then
-                                          echo "🚀 Restarting $PROCESS_NAME..."
                                           ${fileConfig.appControl.restartCommand} 2>/dev/null || true
                   
-                                          if ${lib.boolToString (fileConfig.appControl.healthCheck or true)}; then
-                                            sleep 3
-                                            if pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
-                                              echo "  ✓ Health check passed"
-                                            else
-                                              echo "  ⚠️  Health check failed - app may not have started"
+                                        if ${lib.boolToString (fileConfig.appControl.healthCheck or true)}; then
+                                          sleep 3
+                                            if ! pgrep -x "$PROCESS_NAME" >/dev/null 2>&1; then
+                                              echo "warning: health check failed for $PROCESS_NAME"
                                             fi
                                           fi
                                         fi
-                
-                                        # Recovery info if backup was made
-                                        if [[ -n "$BACKUP_DIR" ]]; then
-                                          echo "💡 Recovery: cp '$BACKUP_DIR/${fileConfig.filename}.backup' '$TARGET_PATH'"
-                                        fi
                                       else
-                                        echo "✓ No changes needed: ${fileConfig.filename}"
+                                        print_deploy_header
+                                        echo "- ${fileConfig.filename} (no changes)"
                                         # Clean up temp file
                                         rm -f "$GENERATED_PLIST"
                                       fi
                                     else
-                                      echo "❌ Generated plist not found: ${fileConfig.filename}"
+                                      echo "warning: generated plist not found: ${fileConfig.filename}"
                                     fi
-                                  '') jsonConfig.files
-                                ) actualConfigs}
+                                '') jsonConfig.files
+                              ) actualConfigs}
         
                                 # Cleanup
                                 rm -rf "$TEMP_BATCH_DIR"
-                                echo "🧹 Batch processing complete"
         
         '' else "";
 

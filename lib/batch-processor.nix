@@ -43,10 +43,10 @@ let
                       try:
                           return type_handlers[type_handler](value)
                       except (ValueError, TypeError) as e:
-                          print(f"⚠️  Warning: Failed to convert {type_handler}: {e}", file=sys.stderr)
+                          print(f"warning: failed to convert {type_handler}: {e}", file=sys.stderr)
                           return value
                   else:
-                      print(f"⚠️  Warning: Unknown type handler: {type_handler}", file=sys.stderr)
+                      print(f"warning: unknown type handler: {type_handler}", file=sys.stderr)
                       return value
               # Recursively process dict
               return {k: convert_json_to_plist(v, type_handlers) for k, v in obj.items()}
@@ -83,7 +83,7 @@ let
                   # Get data for this file
                   plist_data = file_entry.get('data')
                   if plist_data is None:
-                      print(f"⚠️  Warning: No data found for filename: {filename}", file=sys.stderr)
+                      print(f"warning: no data found for filename: {filename}", file=sys.stderr)
                       continue
                   
                   # Convert with enhanced type handling
@@ -112,9 +112,7 @@ let
                       'success': True
                   })
                   
-                  print(f"✓ Generated plist: {filename} ({output_path.stat().st_size} bytes)")
-              
-              return {
+            return {
                   'json_file': str(json_path),
                   'success': True,
                   'results': results,
@@ -122,7 +120,7 @@ let
               }
               
           except Exception as e:
-              print(f"❌ Error processing {json_path}: {e}", file=sys.stderr)
+              print(f"warning: error processing {json_path}: {e}", file=sys.stderr)
               return {
                   'json_file': str(json_path),
                   'success': False,
@@ -139,13 +137,10 @@ let
           temp_dir = sys.argv[1]
           json_files = sys.argv[2:]
           
-          print(f"🔄 Processing {len(json_files)} JSON configuration files...")
-          
           all_results = []
           total_files_processed = 0
           
           for json_file in json_files:
-              print(f"\n📁 Processing: {os.path.basename(json_file)}")
               result = process_json_file(json_file, temp_dir)
               all_results.append(result)
               total_files_processed += result['total_files']
@@ -164,12 +159,6 @@ let
           with open(summary_path, 'w') as f:
               json.dump(summary, f, indent=2)
           
-          print(f"\n📊 Batch processing complete:")
-          print(f"   JSON files: {len(json_files)}")
-          print(f"   Plist files generated: {total_files_processed}")
-          print(f"   Success: {summary['success']}")
-          print(f"   Summary written to: {summary_path}")
-          
           # Exit with appropriate code
           sys.exit(0 if summary['success'] else 1)
       
@@ -187,7 +176,7 @@ let
         MAX_JOBS=${toString maxJobs}
         TEMP_DIR="$1"
         
-        echo "🚀 Starting parallel deployment (max $MAX_JOBS concurrent jobs)..."
+        echo "Starting parallel deployment (max $MAX_JOBS concurrent jobs)..."
         
         # Function to deploy a single plist file
         deploy_file() {
@@ -206,11 +195,9 @@ let
           local permissions=$(jq -r '.permissions // "600"' "$job_json")
           
           if [[ -z "$target_path" ]]; then
-            echo "❌ No target_path specified for $filename"
+            echo "warning: no target_path specified for $filename"
             return 1
           fi
-          
-          echo "📤 Deploying: $filename"
           
           # Enhanced change detection
           NEEDS_DEPLOY=0
@@ -244,12 +231,12 @@ let
             mv "$output_path" "$target_path"
             chmod "$permissions" "$target_path"
             
-            echo "✅ Deployed: $filename ($DEPLOY_REASON)"
+            echo "- $filename ($DEPLOY_REASON)"
             
             # Write deployment status back to temp file
             echo "{\"filename\":\"$filename\",\"deployed\":true,\"reason\":\"$DEPLOY_REASON\"}" > "$temp_dir/deploy_status_$(basename "$filename" .plist).json"
           else
-            echo "✓ No changes needed: $filename"
+            echo "- $filename (no changes)"
             # Clean up temp file
             rm -f "$output_path"
             
@@ -265,7 +252,7 @@ let
         BATCH_SUMMARY="$TEMP_DIR/batch_summary.json"
         
         if [[ ! -f "$BATCH_SUMMARY" ]]; then
-          echo "❌ Batch summary not found: $BATCH_SUMMARY"
+          echo "warning: batch summary not found: $BATCH_SUMMARY"
           exit 1
         fi
         

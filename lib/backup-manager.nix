@@ -9,7 +9,7 @@ let
 
   # Create backup directory path with timestamp
   createBackupDirPath = timestamp:
-    "$HOME/Library/Preferences/backups/${toString timestamp}";
+    "$HOME/Desktop/$(date -r ${toString timestamp} +%Y%m%d-%H%M%S) nix-backups";
 
   # Generate checksum for file change detection
   generateChecksum = file: ''
@@ -47,7 +47,7 @@ let
 
   # Create backup directory structure
   createBackupStructure = timestamp: ''
-        local backup_dir="$HOME/Library/Preferences/backups/${toString timestamp}"
+        local backup_dir="$HOME/Desktop/$(date -r ${toString timestamp} +%Y%m%d-%H%M%S) nix-backups"
         mkdir -p "$backup_dir"
     
         # Create initial manifest
@@ -70,7 +70,7 @@ let
   # Backup individual file with metadata
   backupFile = { fileConfig, timestamp, originalPath }: ''
         local original_path="${originalPath}"
-        local backup_dir="$HOME/Library/Preferences/backups/${toString timestamp}"
+        local backup_dir="$HOME/Desktop/$(date -r ${toString timestamp} +%Y%m%d-%H%M%S) nix-backups"
         local backup_filename="${fileConfig.filename}.backup"
         local backup_path="$backup_dir/$backup_filename"
     

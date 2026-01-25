@@ -109,13 +109,13 @@ let
               if not handler["validator"](value):
                   raise ValueError(f"Invalid value for type {type_name}: {value}")
           except Exception as e:
-              print(f"⚠️  Validation warning for {type_name}: {e}")
+              print(f"warning: validation issue for {type_name}: {e}")
           
           # Convert value
           try:
               return handler["converter"](value)
           except Exception as e:
-              print(f"⚠️  Conversion warning for {type_name}: {e}")
+              print(f"warning: conversion issue for {type_name}: {e}")
               return value
       
       def enhanced_convert_json_to_plist(obj, depth=0, max_depth=50):
@@ -132,7 +132,7 @@ let
                   try:
                       return convert_with_validation(type_name, value)
                   except Exception as e:
-                      print(f"⚠️  Type conversion failed: {type_name}: {e}")
+                      print(f"warning: type conversion failed for {type_name}: {e}")
                       return value
               
               # Recursively process dict
@@ -185,52 +185,52 @@ let
             with open(file_path, 'r') as f:
                 data = json.load(f)
             
-            print("🔍 Validating:", file_path)
+            print("Validating:", file_path)
             
             if 'files' not in data:
-                print("  ❌ Missing 'files' array")
+                print("error: missing 'files' array")
                 return False
             
             if not isinstance(data['files'], list):
-                print("  ❌ 'files' must be an array")
+                print("error: 'files' must be an array")
                 return False
             
             file_count = len(data['files'])
-            print("  📁 Found", file_count, "file configuration(s)")
+            print("Found", file_count, "file configuration(s)")
             
             all_valid = True
             for i, file_config in enumerate(data['files']):
                 filename = file_config.get('filename', 'unnamed')
-                print("  📄 File", str(i + 1) + ":", filename)
+                print("File", str(i + 1) + ":", filename)
                 
                 required_fields = ['type', 'format', 'filename', 'filepath', 'permissions']
                 for field in required_fields:
                     if field not in file_config:
-                        print("    ❌ Missing required field:", field)
+                        print("error: missing required field:", field)
                         all_valid = False
                     else:
-                        print("    ✓", field)
+                        print("ok:", field)
                 
                 if file_config.get('type') == 'plist':
                     format_val = file_config.get('format')
                     if format_val not in ['xml1', 'binary1']:
-                        print("    ⚠️  Unknown format:", format_val)
+                        print("warning: unknown format:", format_val)
                     
                     if not filename.endswith('.plist'):
-                        print("    ⚠️  Filename should end with .plist:", filename)
+                        print("warning: filename should end with .plist:", filename)
             
             if all_valid:
-                print("  ✅ Validation passed for", file_path)
+                print("Validation passed for", file_path)
             else:
-                print("  ❌ Validation failed for", file_path)
+                print("Validation failed for", file_path)
             
             return all_valid
             
         except json.JSONDecodeError as e:
-            print("  ❌ JSON parsing error:", e)
+            print("error: JSON parsing error:", e)
             return False
         except Exception as e:
-            print("  ❌ Unexpected error:", e)
+            print("error: unexpected error:", e)
             return False
     
     if len(sys.argv) < 2:
