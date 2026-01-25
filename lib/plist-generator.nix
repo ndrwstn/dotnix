@@ -417,7 +417,7 @@ rec {
               old_size=$(/usr/bin/stat -f %z "$PLIST_FILE" 2>/dev/null || echo "0")
               new_size=$(/usr/bin/stat -f %z "$TEMP_PLIST" 2>/dev/null || echo "0")
         
-              if [[ ${old_size:-0} -ne ${new_size:-0} ]]; then
+              if [[ ''${old_size:-0} -ne ''${new_size:-0} ]]; then
                 NEEDS_DEPLOY=1
                 DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
               else
@@ -660,7 +660,7 @@ rec {
                                         old_size=$(/usr/bin/stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
                                         new_size=$(/usr/bin/stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
                 
-                                        if [[ ${old_size:-0} -ne ${new_size:-0} ]]; then
+                                        if [[ ''${old_size:-0} -ne ''${new_size:-0} ]]; then
                                           NEEDS_DEPLOY=1
                                           DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
                                         else
@@ -776,4 +776,3 @@ rec {
     # Combine backup setup with processing script
     backupSetup + (if useBatchProcessing then batchProcessingScript else individualProcessingScript);
 }
-

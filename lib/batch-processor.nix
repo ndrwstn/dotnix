@@ -220,7 +220,7 @@ let
             # Quick size check first
           local old_size=$(/usr/bin/stat -f %z "$target_path" 2>/dev/null || echo "0")
             
-            if [[ ${old_size:-0} -ne ${size:-0} ]]; then
+            if [[ ''${old_size:-0} -ne ''${size:-0} ]]; then
               NEEDS_DEPLOY=1
               DEPLOY_REASON="size changed ($old_size -> $size bytes)"
             else
