@@ -24,7 +24,7 @@ let
     fi
     
     # Get file modification time
-    local file_mtime=$(${pkgs.coreutils}/bin/stat -f %m "$1" 2>/dev/null || echo "0")
+    local file_mtime=$(/usr/bin/stat -f %m "$1" 2>/dev/null || echo "0")
     local backup_time="${toString lastBackupTime}"
     
     # Check if file was modified after last known good backup
@@ -79,11 +79,11 @@ let
           cp -p "$original_path" "$backup_path"
       
           # Get file metadata
-          local file_perms=$(${pkgs.coreutils}/bin/stat -f "%Lp" "$original_path")
-          local file_uid=$(${pkgs.coreutils}/bin/stat -f "%u" "$original_path")
-          local file_gid=$(${pkgs.coreutils}/bin/stat -f "%g" "$original_path")
-          local file_size=$(${pkgs.coreutils}/bin/stat -f "%z" "$original_path")
-          local file_mtime=$(${pkgs.coreutils}/bin/stat -f "%m" "$original_path")
+          local file_perms=$(/usr/bin/stat -f "%Lp" "$original_path")
+          local file_uid=$(/usr/bin/stat -f "%u" "$original_path")
+          local file_gid=$(/usr/bin/stat -f "%g" "$original_path")
+          local file_size=$(/usr/bin/stat -f "%z" "$original_path")
+          local file_mtime=$(/usr/bin/stat -f "%m" "$original_path")
           local file_checksum=$(${pkgs.coreutils}/bin/sha256sum "$original_path" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
       
           # Create JSON entry for manifest

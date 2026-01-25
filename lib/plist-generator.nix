@@ -291,7 +291,7 @@ rec {
               if [[ "$BACKUP_STRATEGY" == "always" ]] || [[ "$BACKUP_STRATEGY" == "smart" ]]; then
                 if [[ -f "$PLIST_FILE" ]]; then
                   # Get current file metadata
-                  file_mtime=$(${pkgs.coreutils}/bin/stat -f %m "$PLIST_FILE" 2>/dev/null || echo "0")
+                  file_mtime=$(/usr/bin/stat -f %m "$PLIST_FILE" 2>/dev/null || echo "0")
                   current_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
             
                   # Check if we have a last checksum for comparison
@@ -414,10 +414,10 @@ rec {
             DEPLOY_REASON=""
             if [[ -f "$PLIST_FILE" ]]; then
               # Quick size check first (faster than content comparison)
-              old_size=$(${pkgs.coreutils}/bin/stat -f %z "$PLIST_FILE" 2>/dev/null || echo "0")
-              new_size=$(${pkgs.coreutils}/bin/stat -f %z "$TEMP_PLIST" 2>/dev/null || echo "0")
+              old_size=$(/usr/bin/stat -f %z "$PLIST_FILE" 2>/dev/null || echo "0")
+              new_size=$(/usr/bin/stat -f %z "$TEMP_PLIST" 2>/dev/null || echo "0")
         
-              if [[ $old_size -ne $new_size ]]; then
+              if [[ ${old_size:-0} -ne ${new_size:-0} ]]; then
                 NEEDS_DEPLOY=1
                 DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
               else
@@ -450,11 +450,11 @@ rec {
                 cp -p "$PLIST_FILE" "$backup_path"
           
                 # Get file metadata for manifest
-                file_perms=$(${pkgs.coreutils}/bin/stat -f "%Lp" "$PLIST_FILE")
-                file_uid=$(${pkgs.coreutils}/bin/stat -f "%u" "$PLIST_FILE")
-                file_gid=$(${pkgs.coreutils}/bin/stat -f "%g" "$PLIST_FILE")
-                file_size=$(${pkgs.coreutils}/bin/stat -f "%z" "$PLIST_FILE")
-                file_mtime=$(${pkgs.coreutils}/bin/stat -f "%m" "$PLIST_FILE")
+                file_perms=$(/usr/bin/stat -f "%Lp" "$PLIST_FILE")
+                file_uid=$(/usr/bin/stat -f "%u" "$PLIST_FILE")
+                file_gid=$(/usr/bin/stat -f "%g" "$PLIST_FILE")
+                file_size=$(/usr/bin/stat -f "%z" "$PLIST_FILE")
+                file_mtime=$(/usr/bin/stat -f "%m" "$PLIST_FILE")
                 file_checksum=$(${pkgs.coreutils}/bin/sha256sum "$PLIST_FILE" | ${pkgs.coreutils}/bin/cut -d' ' -f1)
           
                 echo "  ✓ Backed up to: $backup_path"
@@ -657,10 +657,10 @@ rec {
               
                                       if [[ -f "$TARGET_PATH" ]]; then
                                         # Quick size check
-                                        old_size=$(stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
-                                        new_size=$(stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
+                                        old_size=$(/usr/bin/stat -f %z "$TARGET_PATH" 2>/dev/null || echo "0")
+                                        new_size=$(/usr/bin/stat -f %z "$GENERATED_PLIST" 2>/dev/null || echo "0")
                 
-                                        if [[ $old_size -ne $new_size ]]; then
+                                        if [[ ${old_size:-0} -ne ${new_size:-0} ]]; then
                                           NEEDS_DEPLOY=1
                                           DEPLOY_REASON="size changed ($old_size -> $new_size bytes)"
                                         else
@@ -776,5 +776,4 @@ rec {
     # Combine backup setup with processing script
     backupSetup + (if useBatchProcessing then batchProcessingScript else individualProcessingScript);
 }
-
 
