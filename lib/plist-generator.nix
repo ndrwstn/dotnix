@@ -466,10 +466,10 @@ rec {
           "original_path": "$PLIST_FILE",
           "backup_path": "$backup_path",
           "permissions": "$file_perms",
-          "uid": $file_uid,
-          "gid": $file_gid,
-          "size": $file_size,
-          "mtime": $file_mtime,
+          "uid": "$file_uid",
+          "gid": "$file_gid",
+          "size": "$file_size",
+          "mtime": "$file_mtime",
           "checksum": "$file_checksum",
           "backup_reason": "$DEPLOY_REASON",
           "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -488,7 +488,8 @@ rec {
                 echo "⏹️  Stopping $PROCESS_NAME..."
           
                 # Try graceful shutdown first
-                if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$(${fileConfig.appControl.quitCommand} 2>/dev/null || true)"; then
+                QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
+                if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$($QUIT_COMMAND 2>/dev/null || true)"; then
                   echo "  ✓ Gracefully stopped"
                 else
                   echo "  ⚠️  Force stopping after timeout"
@@ -691,7 +692,7 @@ rec {
                                       # Enhanced app management with timeout and health checks
                                       APP_WAS_RUNNING=0
                                       PROCESS_NAME="${fileConfig.appControl.processName}"
-                                      TIMEOUT=${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}
+            TIMEOUT="${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}"
               
                                       if [[ $NEEDS_DEPLOY -eq 1 ]]; then
                                         # Check if app is running
@@ -699,8 +700,9 @@ rec {
                                           APP_WAS_RUNNING=1
                                           echo "⏹️  Stopping $PROCESS_NAME..."
                   
-                                          # Try graceful shutdown with timeout
-                                          if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$(${fileConfig.appControl.quitCommand} 2>/dev/null || true)"; then
+                                           # Try graceful shutdown with timeout
+                                           QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
+                                           if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done" <<< "$($QUIT_COMMAND 2>/dev/null || true)"; then
                                             echo "  ✓ Gracefully stopped"
                                           else
                                             echo "  ⚠️  Force stopping after timeout"
