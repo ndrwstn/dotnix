@@ -678,6 +678,7 @@ rec {
                                          QUIT_COMMAND="${fileConfig.appControl.quitCommand}"
                                          eval "$QUIT_COMMAND" 2>/dev/null || true
                                             if timeout "$TIMEOUT"s bash -c "while pgrep -x '$PROCESS_NAME' >/dev/null; do sleep 0.5; done"; then
+                                              :
                                             else
                                               echo "warning: forced stop of $PROCESS_NAME after timeout"
                                               pkill -x "$PROCESS_NAME" 2>/dev/null || true
