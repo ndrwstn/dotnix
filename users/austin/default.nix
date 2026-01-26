@@ -223,7 +223,7 @@ lib.mkMerge [
       pluto
       poppler-utils
       # printrun
-      # python3
+      python3
       pyright
       # rsync
       qpdf

@@ -6,11 +6,17 @@
       "filename": "com.manytricks.Moom.plist",
       "filepath": "~/Library/Preferences",
       "permissions": "600",
+      "backup": {
+        "enabled": true,
+        "strategy": "smart"
+      },
       "appControl": {
         "processName": "Moom",
         "quitCommand": "killall Moom",
         "restartCommand": "open -a Moom",
-        "requiresRestart": true
+        "requiresRestart": true,
+        "timeout": 10,
+        "healthCheck": true
       },
       "data": {
         "Key Control: Space": 0,
