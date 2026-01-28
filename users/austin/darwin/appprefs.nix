@@ -23,15 +23,28 @@ let
     })
     prefFiles;
 
-  # Generate deployment script for all preference files
-  deploymentScript = lib.concatMapStringsSep "\n"
-    (item:
-      plistGen.generateAllPlistScripts {
+  acrossPrefsDir = "$HOME/Library/Group Containers/group.com.daymore.Across/Library/Preferences";
+
+  prefScriptFor = item:
+    let
+      baseScript = plistGen.generateAllPlistScripts {
         inherit config;
         jsonConfig = item.config;
         jsonFilePath = toString item.sourcePath;
-      }
-    )
+      };
+      isAcross = item.sourcePath == prefsDir + "/across.json";
+    in
+    if isAcross then ''
+      if [ -d "${acrossPrefsDir}" ]; then
+        ${baseScript}
+      else
+        echo "Across group container not found; skipping prefs" >&2
+      fi
+    '' else baseScript;
+
+  # Generate deployment script for all preference files
+  deploymentScript = lib.concatMapStringsSep "\n"
+    prefScriptFor
     prefConfigs;
 
 in
