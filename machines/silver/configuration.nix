@@ -35,13 +35,15 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
+
+    # Use NixOS auto-prune (correct syntax)
+    autoPrune = {
+      enable = true;
+      dates = "daily";
+    };
+
+    # Valid daemon settings only
     daemon.settings = {
-      # Auto-pruning configuration
-      pruning = {
-        enabled = true;
-        interval = "24h";
-      };
-      # Standard daemon settings
       log-driver = "journald";
       storage-driver = "overlay2";
     };
