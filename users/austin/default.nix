@@ -180,7 +180,6 @@ lib.mkMerge [
       # cloudflared
       curlie
       deadnix
-      # docker
       eslint
       eza
       # ffmpeg_7

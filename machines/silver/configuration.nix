@@ -31,6 +31,30 @@
   # Enable webcam support
   hardware.facetimehd.enable = true;
 
+  # Docker configuration
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    daemon.settings = {
+      # Auto-pruning configuration
+      pruning = {
+        enabled = true;
+        interval = "24h";
+      };
+      # Standard daemon settings
+      log-driver = "journald";
+      storage-driver = "overlay2";
+    };
+  };
+
+  # Add austin to docker group for Docker access
+  users.users.austin.extraGroups = [ "docker" ];
+
+  # Docker Compose support
+  environment.systemPackages = with pkgs; [
+    docker-compose
+  ];
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It's perfectly fine and recommended to leave
