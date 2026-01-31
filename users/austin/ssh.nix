@@ -119,6 +119,7 @@ let
   # 3. Using deployed public key files that 1Password can match to private keys
   # 4. Using deployed public keys for external services (gitea, github)
   # 5. Using physical setup key for goetz (bootstrap/setup scenarios)
+  # 6. Enabling agent forwarding for all internal machine connections (for 1Password remote auth)
   sshMatches =
     # Generate machine-specific matches, filtering out current machine
     (lib.mapAttrsToList
@@ -130,6 +131,7 @@ let
             User = machineData.user;
             Port = machineData.port;
             IdentityFile = "~/.ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}";
+            ForwardAgent = "yes"; # Enable agent forwarding for all internal machines
           };
         }
       )
@@ -331,6 +333,22 @@ in
         controlMaster = "no";
         controlPath = "~/.ssh/master-%r@%n:%p";
         controlPersist = "no";
+      };
+
+      # Conditional IdentityAgent configuration for forwarded vs local sockets
+      # When in SSH session, use forwarded agent socket
+      # When not in SSH session, use local 1Password agent socket
+      "exec \"test -n \\\"$SSH_CONNECTION\\\"\"" = {
+        forwardAgent = true;
+        identityAgent = "$SSH_AUTH_SOCK";
+      };
+
+      "exec \"test -z \\\"$SSH_CONNECTION\\\"\"" = {
+        forwardAgent = false;
+        identityAgent =
+          if pkgs.stdenv.isDarwin
+          then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+          else "~/.1password/agent.sock";
       };
     };
   };

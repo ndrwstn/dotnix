@@ -34,6 +34,14 @@
     "m1ddc"
   ];
 
+  # Enable SSH daemon with agent forwarding
+  services.openssh = {
+    enable = true;
+    extraConfig = ''
+      AllowAgentForwarding yes
+    '';
+  };
+
   # Set nix-darwin state version
   system.stateVersion = 4;
 }
