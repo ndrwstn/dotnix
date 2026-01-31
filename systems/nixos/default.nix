@@ -73,6 +73,29 @@
     };
   };
 
+  systemd.services.brother-mfc-l8900 = {
+    description = "Configure Brother MFC-L8900 printer";
+    after = [ "cups.service" "agenix.service" ];
+    requires = [ "cups.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      if [ ! -f "/run/agenix/general" ]; then
+        echo "Printer secret /run/agenix/general not found; skipping printer setup."
+        exit 0
+      fi
+
+      printerUri="$(${pkgs.jq}/bin/jq -r '.printers.brother_mfc_l8900.uri' /run/agenix/general)"
+      if [ -z "$printerUri" ] || [ "$printerUri" = "null" ]; then
+        echo "Printer URI not found in /run/agenix/general; skipping printer setup."
+        exit 0
+      fi
+
+      ${pkgs.cups}/bin/lpadmin -p "Brother_MFC_L8900" -v "$printerUri" -m everywhere -E
+      ${pkgs.cups}/bin/lpadmin -d "Brother_MFC_L8900"
+    '';
+  };
+
   # Disable GNOME's GCR SSH agent to prevent SSH_AUTH_SOCK override
   # This allows 1Password SSH agent to work properly
   environment.variables = {

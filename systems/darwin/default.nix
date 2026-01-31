@@ -43,6 +43,7 @@ in
     ./agenix.nix
     ./login-items.nix
     ./disable-background-services.nix
+    ./printers.nix
   ];
 
   # any GUI apps must be added system-wide
