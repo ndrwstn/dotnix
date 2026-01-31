@@ -9,7 +9,7 @@
 
   # Add agenix package to system packages for CLI tools
   environment.systemPackages = [
-    inputs.agenix.packages.${pkgs.system}.default
+    inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Configure agenix identity paths for Darwin

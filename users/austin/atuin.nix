@@ -216,7 +216,7 @@ in
 
   # Add Atuin integration to shells
   programs.zsh = lib.mkIf (isMachineConfigured && config.programs.zsh.enable) {
-    initExtra = lib.mkAfter atuinZshIntegration;
+    initContent = lib.mkAfter atuinZshIntegration;
   };
 
   programs.bash = lib.mkIf (isMachineConfigured && config.programs.bash.enable) {

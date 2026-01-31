@@ -42,8 +42,10 @@ lib.mkMerge [
       # Git configuration
       git = {
         enable = true;
-        userName = "Andrew Austin";
-        userEmail = "austin@impetuo.us";
+        settings.user = {
+          name = "Andrew Austin";
+          email = "austin@impetuo.us";
+        };
       };
 
       # Shell configuration
@@ -306,4 +308,3 @@ lib.mkMerge [
   (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib; }))
 ]
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-

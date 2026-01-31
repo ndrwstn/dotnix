@@ -296,30 +296,12 @@ in
 {
   # Note: agenix secrets are configured via age.secrets below, not via imports
 
-  # TODO: Re-evaluate for Home Manager 25.11 (Nov 2025)
-  # 
-  # The enableDefaultConfig option was added to Home Manager in late August 2025
-  # to replace the old top-level SSH options. This feature should be available
-  # in Home Manager 25.11 release (November 2025).
-  #
-  # Current approach (compatible with existing Home Manager):
-  # - Manual "*" matchBlock to override defaults
-  # - Limited to options available in current Home Manager version
-  # - Note: addKeysToAgent and hashKnownHosts not available in current version
-  #
-  # Future approach (Home Manager 25.11+):
-  # enableDefaultConfig = false;  # Disable contradictory multiplexing defaults
-  # matchBlocks = generateMatchBlocks sshMatches;  # No manual "*" block needed
-  #
-  # Migration steps for 25.11:
-  # 1. Uncomment enableDefaultConfig = false;
-  # 2. Remove the manual "*" matchBlock
-  # 3. Test configuration
-  # 4. Add back any options like addKeysToAgent if needed
+  # Home Manager now supports enableDefaultConfig for explicit defaults.
+  # We disable defaults and declare our desired Host * settings below.
 
   programs.ssh = {
     enable = true;
-    # enableDefaultConfig = false; # Disable contradictory multiplexing defaults
+    enableDefaultConfig = false;
 
     # Global options (unindented, at top of config)
     extraOptionOverrides = {
@@ -333,8 +315,6 @@ in
       # Terminal and security settings
       SetEnv = "TERM=xterm-256color";
       StrictHostKeyChecking = "accept-new";
-      # Known hosts files - applies to ALL SSH connections
-      UserKnownHostsFile = ''"~/.ssh/known_hosts" "~/.ssh/known_hosts_nix"'';
     };
 
     # Host-specific settings (generates separate Host blocks)
@@ -342,11 +322,15 @@ in
       # Manual "*" block with only desired defaults (no multiplexing options)
       "*" = {
         forwardAgent = false;
-        # addKeysToAgent = "no";  # TODO: Available in Home Manager 25.11+
+        addKeysToAgent = "no";
         compression = false;
         serverAliveInterval = 0;
         serverAliveCountMax = 3;
-        # hashKnownHosts = false;  # TODO: Available in Home Manager 25.11+
+        hashKnownHosts = false;
+        userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
+        controlMaster = "no";
+        controlPath = "~/.ssh/master-%r@%n:%p";
+        controlPersist = "no";
       };
     };
   };

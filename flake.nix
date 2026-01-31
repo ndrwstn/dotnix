@@ -105,12 +105,12 @@
          }:
           let
             unstable = import nixpkgs-unstable {
-              system = pkgs.system;
+              system = pkgs.stdenv.hostPlatform.system;
               config.allowUnfree = true;
             };
-            autopkgs = nixautopkgs.packages.${pkgs.system};
-            mcppkgs = mcp-servers-nix.packages.${pkgs.system} // {
-              playwright-mcp = mcp-servers-nix.packages.${pkgs.system}.playwright-mcp.overrideAttrs (old: {
+            autopkgs = nixautopkgs.packages.${pkgs.stdenv.hostPlatform.system};
+            mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system} // {
+              playwright-mcp = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp.overrideAttrs (old: {
                 versionCheckProgram = "${placeholder "out"}/bin/mcp-server-playwright";
               });
             };
@@ -324,4 +324,3 @@
     };
 }
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-
