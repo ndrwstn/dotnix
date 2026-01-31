@@ -275,12 +275,13 @@ rec {
             BACKUP_STRATEGY="${if fileConfig ? backup then fileConfig.backup.strategy or "smart" else "smart"}"
             PROCESS_NAME="${fileConfig.appControl.processName}"
             TIMEOUT=${if fileConfig.appControl ? timeout then toString fileConfig.appControl.timeout else "10"}
-            DEPLOY_HEADER_PRINTED=0
+            DEPLOY_HEADER_PRINTED="${PLIST_DEPLOY_HEADER_PRINTED:-0}"
 
             print_deploy_header() {
               if [[ $DEPLOY_HEADER_PRINTED -eq 0 ]]; then
                 echo "Deploying macOS preferences..."
                 DEPLOY_HEADER_PRINTED=1
+                export PLIST_DEPLOY_HEADER_PRINTED=1
               fi
             }
 
@@ -576,12 +577,13 @@ rec {
         if useBatchProcessing && (lib.length actualConfigs) > 0 then ''
                   # Batch processing using enhanced Python processor
                               TEMP_BATCH_DIR=$(mktemp -d -t plist-batch.XXXXXX)
-                              DEPLOY_HEADER_PRINTED=0
+                              DEPLOY_HEADER_PRINTED="${PLIST_DEPLOY_HEADER_PRINTED:-0}"
 
                               print_deploy_header() {
                                 if [[ $DEPLOY_HEADER_PRINTED -eq 0 ]]; then
                                   echo "Deploying macOS preferences..."
                                   DEPLOY_HEADER_PRINTED=1
+                                  export PLIST_DEPLOY_HEADER_PRINTED=1
                                 fi
                               }
                 ${batchPlistProcessor { 

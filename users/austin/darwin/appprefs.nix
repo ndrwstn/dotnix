@@ -54,6 +54,7 @@ in
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       # Ensure Python is available for batch processing
       export PATH="${pkgs.python3}/bin:$PATH"
+      export PLIST_DEPLOY_HEADER_PRINTED=0
       
       ${deploymentScript}
     ''
