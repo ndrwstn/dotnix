@@ -18,16 +18,16 @@
   services.xserver = {
     enable = true;
 
-    # Enable the GNOME Desktop Environment
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-
-    # Configure keymap
+    # Configure keymap (display manager moved to top-level)
     xkb = {
       layout = "us";
       variant = "";
     };
   };
+
+  # GNOME desktop environment configuration (top-level services)
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Exclude Seahorse to prevent SSH_ASKPASS interference
   environment.gnome.excludePackages = [ pkgs.seahorse ];
