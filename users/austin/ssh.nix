@@ -132,6 +132,11 @@ let
             Port = machineData.port;
             IdentityFile = "~/.ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}";
             ForwardAgent = "yes"; # Enable agent forwarding for all internal machines
+            # Set appropriate IdentityAgent based on platform
+            identityAgent =
+              if pkgs.stdenv.isDarwin
+              then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+              else "~/.1password/agent.sock";
           };
         }
       )
@@ -335,21 +340,7 @@ in
         controlPersist = "no";
       };
 
-      # Conditional IdentityAgent configuration for forwarded vs local sockets
-      # When in SSH session, use forwarded agent socket
-      # When not in SSH session, use local 1Password agent socket
-      "exec \"test -n \\\"$SSH_CONNECTION\\\"\"" = {
-        forwardAgent = true;
-        identityAgent = "$SSH_AUTH_SOCK";
-      };
 
-      "exec \"test -z \\\"$SSH_CONNECTION\\\"\"" = {
-        forwardAgent = false;
-        identityAgent =
-          if pkgs.stdenv.isDarwin
-          then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-          else "~/.1password/agent.sock";
-      };
     };
   };
 
