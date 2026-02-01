@@ -239,10 +239,8 @@ lib.mkMerge [
       sqls
       statix
       stylua
-
-      # Image processing tools for snacks.image
-      imagemagick # Provides magick/convert commands
-      ghostscript # Provides gs command for PDF rendering
+      imagemagick
+      ghostscript
       nodePackages.mermaid-cli # Provides mmdc command for diagram rendering
       # stern
       talosctl
@@ -252,6 +250,7 @@ lib.mkMerge [
       tree-sitter
       typescript-language-server
       typos
+      uv
       # ungoogled-chromium
       watch
       watchexec
