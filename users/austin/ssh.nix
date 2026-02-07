@@ -265,6 +265,13 @@ let
             hostname = match.config.HostName or null;
             user = match.config.User or null;
             port = match.config.Port or null;
+            forwardAgent =
+              if match.config.ForwardAgent or null == "yes"
+              then true
+              else if match.config.ForwardAgent or null == "no"
+              then false
+              else null;
+            identityAgent = match.config.identityAgent or null;
             identityFile =
               if match.config.IdentityFile or null != null
               then [ match.config.IdentityFile ]
