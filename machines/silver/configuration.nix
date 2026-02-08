@@ -28,6 +28,13 @@
   # Define hostname
   networking.hostName = "Silver";
 
+  # Laptop lid behavior: suspend by default, ignore when docked
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "suspend";
+    HandleLidSwitchDocked = "ignore";
+  };
+
   # Enable webcam support
   hardware.facetimehd.enable = true;
 

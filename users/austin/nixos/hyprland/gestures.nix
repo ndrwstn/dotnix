@@ -2,7 +2,7 @@
 # Note: These gestures are enabled for all NixOS systems. For systems without
 # trackpads or gesture input devices, consider conditionally enabling this
 # module based on hardware detection or system type.
-{ pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   wayland.windowManager.hyprland = {
@@ -13,7 +13,6 @@
       "gesture = 3, vertical, move"
 
       "# 4-finger gestures - common actions"
-      "gesture = 4, left, dispatcher, exec, ${pkgs.kitty}/bin/kitty"
       "gesture = 4, up, close"
       "gesture = 4, right, float"
       "gesture = 4, down, fullscreen"

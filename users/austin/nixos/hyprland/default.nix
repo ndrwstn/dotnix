@@ -7,6 +7,7 @@ lib.mkMerge [
   (import ./gestures.nix { inherit pkgs unstable lib config; })
   (import ./keymaps.nix { inherit pkgs unstable lib config; })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
+  (import ./wlogout.nix { inherit pkgs unstable lib config; })
   {
     wayland.windowManager.hyprland = {
       enable = true;

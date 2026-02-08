@@ -10,13 +10,22 @@ in
     bind = [
       # Terminal
       "${mod},Return,exec,${unstable.ghostty}/bin/ghostty"
+      "CTRL,Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
 
       # Application launcher
       "${mod},Space,exec,${pkgs.wofi}/bin/wofi --show drun"
+      "${mod},B,exec,${pkgs.ungoogled-chromium}/bin/chromium"
+      "${mod},P,exec,${pkgs._1password-gui}/bin/1password"
+      "${mod},E,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
 
       # Window management
       "${mod},Q,killactive,"
       "${mod},F,fullscreen,"
+      "${mod},V,togglefloating,"
+
+      # Session
+      "${mod}+SHIFT,R,exec,hyprctl reload"
+      "${mod}+SHIFT,E,exec,${pkgs.wlogout}/bin/wlogout"
 
       # Workspace navigation
       "${mod},1,workspace,1"
@@ -55,7 +64,6 @@ in
       "${mod}+SHIFT,L,movewindow,r"
 
       # Layout
-      "${mod},E,layoutmsg,toggleorientation"
       "${mod},S,togglesplit,"
 
       # Gaps
@@ -63,17 +71,34 @@ in
       "${mod},comma,exec,hyprctl keyword general:gaps_in 5"
 
       # Screenshot
-      "${mod},P,exec,${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+      "${mod}+SHIFT,S,exec,${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
       "${mod}+SHIFT,P,exec,${pkgs.grim}/bin/grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
 
       # Audio control
       ",XF86AudioRaiseVolume,exec,${pkgs.pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ +5%"
       ",XF86AudioLowerVolume,exec,${pkgs.pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ -5%"
       ",XF86AudioMute,exec,${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle"
+      ",XF86AudioMicMute,exec,${pkgs.pulseaudio}/bin/pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+      ",XF86AudioPlay,exec,${pkgs.playerctl}/bin/playerctl play-pause"
+      ",XF86AudioPause,exec,${pkgs.playerctl}/bin/playerctl pause"
+      ",XF86AudioNext,exec,${pkgs.playerctl}/bin/playerctl next"
+      ",XF86AudioPrev,exec,${pkgs.playerctl}/bin/playerctl previous"
 
       # Brightness control
       ",XF86MonBrightnessUp,exec,${pkgs.light}/bin/light -A 5"
       ",XF86MonBrightnessDown,exec,${pkgs.light}/bin/light -U 5"
     ];
   };
+
+  wayland.windowManager.hyprland.extraConfig = ''
+    bind=${mod},R,submap,resize
+
+    submap=resize
+    binde=,right,resizeactive,10 0
+    binde=,left,resizeactive,-10 0
+    binde=,up,resizeactive,0 -10
+    binde=,down,resizeactive,0 10
+    bind=,escape,submap,reset
+    submap=reset
+  '';
 }
