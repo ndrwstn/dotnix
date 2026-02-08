@@ -40,6 +40,7 @@
     polkit_gnome
     grim
     slurp
+    brightnessctl
     light
     swww
     ## unstable

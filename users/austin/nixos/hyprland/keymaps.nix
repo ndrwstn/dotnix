@@ -9,8 +9,7 @@ in
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Terminal
-      "${mod},Return,exec,${unstable.ghostty}/bin/ghostty"
-      "CTRL,Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
+      "${mod},Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
 
       # Application launcher
       "${mod},Space,exec,${pkgs.wofi}/bin/wofi --show drun"
@@ -74,19 +73,21 @@ in
       "${mod}+SHIFT,S,exec,${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
       "${mod}+SHIFT,P,exec,${pkgs.grim}/bin/grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
 
-      # Audio control
-      ",XF86AudioRaiseVolume,exec,${pkgs.pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ +5%"
-      ",XF86AudioLowerVolume,exec,${pkgs.pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ -5%"
-      ",XF86AudioMute,exec,${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle"
-      ",XF86AudioMicMute,exec,${pkgs.pulseaudio}/bin/pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+      # Audio control (cap max volume at 100%)
+      ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
+      ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
+      ",XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+      ",XF86AudioMicMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
       ",XF86AudioPlay,exec,${pkgs.playerctl}/bin/playerctl play-pause"
       ",XF86AudioPause,exec,${pkgs.playerctl}/bin/playerctl pause"
       ",XF86AudioNext,exec,${pkgs.playerctl}/bin/playerctl next"
       ",XF86AudioPrev,exec,${pkgs.playerctl}/bin/playerctl previous"
 
       # Brightness control
-      ",XF86MonBrightnessUp,exec,${pkgs.light}/bin/light -A 5"
-      ",XF86MonBrightnessDown,exec,${pkgs.light}/bin/light -U 5"
+      ",XF86MonBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%+"
+      ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-"
+      ",XF86KbdBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%+"
+      ",XF86KbdBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%-"
     ];
   };
 
