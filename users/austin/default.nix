@@ -266,7 +266,7 @@ lib.mkMerge [
 
       ## overlays
       autopkgs.gcs
-      autopkgs.opencode
+      (autopkgs.opencode.override { bun = unstable.bun; })
       # autopkgs.opencode-desktop # broken due to new dependency without hash update in v0.1.51
       # TODO: monitor gh:anomalyco/opencode issue #11755 for resolution?
       autopkgs.openspec
