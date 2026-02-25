@@ -109,11 +109,7 @@
               config.allowUnfree = true;
             };
             autopkgs = nixautopkgs.packages.${pkgs.stdenv.hostPlatform.system};
-            mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system} // {
-              playwright-mcp = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp.overrideAttrs (old: {
-                versionCheckProgram = "${placeholder "out"}/bin/mcp-server-playwright";
-              });
-            };
+            mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system};
           in
           {
             home-manager.extraSpecialArgs = { inherit unstable autopkgs mcppkgs nur; };
@@ -179,11 +175,7 @@
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
-          mcppkgs = mcp-servers-nix.packages.${systemType} // {
-            playwright-mcp = mcp-servers-nix.packages.${systemType}.playwright-mcp.overrideAttrs (old: {
-              versionCheckProgram = "${placeholder "out"}/bin/mcp-server-playwright";
-            });
-          };
+          mcppkgs = mcp-servers-nix.packages.${systemType};
 
           # Discover valid user directories
           validUsers = autoDiscovery.discoverDirectories {
