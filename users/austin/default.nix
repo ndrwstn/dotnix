@@ -292,7 +292,6 @@ lib.mkMerge [
       # Note:
       # - prefer official desktop binaries until upstream fixes Nix packaging.
       # autopkgs.opencode-desktop
-      autopkgs.openspec
 
       ## mcppkgs
       mcppkgs.playwright-mcp
