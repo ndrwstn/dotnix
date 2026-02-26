@@ -176,8 +176,10 @@ lib.mkMerge [
       # ansible
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       bats
+      btop
       clippy
       # cloudflared
+      csvlens
       curlie
       deadnix
       eslint
@@ -216,10 +218,11 @@ lib.mkMerge [
       nix-tree
       nix-update
       nixpkgs-fmt
-      # nmap
+      nmap
       nodejs_22
       nodePackages.prettier
       nvd
+      ocrmypdf
       pandoc
       pluto
       poppler-utils
@@ -229,6 +232,7 @@ lib.mkMerge [
       # rsync
       qpdf
       rage
+      ranger
       ruff
       rust-analyzer
       rustfmt

@@ -12,26 +12,31 @@
     global = {
       brewfile = true;
     };
+    taps = [
+      "arimxyer/models"
+      "gromgit/brewtils"
+    ];
     casks = [
       "1password"
       "1password-cli"
-      # "araxis-merge"
+      # "araxis-merge" # $$$
+      # "autodesk-fusion" # $$$
       "balenaetcher"
       "blender"
       "brave-browser"
       "calibre"
-      "carbon-copy-cloner"
+      "carbon-copy-cloner" # $$$
       "claude"
       # "cleanshot"
       # "clop"
-      # "daisydisk"
+      # "daisydisk" # $$$
       "dbeaver-community"
       "discord"
       "dropbox"
-      # "dropzone"
+      # "dropzone" # $$$
       # "find-any-file"
       # "firefox"
-      # "forklift"
+      # "forklift" # $$$
       # "freecad"
       "ghostty"
       # "gimp"
@@ -46,21 +51,21 @@
       "keka"
       # "kicad"
       # "krita"
-      "little-snitch"
+      "little-snitch" # $$$
       # "localsend"
       "logi-options+"
       # "maccy"
       "megasync"
       "monitorcontrol"
-      "moom"
+      "moom" # $$$
       "mqttx"
-      "name-mangler"
+      "name-mangler" # $$$
       # "numi"
       "obs"
       "obsidian"
       # "ollamac" # not being actively used; consider using llama.cpp
       "orcaslicer"
-      # "pdf-expert"
+      # "pdf-expert" # $$$
       "pearcleaner"
       # "plex"
       "postgres-unofficial"
@@ -74,7 +79,7 @@
       # "stremio"
       "sublime-merge"
       "sublime-text"
-      "textual"
+      "textual" # $$$
       "transmission"
       "transmission-remote-gui"
       "ungoogled-chromium"
@@ -85,7 +90,10 @@
     brews = [
       "displayplacer"
       "ffmpeg"
+      "llmfit"
+      "models"
       "tag"
+      "taproom"
       # "m1ddc"
       "mas"
       # "ollama" # not being actively used; consider using llama.cpp
@@ -96,7 +104,7 @@
       "Across" = 6444851827;
       "AdBlock Plus" = 1432731683;
       "Amphetamine" = 937984704;
-      "Banktivity" = 1480779512;
+      "Banktivity" = 1480779512; # $$$
       # "GarageBand" = 682658836;
       "Goodnotes" = 1444383602;
       # "Grab2Text" = 6475956137; # removed from mac apple store?
@@ -108,7 +116,7 @@
       # "Pages" = 409201541;
       "RECAP Uploader" = 1600281788;
       "The Camelizer" = 1532579087;
-      "Things" = 904280696;
+      "Things" = 904280696; # $$$
       # "Xcode" = 497799835;
     };
   };
