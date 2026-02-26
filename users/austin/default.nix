@@ -266,9 +266,28 @@ lib.mkMerge [
 
       ## overlays
       autopkgs.gcs
+      # WORKAROUND (opencode CLI + Nix):
+      # - opencode declares a required bun version in package.json.
+      # - when nixpkgs is behind that version, opencode fails during version check.
+      # - override bun with unstable.bun to avoid breakage while upstream catches up.
+      #
+      # Upstream tracking:
+      # - https://github.com/anomalyco/opencode/issues/8469
+      # - https://github.com/anomalyco/opencode/issues/13300
+      #
+      # Cleanup plan:
+      # - periodically remove this override and run `nix flake check`.
+      # - if check passes, keep plain `autopkgs.opencode`.
       (autopkgs.opencode.override { bun = unstable.bun; })
-      # autopkgs.opencode-desktop # broken due to new dependency without hash update in v0.1.51
-      # TODO: monitor gh:anomalyco/opencode issue #11755 for resolution?
+      # BROKEN (opencode-desktop + Nix): missing outputHash for git dependency
+      # `specta-2.0.0-rc.22`, which causes vendoring/build failure in Nix.
+      #
+      # Upstream tracking:
+      # - https://github.com/anomalyco/opencode/issues/11755
+      #
+      # Note:
+      # - prefer official desktop binaries until upstream fixes Nix packaging.
+      # autopkgs.opencode-desktop
       autopkgs.openspec
 
       ## mcppkgs
