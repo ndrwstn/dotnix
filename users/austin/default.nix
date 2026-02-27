@@ -269,6 +269,7 @@ lib.mkMerge [
 
 
       ## overlays
+      autopkgs.agent-browser
       autopkgs.gcs
       autopkgs.opencode
       autopkgs.opencode-desktop
