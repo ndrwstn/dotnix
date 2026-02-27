@@ -193,6 +193,7 @@ lib.mkMerge [
       gh
       gitleaks
       gitlint
+      glow
       golangci-lint
       gopls
       # go-task
