@@ -14,6 +14,7 @@
     };
     taps = [
       "gromgit/brewtils"
+      "arimxyer/tap"
     ];
     casks = [
       "1password"
@@ -90,7 +91,7 @@
       "displayplacer"
       "ffmpeg"
       "llmfit"
-      # "models" # repo is gh:arimxyer/models (not a public Homebrew tap/formula)
+      "models"
       "tag"
       "taproom"
       # "m1ddc"
