@@ -115,6 +115,7 @@
       # "Numbers" = 409203825;
       # "Pages" = 409201541;
       "RECAP Uploader" = 1600281788;
+      "SnippetsLab" = 1006087419;
       "The Camelizer" = 1532579087;
       "Things" = 904280696; # $$$
       # "Xcode" = 497799835;
