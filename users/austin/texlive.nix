@@ -10,6 +10,7 @@ pkgs.texlive.combine {
     latex-bin
     l3kernel
     l3packages
+    l3build
     xkeyval
     # Basic packages
     babel-english
