@@ -168,6 +168,37 @@ lib.mkMerge [
       };
     };
 
+    home.activation.ensureLuaLatexFormat =
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        set -eu
+
+        state_dir="${config.xdg.stateHome}/texlive"
+        marker_file="$state_dir/lualatex-fmt.source"
+        current_marker="${texlivePackage}"
+        kpsewhich_bin="${texlivePackage}/bin/kpsewhich"
+        fmtutil_bin="${texlivePackage}/bin/fmtutil"
+
+        mkdir -p "$state_dir"
+
+        rebuild_reason=""
+        if [ ! -f "$marker_file" ]; then
+          rebuild_reason="marker missing"
+        elif [ "$(cat "$marker_file")" != "$current_marker" ]; then
+          rebuild_reason="texlive derivation changed"
+        elif ! "$kpsewhich_bin" -engine=luatex lualatex.fmt >/dev/null 2>&1; then
+          rebuild_reason="lualatex.fmt missing"
+        fi
+
+        if [ -n "$rebuild_reason" ]; then
+          echo "texlive: rebuilding lualatex format ($rebuild_reason)"
+          "$fmtutil_bin" --user --byfmt lualatex
+          "$kpsewhich_bin" -engine=luatex lualatex.fmt >/dev/null
+          printf '%s\n' "$current_marker" > "$marker_file"
+        else
+          echo "texlive: lualatex format is up to date"
+        fi
+      '';
+
     # Common packages across all systems
     home.packages = with pkgs; [
       act
