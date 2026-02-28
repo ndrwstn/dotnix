@@ -170,32 +170,50 @@ lib.mkMerge [
 
     home.activation.ensureLuaLatexFormat =
       lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        set -eu
+        set -u
 
         state_dir="${config.xdg.stateHome}/texlive"
         marker_file="$state_dir/lualatex-fmt.source"
+        log_file="$state_dir/lualatex-fmtutil.log"
         current_marker="${texlivePackage}"
         kpsewhich_bin="${texlivePackage}/bin/kpsewhich"
         fmtutil_bin="${texlivePackage}/bin/fmtutil"
 
         mkdir -p "$state_dir"
 
-        rebuild_reason=""
-        if [ ! -f "$marker_file" ]; then
-          rebuild_reason="marker missing"
-        elif [ "$(cat "$marker_file")" != "$current_marker" ]; then
-          rebuild_reason="texlive derivation changed"
-        elif ! "$kpsewhich_bin" -engine=luatex lualatex.fmt >/dev/null 2>&1; then
-          rebuild_reason="lualatex.fmt missing"
+        texmfvar="$($kpsewhich_bin -var-value=TEXMFVAR 2>/dev/null || true)"
+        fmt_path=""
+        if [ -n "$texmfvar" ]; then
+          fmt_path="$texmfvar/web2c/luahbtex/lualatex.fmt"
         fi
 
-        if [ -n "$rebuild_reason" ]; then
-          echo "texlive: rebuilding lualatex format ($rebuild_reason)"
-          "$fmtutil_bin" --user --byfmt lualatex
-          "$kpsewhich_bin" -engine=luatex lualatex.fmt >/dev/null
-          printf '%s\n' "$current_marker" > "$marker_file"
+        rebuild_needed=0
+        if [ ! -f "$marker_file" ]; then
+          rebuild_needed=1
+        elif [ "$(cat "$marker_file")" != "$current_marker" ]; then
+          rebuild_needed=1
+        elif [ -z "$fmt_path" ] || [ ! -f "$fmt_path" ]; then
+          rebuild_needed=1
+        fi
+
+        if [ "$rebuild_needed" -eq 1 ]; then
+          if "$fmtutil_bin" --user --byfmt lualatex >"$log_file" 2>&1; then
+            texmfvar="$($kpsewhich_bin -var-value=TEXMFVAR 2>/dev/null || true)"
+            fmt_path=""
+            if [ -n "$texmfvar" ]; then
+              fmt_path="$texmfvar/web2c/luahbtex/lualatex.fmt"
+            fi
+            if [ -n "$fmt_path" ] && [ -f "$fmt_path" ]; then
+              printf '%s\n' "$current_marker" > "$marker_file"
+              echo "Creating lualatex.fmt ... success."
+            else
+              echo "Creating lualatex.fmt ... failed (see $log_file)."
+            fi
+          else
+            echo "Creating lualatex.fmt ... failed (see $log_file)."
+          fi
         else
-          echo "texlive: lualatex format is up to date"
+          echo "Creating lualatex.fmt ... already present."
         fi
       '';
 
