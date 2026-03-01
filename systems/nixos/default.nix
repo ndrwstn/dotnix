@@ -14,6 +14,72 @@
   # Allow unfree packages (required for copilot-language-server)
   nixpkgs.config.allowUnfree = true;
 
+  # Enable nix-ld for dynamically linked binaries (e.g., opencode from nixautopkgs)
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      # Core runtime libraries
+      zlib
+      zstd
+      stdenv.cc.cc
+      curl
+      openssl
+
+      # System libraries commonly needed
+      attr
+      libssh
+      bzip2
+      libxml2
+      acl
+      libsodium
+      util-linux
+      xz
+      systemd
+
+      # Additional libraries for bun-based applications
+      brotli
+      libffi
+      gmp
+      libGL
+      vulkan-loader
+
+      # X11/graphics support (for opencode-desktop)
+      xorg.libX11
+      xorg.libXext
+      xorg.libXrender
+      xorg.libXcursor
+      xorg.libXfixes
+      xorg.libXcomposite
+      xorg.libXdamage
+      xorg.libXrandr
+      xorg.libxcb
+      xorg.libXScrnSaver
+      xorg.libxshmfence
+
+      # Additional desktop dependencies
+      gtk3
+      glib
+      dbus
+      fontconfig
+      freetype
+      cairo
+      pango
+      gdk-pixbuf
+      atk
+      at-spi2-atk
+      at-spi2-core
+      cups
+      nspr
+      nss
+      alsa-lib
+      expat
+      libdrm
+      mesa
+      libxkbcommon
+      libepoxy
+    ];
+  };
+
   # Enable the X11 windowing system by default
   services.xserver = {
     enable = true;
