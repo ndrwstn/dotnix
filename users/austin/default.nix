@@ -321,10 +321,10 @@ lib.mkMerge [
       ## overlays
       autopkgs.agent-browser
       autopkgs.gcs
-      autopkgs.marker
+      # autopkgs.marker
       autopkgs.opencode
       autopkgs.opencode-desktop
-      autopkgs.surya
+      # autopkgs.surya
 
       ## mcppkgs
       mcppkgs.playwright-mcp
