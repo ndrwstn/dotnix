@@ -16,6 +16,7 @@ lib.mkMerge [
     nixpkgs.config.allowUnfree = true;
     extraPackages = [
       texlivePackage
+      pkgs.texlab
       # provide correct viewer depending on environment
       (if pkgs.stdenv.isDarwin then pkgs.skim else pkgs.zathura)
       # Add build tools for compilation (fixes gcc errors)

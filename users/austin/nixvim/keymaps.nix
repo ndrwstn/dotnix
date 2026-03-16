@@ -273,25 +273,18 @@
     { key = "<leader>qd"; mode = "n"; action = "<cmd>lua require('persistence').stop()<CR>"; options.desc = "Don't Save Current Session"; }
 
     # ========================================================================
-    # SIDEKICK - COPILOT NES + OPENCODE CLI
+    # OPENCODE - AI ASSISTANT
     # ========================================================================
-    # NES Navigation
-    # { key = "<Tab>"; mode = [ "n" "i" ]; action.__raw = "function() return require('sidekick').nes_jump_or_apply() end"; options = { expr = true; desc = "NES Jump/Apply"; }; }
-
-    # CLI Controls
-    # { key = "<c-.>"; mode = [ "n" "t" "i" "x" ]; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
-    # { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Toggle Sidekick CLI"; }
-    # { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('sidekick.cli').select()<CR>"; options.desc = "Select CLI Tool"; }
-    # { key = "<leader>ad"; mode = "n"; action = "<cmd>lua require('sidekick.cli').close()<CR>"; options.desc = "Close CLI"; }
-
-    # Context Sending
-    # { key = "<leader>at"; mode = [ "x" "n" ]; action = "<cmd>lua require('sidekick.cli').send({ msg = '{this}' })<CR>"; options.desc = "Send This"; }
-    # { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{file}' })<CR>"; options.desc = "Send File"; }
-    # { key = "<leader>av"; mode = "x"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{selection}' })<CR>"; options.desc = "Send Selection"; }
-    # { key = "<leader>ap"; mode = [ "n" "x" ]; action = "<cmd>lua require('sidekick.cli').prompt()<CR>"; options.desc = "CLI Prompt"; }
-
-    # Direct OpenCode Access
-    # { key = "<leader>ac"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle({ name = 'opencode', focus = true })<CR>"; options.desc = "OpenCode CLI"; }
+    # Toggle opencode interface
+    { key = "<leader>ao"; mode = "n"; action = "<cmd>lua require('opencode').toggle()<CR>"; options.desc = "Toggle OpenCode"; }
+    # Ask with current buffer/selection context
+    { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('opencode').ask()<CR>"; options.desc = "OpenCode Ask"; }
+    { key = "<leader>aa"; mode = "x"; action = "<cmd>lua require('opencode').ask('@this ')<CR>"; options.desc = "OpenCode Ask Selection"; }
+    # Send current file
+    { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('opencode').ask('@buffer ')<CR>"; options.desc = "OpenCode Send Buffer"; }
+    # Session management
+    { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('opencode').session_new()<CR>"; options.desc = "OpenCode New Session"; }
+    { key = "<leader>aq"; mode = "n"; action = "<cmd>lua require('opencode').close()<CR>"; options.desc = "OpenCode Close"; }
 
     # ========================================================================
     # CODEWINDOW - MINIMAP

@@ -51,5 +51,7 @@ pkgs.texlive.combine {
     changepage
     # Formatter
     latexindent
+    # Linter
+    chktex
     ;
 }
