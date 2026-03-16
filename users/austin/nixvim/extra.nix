@@ -1,5 +1,5 @@
 # users/austin/nixvim/extra.nix
-{ pkgs }: {
+{ pkgs, unstable }: {
   extraPlugins = with pkgs.vimPlugins; [
     codewindow-nvim
     nvim-notify # Keep for snacks.notifier integration
@@ -7,7 +7,8 @@
     undotree
     # train-nvim removed - replaced by hardtime.nvim
     luasnip # Snippet engine for blink.cmp
-    opencode-nvim
+  ] ++ [
+    unstable.vimPlugins.opencode-nvim # Use latest from unstable
   ];
 
   extraConfigLua = ''

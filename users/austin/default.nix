@@ -110,7 +110,7 @@ lib.mkMerge [
       };
 
       # nixvim
-      nixvim = import ./nixvim { inherit config pkgs lib texlivePackage; };
+      nixvim = import ./nixvim { inherit config pkgs lib texlivePackage unstable; };
 
       # oh-my-posh
       oh-my-posh = {
