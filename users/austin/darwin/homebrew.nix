@@ -26,7 +26,7 @@
       "brave-browser"
       "calibre"
       "carbon-copy-cloner" # $$$
-      "claude"
+      # "claude" # NOTE 2026-03-13 out of date compared to claude download page
       # "cleanshot"
       # "clop"
       # "daisydisk" # $$$

@@ -311,7 +311,7 @@ lib.mkMerge [
       # yed
       yamllint
       yq
-      # yt-dlp
+      yt-dlp
 
 
       ## unstable
