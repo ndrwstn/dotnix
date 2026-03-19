@@ -231,6 +231,7 @@ lib.mkMerge [
       csvlens
       curlie
       deadnix
+      delta
       eslint
       eza
       # ffmpeg_7
