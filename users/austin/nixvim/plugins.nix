@@ -356,15 +356,23 @@
       texlivePackage = texlivePackage;
       settings = {
         view_method = (if pkgs.stdenv.isDarwin then "skim" else "zathura");
+        # Default to lualatex without requiring magic comments in every file
+        compiler_latexmk_engines = {
+          _ = "-lualatex";
+        };
         compiler_latexmk = {
           options = [
-            "-lualatex"
             "-verbose"
             "-file-line-error"
             "-synctex=1"
             "-interaction=nonstopmode"
           ];
         };
+        # Add custom file patterns to vimtex-clean commands
+        compiler_clean_paths = [
+          "*.toa"
+          "_minted*"
+        ];
         quickfix_ignore_filters = [
           "Underfull"
           "Overfull"
