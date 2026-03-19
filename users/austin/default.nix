@@ -36,6 +36,11 @@ lib.mkMerge [
       stateHome = "${config.home.homeDirectory}/.local/state";
     };
 
+    # latexmk configuration in XDG location - add custom extensions to clean
+    xdg.configFile."latexmk/latexmkrc".text = ''
+      push @generated_exts, "toa";
+    '';
+
     programs = {
       home-manager.enable = true;
 
