@@ -8,6 +8,7 @@
   imports = [
     ./users.nix
     ./secrets.nix
+    ./clamav.nix
   ];
 
   options = {

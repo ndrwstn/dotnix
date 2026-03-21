@@ -221,4 +221,9 @@
     usbutils
 
   ];
+
+  # Ensure ClamAV database directory exists with proper permissions
+  systemd.tmpfiles.rules = [
+    "d /home/austin/.local/share/clamav 0755 austin users -"
+  ];
 }
