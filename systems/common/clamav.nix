@@ -3,11 +3,12 @@
 { config
 , pkgs
 , lib
+, autopkgs
 , ...
 }: {
-  # Install clamav package
-  environment.systemPackages = with pkgs; [
-    clamav
+  # Install clamav package from nixautopkgs (version 1.5.2)
+  environment.systemPackages = [
+    autopkgs.clamav
   ];
 
   # Create freshclam configuration file
