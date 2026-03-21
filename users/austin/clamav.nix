@@ -3,6 +3,7 @@
 { config
 , pkgs
 , lib
+, autopkgs
 , ...
 }:
 let
@@ -11,8 +12,8 @@ let
     #!${pkgs.bash}/bin/bash
 
     DB_DIR="$HOME/.local/share/clamav"
-    FRESHCLAM="${pkgs.clamav}/bin/freshclam"
-    CLAMSCAN="${pkgs.clamav}/bin/clamscan"
+    FRESHCLAM="${autopkgs.clamav}/bin/freshclam"
+    CLAMSCAN="${autopkgs.clamav}/bin/clamscan"
 
     # Ensure DB directory exists
     mkdir -p "$DB_DIR"
@@ -46,6 +47,6 @@ in
 
   # Add shell alias for manual freshclam
   programs.zsh.shellAliases = {
-    freshclam = "${pkgs.clamav}/bin/freshclam --config-file=/etc/clamav/freshclam.conf";
+    freshclam = "${autopkgs.clamav}/bin/freshclam --config-file=/etc/clamav/freshclam.conf";
   };
 }

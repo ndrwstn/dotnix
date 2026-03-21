@@ -362,7 +362,7 @@ lib.mkMerge [
   (import ./tmux.nix { inherit config pkgs lib; })
 
   # Import ClamAV antivirus configuration
-  (import ./clamav.nix { inherit config pkgs lib; })
+  (import ./clamav.nix { inherit config pkgs lib autopkgs; })
 
   # Import Darwin-specific flakes
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
