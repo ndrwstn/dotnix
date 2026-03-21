@@ -11,6 +11,10 @@
     autopkgs.clamav
   ];
 
+  # Create certs directory required by nixautopkgs clamav
+  # The package expects certs at /etc/clamav/certs/ for code signature verification
+  environment.etc."clamav/certs/.keep".text = "";
+
   # Create freshclam configuration file
   environment.etc."clamav/freshclam.conf".text = ''
     DatabaseDirectory /Users/austin/.local/share/clamav
