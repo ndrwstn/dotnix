@@ -273,18 +273,15 @@
     { key = "<leader>qd"; mode = "n"; action = "<cmd>lua require('persistence').stop()<CR>"; options.desc = "Don't Save Current Session"; }
 
     # ========================================================================
-    # OPENCODE - AI ASSISTANT
+    # SIDEKICK - AI ASSISTANT
     # ========================================================================
-    # Toggle opencode interface
-    { key = "<leader>ao"; mode = "n"; action = "<cmd>lua require('opencode').toggle()<CR>"; options.desc = "Toggle OpenCode"; }
-    # Ask with current buffer/selection context
-    { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('opencode').ask()<CR>"; options.desc = "OpenCode Ask"; }
-    { key = "<leader>aa"; mode = "x"; action = "<cmd>lua require('opencode').ask('@this ')<CR>"; options.desc = "OpenCode Ask Selection"; }
-    # Send current file
-    { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('opencode').ask('@buffer ')<CR>"; options.desc = "OpenCode Send Buffer"; }
-    # Session management
-    { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('opencode').session_new()<CR>"; options.desc = "OpenCode New Session"; }
-    { key = "<leader>aq"; mode = "n"; action = "<cmd>lua require('opencode').close()<CR>"; options.desc = "OpenCode Close"; }
+    # CLI Terminal Integration
+    { key = "<leader>aa"; mode = "n"; action = "<cmd>lua require('sidekick.cli').toggle()<CR>"; options.desc = "Sidekick Toggle CLI"; }
+    { key = "<leader>as"; mode = "n"; action = "<cmd>lua require('sidekick.cli').select()<CR>"; options.desc = "Sidekick Select Tool"; }
+    { key = "<leader>ad"; mode = "n"; action = "<cmd>lua require('sidekick.cli').close()<CR>"; options.desc = "Sidekick Close Session"; }
+    { key = "<leader>at"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{this}' })<CR>"; options.desc = "Sidekick Send Context"; }
+    { key = "<leader>af"; mode = "n"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{file}' })<CR>"; options.desc = "Sidekick Send File"; }
+    { key = "<leader>av"; mode = "x"; action = "<cmd>lua require('sidekick.cli').send({ msg = '{selection}' })<CR>"; options.desc = "Sidekick Send Selection"; }
 
     # ========================================================================
     # CODEWINDOW - MINIMAP

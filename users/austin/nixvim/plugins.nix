@@ -433,55 +433,52 @@
     #       See: https://github.com/giuxtaposition/blink-cmp-copilot
     #       Decision: Skipped for now to avoid extraPlugin maintenance burden
     copilot-lua = {
-      enable = false;
+      enable = true;
     };
 
     # ============================================================================
     # AI & ASSISTANCE - SIDEKICK
     # ============================================================================
     # Design Decision: sidekick.nvim leverages existing Copilot subscription
-    # for NES (Next Edit Suggestions) and OpenCode CLI integration
+    # for NES (Next Edit Suggestions) and CLI terminal integration
     # Requires: copilot-lua (configured above) or copilot LSP server
-    # sidekick = {
-    #   enable = false;
-    #   settings = {
-    #     # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
-    #     nes = {
-    #       enabled = false;
-    #       debounce = 100;
-    #       diff = {
-    #         inline = "words";
-    #       };
-    #       trigger = {
-    #         events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
-    #       };
-    #       clear = {
-    #         events = [ "TextChangedI" "InsertEnter" "esc" ];
-    #         esc = true;
-    #       };
-    #     };
-    # 
-    #     # OpenCode CLI Integration
-    #     cli = {
-    #       watch = true;
-    #       mux = {
-    #         backend = "tmux";
-    #         enabled = true;
-    #         create = "terminal";
-    #       };
-    #       tools = {
-    #         opencode = {
-    #           cmd = [ "opencode" ];
-    #           env = {
-    #             OPENCODE_THEME = "system";
-    #           };
-    #         };
-    #       win = {
-    #         layout = "right";
-    #         split = {
-    #           width = 80;
-    #           height = 20;
-    #         };
+    sidekick = {
+      enable = true;
+      settings = {
+        # Next Edit Suggestions (NES) - Multi-line refactorings from Copilot
+        nes = {
+          enabled = false;
+          debounce = 100;
+          diff = {
+            inline = "words";
+          };
+          trigger = {
+            events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
+          };
+          clear = {
+            events = [ "TextChangedI" "InsertEnter" "esc" ];
+            esc = true;
+          };
+        };
+
+        # CLI Terminal Integration
+        cli = {
+          watch = true;
+          mux = {
+            backend = "tmux";
+            enabled = true;
+            create = "terminal";
+          };
+          win = {
+            layout = "right";
+            split = {
+              width = 80;
+              height = 20;
+            };
+          };
+        };
+      };
+    };
     #       };
     #       picker = "snacks";
     #       prompts = {
