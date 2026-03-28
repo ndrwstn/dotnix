@@ -1,9 +1,18 @@
 # users/austin/nixvim/plugins.nix
 { pkgs
 , texlivePackage
+, lib
 , ...
 }: {
   clipboard = { register = "unnamedplus"; };
+
+  # Disable nixvim's auto-installed AI CLI dependencies
+  # We use external installations instead (via autopkgs)
+  dependencies.claude-code.enable = lib.mkForce false;
+  dependencies.copilot.enable = lib.mkForce false;
+  dependencies.gemini.enable = lib.mkForce false;
+  dependencies.opencode.enable = lib.mkForce false;
+
   plugins = {
 
     # ============================================================================
@@ -474,6 +483,13 @@
             split = {
               width = 80;
               height = 20;
+            };
+          };
+
+          # Use external opencode from autopkgs (not nixvim's bundled version)
+          tools = {
+            opencode = {
+              cmd = [ "opencode" ]; # Uses autopkgs.opencode from PATH
             };
           };
         };

@@ -27,7 +27,7 @@ lib.mkMerge [
     ];
   }
   (import ./keymaps.nix)
-  (import ./plugins.nix { inherit pkgs texlivePackage; })
+  (import ./plugins.nix { inherit pkgs texlivePackage lib; })
   (import ./options.nix)
   (import ./extra.nix { inherit pkgs unstable; })
 ]
