@@ -142,8 +142,9 @@
 
   systemd.services.brother-mfc-l8900 = {
     description = "Configure Brother MFC-L8900 printer";
-    after = [ "cups.service" "agenix.service" ];
+    after = [ "cups.service" "agenix.service" "network-online.target" ];
     requires = [ "cups.service" ];
+    wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig.Type = "oneshot";
     script = ''
@@ -158,8 +159,18 @@
         exit 0
       fi
 
-      ${pkgs.cups}/bin/lpadmin -p "Brother_MFC_L8900" -v "$printerUri" -m everywhere -E
-      ${pkgs.cups}/bin/lpadmin -d "Brother_MFC_L8900"
+      for attempt in 1 2 3 4 5 6; do
+        if ${pkgs.cups}/bin/lpadmin -p "Brother_MFC_L8900" -v "$printerUri" -m everywhere -E; then
+          ${pkgs.cups}/bin/lpadmin -d "Brother_MFC_L8900"
+          exit 0
+        fi
+
+        echo "Printer setup attempt $attempt failed; retrying in 10 seconds."
+        ${pkgs.coreutils}/bin/sleep 10
+      done
+
+      echo "Printer setup failed after 6 attempts."
+      exit 1
     '';
   };
 
