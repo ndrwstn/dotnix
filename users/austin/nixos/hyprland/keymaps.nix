@@ -4,6 +4,15 @@
 
 let
   mod = "SUPER";
+  cliphistMenu = pkgs.writeShellScript "cliphist-menu" ''
+    set -eu
+
+    selection="$(${pkgs.cliphist}/bin/cliphist list | ${pkgs.wofi}/bin/wofi --dmenu --prompt 'Clipboard')"
+
+    if [ -n "''${selection}" ]; then
+      printf '%s' "''${selection}" | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
+    fi
+  '';
 in
 {
   wayland.windowManager.hyprland.settings = {
@@ -14,8 +23,12 @@ in
       # Application launcher
       "${mod},Space,exec,${pkgs.wofi}/bin/wofi --show drun"
       "${mod},B,exec,${pkgs.ungoogled-chromium}/bin/chromium"
+      "${mod},C,exec,${cliphistMenu}"
       "${mod},P,exec,${pkgs._1password-gui}/bin/1password"
       "${mod},E,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
+      "${mod},N,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
+      "${mod}+SHIFT,B,exec,${pkgs.blueman}/bin/blueman-manager"
+      "${mod},M,exec,${pkgs.pavucontrol}/bin/pavucontrol"
 
       # Window management
       "${mod},Q,killactive,"
@@ -73,21 +86,35 @@ in
       "${mod}+SHIFT,S,exec,${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
       "${mod}+SHIFT,P,exec,${pkgs.grim}/bin/grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
 
-      # Audio control (cap max volume at 100%)
-      ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
-      ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
+      # Audio and media control
       ",XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ",XF86AudioMicMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
       ",XF86AudioPlay,exec,${pkgs.playerctl}/bin/playerctl play-pause"
       ",XF86AudioPause,exec,${pkgs.playerctl}/bin/playerctl pause"
+      ",XF86AudioStop,exec,${pkgs.playerctl}/bin/playerctl stop"
       ",XF86AudioNext,exec,${pkgs.playerctl}/bin/playerctl next"
       ",XF86AudioPrev,exec,${pkgs.playerctl}/bin/playerctl previous"
+      ",XF86AudioForward,exec,${pkgs.playerctl}/bin/playerctl position 5+"
+      ",XF86AudioRewind,exec,${pkgs.playerctl}/bin/playerctl position 5-"
 
-      # Brightness control
+      # Common laptop helper keys
+      ",XF86Explorer,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
+      ",XF86Launch1,exec,${pkgs.wofi}/bin/wofi --show drun"
+      ",XF86Launch2,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
+    ];
+
+    binde = [
+      ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
+      ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
       ",XF86MonBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%+"
       ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-"
       ",XF86KbdBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%+"
       ",XF86KbdBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%-"
+    ];
+
+    bindm = [
+      "${mod},mouse:272,movewindow"
+      "${mod},mouse:273,resizewindow"
     ];
   };
 

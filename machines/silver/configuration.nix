@@ -33,7 +33,11 @@
     HandleLidSwitch = "suspend";
     HandleLidSwitchExternalPower = "suspend";
     HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "suspend";
   };
+
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 
   # Enable webcam support
   hardware.facetimehd.enable = true;

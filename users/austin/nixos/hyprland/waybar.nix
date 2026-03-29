@@ -2,6 +2,37 @@
 # Waybar configuration for Hyprland
 { pkgs, ... }:
 
+let
+  cliphistMenu = pkgs.writeShellScript "waybar-cliphist-menu" ''
+    set -eu
+
+    selection="$(${pkgs.cliphist}/bin/cliphist list | ${pkgs.wofi}/bin/wofi --dmenu --prompt 'Clipboard')"
+
+    if [ -n "''${selection}" ]; then
+      printf '%s' "''${selection}" | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
+    fi
+  '';
+
+  bluetoothStatus = pkgs.writeShellScript "waybar-bluetooth-status" ''
+    set -eu
+
+    if ! ${pkgs.bluez}/bin/bluetoothctl show >/dev/null 2>&1; then
+      printf '{"text":"󰂲 off","tooltip":"Bluetooth unavailable"}\n'
+      exit 0
+    fi
+
+    if ${pkgs.bluez}/bin/bluetoothctl show | ${pkgs.gnugrep}/bin/grep -q 'Powered: yes'; then
+      connected="$(${pkgs.bluez}/bin/bluetoothctl devices Connected | ${pkgs.coreutils}/bin/wc -l)"
+      if [ "''${connected}" -gt 0 ]; then
+        printf '{"text":"󰂱 %s","tooltip":"Bluetooth on (%s connected)"}\n' "''${connected}" "''${connected}"
+      else
+        printf '{"text":"󰂯 on","tooltip":"Bluetooth on"}\n'
+      fi
+    else
+      printf '{"text":"󰂲 off","tooltip":"Bluetooth off"}\n'
+    fi
+  '';
+in
 {
   programs.waybar = {
     enable = true;
@@ -10,12 +41,24 @@
       {
         layer = "top";
         position = "top";
-        height = 30;
-        spacing = 4;
+        height = 34;
+        spacing = 6;
 
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "battery" "tray" ];
+        modules-right = [
+          "custom/clipboard"
+          "backlight"
+          "pulseaudio"
+          "cpu"
+          "memory"
+          "temperature"
+          "network"
+          "custom/bluetooth"
+          "battery"
+          "custom/power"
+          "tray"
+        ];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -46,6 +89,21 @@
           tooltip-format = "{:%Y-%m-%d %H:%M:%S}";
         };
 
+        "custom/clipboard" = {
+          format = "";
+          tooltip = false;
+          on-click = "${cliphistMenu}";
+        };
+
+        backlight = {
+          device = "acpi_video0";
+          format = "{percent}% ";
+          tooltip-format = "Brightness: {percent}%";
+          scroll-step = 5;
+          on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%+";
+          on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-";
+        };
+
         pulseaudio = {
           format = "{volume}% {icon}";
           format-bluetooth = "{volume}% {icon}";
@@ -59,13 +117,40 @@
             "car" = "🚗";
             "default" = [ "🔈" "🔉" "🔊" ];
           };
+          scroll-step = 5;
+          on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+          on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        };
+
+        cpu = {
+          format = "{usage}% ";
+          tooltip = false;
+        };
+
+        memory = {
+          format = "{}% ";
+          tooltip-format = "Memory usage: {used:0.1f}G / {total:0.1f}G";
+        };
+
+        temperature = {
+          critical-threshold = 85;
+          format = "{temperatureC}°C ";
+          tooltip = false;
         };
 
         network = {
           format-wifi = "📶 {signalStrength}%";
           format-ethernet = "🌐 {ifname}";
           format-disconnected = "⚠️";
-          tooltip-format = "{ifname}";
+          tooltip-format = "{ifname} via {gwaddr}";
+          on-click = "${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
+        };
+
+        "custom/bluetooth" = {
+          exec = "${bluetoothStatus}";
+          return-type = "json";
+          interval = 10;
+          on-click = "${pkgs.blueman}/bin/blueman-manager";
         };
 
         battery = {
@@ -77,6 +162,14 @@
           format-charging = "⚡ {capacity}%";
           format-plugged = "🔌 {capacity}%";
           format-icons = [ "🪫" "🪫" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" ];
+          tooltip-format = "{timeTo}, {power:0.1f}W";
+          on-click = "${pkgs.wlogout}/bin/wlogout";
+        };
+
+        "custom/power" = {
+          format = "⏻";
+          tooltip = false;
+          on-click = "${pkgs.wlogout}/bin/wlogout";
         };
 
         tray = {
@@ -89,7 +182,7 @@
     style = ''
       * {
         font-family: "DejaVu Sans", sans-serif;
-        font-size: 13px;
+        font-size: 14px;
       }
 
       window#waybar {
@@ -138,6 +231,9 @@
       #backlight,
       #network,
       #pulseaudio,
+      #custom-bluetooth,
+      #custom-clipboard,
+      #custom-power,
       #wireplumber,
       #custom-media,
       #tray,
@@ -146,6 +242,23 @@
       #scratchpad {
         padding: 0 10px;
         color: #D8DEE9;
+      }
+
+      #custom-power {
+        padding-right: 14px;
+        font-size: 16px;
+      }
+
+      #custom-clipboard,
+      #custom-bluetooth,
+      #backlight,
+      #network,
+      #pulseaudio,
+      #battery,
+      #custom-power {
+        background: rgba(59, 66, 82, 0.55);
+        border-radius: 8px;
+        margin: 4px 2px;
       }
 
       #window,

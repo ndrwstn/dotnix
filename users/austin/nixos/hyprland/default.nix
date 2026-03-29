@@ -19,6 +19,7 @@ lib.mkMerge [
       settings = {
         # Monitor configuration
         monitor = [
+          "eDP-1,preferred,auto,1.25"
           ",preferred,auto,1"
         ];
 

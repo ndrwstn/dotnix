@@ -23,6 +23,10 @@
     # Polkit authentication agent
     "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
+    # Clipboard history watchers
+    "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store"
+    "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${pkgs.cliphist}/bin/cliphist store"
+
     # Note: 1Password starts via systemd user service (WantedBy=graphical-session.target)
     # No manual start needed - systemd.enable = true in default.nix handles session target
 

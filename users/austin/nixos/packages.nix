@@ -34,7 +34,9 @@
     wl-clipboard
     zathura
     ## Hyprland and Wayland utilities
+    blueman
     mako
+    cliphist
     waybar
     wofi
     polkit_gnome
@@ -42,6 +44,8 @@
     slurp
     brightnessctl
     light
+    networkmanagerapplet
+    pavucontrol
     swww
     ## unstable
     unstable.ghostty
