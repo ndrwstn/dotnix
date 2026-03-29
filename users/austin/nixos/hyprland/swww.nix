@@ -3,7 +3,7 @@
 { pkgs, lib, config, ... }:
 
 let
-  wallpaperDir = "${config.home.homeDirectory}/Pictures/Wallpapers/favorites";
+  wallpaperDir = "${config.home.homeDirectory}/Pictures/Wallpapers/Favorites";
 
   # Script to rotate wallpapers with matugen theming
   wallpaperRotate = pkgs.writeShellScript "wallpaper-rotate" ''
@@ -34,10 +34,10 @@ let
       --transition-bezier 0.4,0.0,0.2,1
     
     # Generate colors with matugen
-    ${pkgs.matugen}/bin/matugen image "$WALLPAPER" --json > /tmp/matugen-colors.json 2>/dev/null || true
+    ${pkgs.matugen}/bin/matugen image "$WALLPAPER" --json > "${config.xdg.cacheHome}/matugen/matugen-colors.json" 2>/dev/null || true
     
     # Apply colors to hyprland (if colors were generated)
-    if [ -f /tmp/matugen-colors.json ]; then
+    if [ -f "${config.xdg.cacheHome}/matugen/matugen-colors.json" ]; then
       # Source the colors and apply via hyprctl
       # This will be replaced by proper template rendering in later phase
       ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true

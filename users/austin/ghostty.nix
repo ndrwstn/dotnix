@@ -14,6 +14,9 @@
       # Enable CSI u protocol support for modified keys
       term = "xterm-256color";
 
+      # Include matugen-generated colors (if available)
+      config-file = "${config.xdg.configHome}/ghostty/colors.conf";
+
       # Keybinding configurations
       keybind = [
         # Unbind Ghostty's Ctrl+Enter fullscreen binding to allow it to pass through to nvim

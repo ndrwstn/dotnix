@@ -51,8 +51,6 @@ lib.mkMerge [
           gaps_in = 5;
           gaps_out = 10;
           border_size = 2;
-          "col.active_border" = "rgba(94,129,172,1)";
-          "col.inactive_border" = "rgba(46,52,64,1)";
           resize_on_border = true;
         };
 
@@ -69,9 +67,11 @@ lib.mkMerge [
             enabled = true;
             range = 4;
             render_power = 3;
-            color = "rgba(0,0,0,0.3)";
           };
         };
+
+        # Source matugen-generated colors (if available)
+        source = "${config.xdg.cacheHome}/matugen/hyprland-colors.conf";
 
         # Animation settings
         animations = {

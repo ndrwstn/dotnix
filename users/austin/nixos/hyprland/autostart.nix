@@ -3,23 +3,17 @@
 { pkgs, lib, config, ... }:
 
 {
+  # mako notification daemon - colors are managed by matugen
   services.mako = {
     enable = true;
-    settings = {
-      background-color = "#2E3440";
-      text-color = "#D8DEE9";
-      border-color = "#5E81AC";
-      border-size = 2;
-      border-radius = 8;
-      default-timeout = 5000;
-      font = "Sans 10";
-    };
+    # No settings here - matugen generates ~/.config/mako/config with dynamic colors
+    # Settings for border-radius, timeout, font will come from the template
   };
 
   # Create wallpaper directories on activation
   home.activation.createWallpaperDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/favorites"
-    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/staging"
+    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/Favorites"
+    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/Staging"
   '';
 
   wayland.windowManager.hyprland.settings.exec-once = [
@@ -39,7 +33,8 @@
     # Initialize swww wallpaper daemon
     "${pkgs.swww}/bin/swww init"
 
-    # Note: First wallpaper is set by the wallpaper-rotate service after boot
-    # To set manually: swww img ~/Pictures/Wallpapers/favorites/your-image.jpg
+    # Set initial wallpaper and generate colors with matugen
+    # Wait a moment for swww to initialize, then run wallpaper-rotate
+    "sleep 2 && systemctl --user start wallpaper-rotate.service || true"
   ];
 }

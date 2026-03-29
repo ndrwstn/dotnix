@@ -99,6 +99,8 @@ in
     ];
 
     style = ''
+      @import "colors.css";
+
       * {
         font-family: "DejaVu Sans", sans-serif;
         font-size: 14px;
