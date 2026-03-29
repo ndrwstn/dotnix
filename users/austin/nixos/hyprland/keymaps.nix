@@ -27,7 +27,6 @@ in
       "${mod},P,exec,${pkgs._1password-gui}/bin/1password"
       "${mod},E,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
       "${mod},N,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
-      "${mod}+SHIFT,B,exec,${pkgs.blueman}/bin/blueman-manager"
       "${mod},M,exec,${pkgs.pavucontrol}/bin/pavucontrol"
 
       # Window management

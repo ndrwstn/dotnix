@@ -13,25 +13,6 @@ let
     fi
   '';
 
-  bluetoothStatus = pkgs.writeShellScript "waybar-bluetooth-status" ''
-    set -eu
-
-    if ! ${pkgs.bluez}/bin/bluetoothctl show >/dev/null 2>&1; then
-      printf '{"text":"󰂲 off","tooltip":"Bluetooth unavailable"}\n'
-      exit 0
-    fi
-
-    if ${pkgs.bluez}/bin/bluetoothctl show | ${pkgs.gnugrep}/bin/grep -q 'Powered: yes'; then
-      connected="$(${pkgs.bluez}/bin/bluetoothctl devices Connected | ${pkgs.coreutils}/bin/wc -l)"
-      if [ "''${connected}" -gt 0 ]; then
-        printf '{"text":"󰂱 %s","tooltip":"Bluetooth on (%s connected)"}\n' "''${connected}" "''${connected}"
-      else
-        printf '{"text":"󰂯 on","tooltip":"Bluetooth on"}\n'
-      fi
-    else
-      printf '{"text":"󰂲 off","tooltip":"Bluetooth off"}\n'
-    fi
-  '';
 in
 {
   programs.waybar = {
@@ -44,20 +25,14 @@ in
         height = 34;
         spacing = 6;
 
-        modules-left = [ "hyprland/workspaces" "hyprland/window" ];
-        modules-center = [ "clock" ];
+        modules-left = [ "hyprland/workspaces" ];
+        modules-center = [ "hyprland/window" ];
         modules-right = [
-          "custom/clipboard"
-          "backlight"
-          "pulseaudio"
-          "cpu"
-          "memory"
-          "temperature"
-          "network"
-          "custom/bluetooth"
-          "battery"
-          "custom/power"
           "tray"
+          "network"
+          "battery"
+          "clock"
+          "custom/power"
         ];
 
         "hyprland/workspaces" = {
@@ -89,68 +64,12 @@ in
           tooltip-format = "{:%Y-%m-%d %H:%M:%S}";
         };
 
-        "custom/clipboard" = {
-          format = "";
-          tooltip = false;
-          on-click = "${cliphistMenu}";
-        };
-
-        backlight = {
-          device = "acpi_video0";
-          format = "{percent}% ";
-          tooltip-format = "Brightness: {percent}%";
-          scroll-step = 5;
-          on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%+";
-          on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-";
-        };
-
-        pulseaudio = {
-          format = "{volume}% {icon}";
-          format-bluetooth = "{volume}% {icon}";
-          format-muted = "🔇";
-          format-icons = {
-            "headphones" = "🎧";
-            "handsfree" = "🎧";
-            "headset" = "🎧";
-            "phone" = "📱";
-            "portable" = "🔊";
-            "car" = "🚗";
-            "default" = [ "🔈" "🔉" "🔊" ];
-          };
-          scroll-step = 5;
-          on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
-          on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-        };
-
-        cpu = {
-          format = "{usage}% ";
-          tooltip = false;
-        };
-
-        memory = {
-          format = "{}% ";
-          tooltip-format = "Memory usage: {used:0.1f}G / {total:0.1f}G";
-        };
-
-        temperature = {
-          critical-threshold = 85;
-          format = "{temperatureC}°C ";
-          tooltip = false;
-        };
-
         network = {
           format-wifi = "📶 {signalStrength}%";
           format-ethernet = "🌐 {ifname}";
           format-disconnected = "⚠️";
           tooltip-format = "{ifname} via {gwaddr}";
           on-click = "${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
-        };
-
-        "custom/bluetooth" = {
-          exec = "${bluetoothStatus}";
-          return-type = "json";
-          interval = 10;
-          on-click = "${pkgs.blueman}/bin/blueman-manager";
         };
 
         battery = {
@@ -224,18 +143,8 @@ in
 
       #clock,
       #battery,
-      #cpu,
-      #memory,
-      #disk,
-      #temperature,
-      #backlight,
       #network,
-      #pulseaudio,
-      #custom-bluetooth,
-      #custom-clipboard,
       #custom-power,
-      #wireplumber,
-      #custom-media,
       #tray,
       #mode,
       #idle_inhibitor,
@@ -249,11 +158,7 @@ in
         font-size: 16px;
       }
 
-      #custom-clipboard,
-      #custom-bluetooth,
-      #backlight,
       #network,
-      #pulseaudio,
       #battery,
       #custom-power {
         background: rgba(59, 66, 82, 0.55);
