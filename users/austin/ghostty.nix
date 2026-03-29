@@ -14,6 +14,9 @@
       # Enable CSI u protocol support for modified keys
       term = "xterm-256color";
 
+      # Subtle desktop transparency
+      background-opacity = 0.92;
+
       # Include matugen-generated colors (if available)
       config-file = "${config.xdg.configHome}/ghostty/colors.conf";
 
