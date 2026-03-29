@@ -18,7 +18,7 @@ let
     fi
     
     # Find a random image
-    WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | shuf -n 1)
+    WALLPAPER=$(${pkgs.findutils}/bin/find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null | ${pkgs.coreutils}/bin/shuf -n 1)
     
     if [ -z "$WALLPAPER" ]; then
       echo "No wallpapers found in $WALLPAPER_DIR"
@@ -33,14 +33,12 @@ let
       --transition-fps 60 \
       --transition-bezier 0.4,0.0,0.2,1
     
-    # Generate colors with matugen
-    ${pkgs.matugen}/bin/matugen image "$WALLPAPER" --json > "${config.xdg.cacheHome}/matugen/matugen-colors.json" 2>/dev/null || true
-    
-    # Apply colors to hyprland (if colors were generated)
-    if [ -f "${config.xdg.cacheHome}/matugen/matugen-colors.json" ]; then
-      # Source the colors and apply via hyprctl
-      # This will be replaced by proper template rendering in later phase
-      ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
+    # Generate colors and app configs with matugen templates
+    if ${pkgs.matugen}/bin/matugen image "$WALLPAPER" --config "${config.xdg.configHome}/matugen/config.toml"; then
+      # Reload Hyprland only if the generated source file exists
+      if [ -s "${config.xdg.cacheHome}/matugen/hyprland-colors.conf" ]; then
+        ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
+      fi
     fi
   '';
 in

@@ -3,28 +3,7 @@
 { pkgs, lib, config, ... }:
 
 let
-  # Tokyo Night base16 fallback colors
-  tokyoNight = {
-    background = "#1a1b26";
-    foreground = "#c0caf5";
-    cursor = "#c0caf5";
-    color0 = "#15161e";
-    color1 = "#f7768e";
-    color2 = "#9ece6a";
-    color3 = "#e0af68";
-    color4 = "#7aa2f7";
-    color5 = "#bb9af7";
-    color6 = "#7dcfff";
-    color7 = "#a9b1d6";
-    color8 = "#414868";
-    color9 = "#f7768e";
-    color10 = "#9ece6a";
-    color11 = "#e0af68";
-    color12 = "#7aa2f7";
-    color13 = "#bb9af7";
-    color14 = "#7dcfff";
-    color15 = "#c0caf5";
-  };
+  wallpaperDir = "${config.home.homeDirectory}/Pictures/Wallpapers/Favorites";
 
   # matugen config file
   matugenConfig = pkgs.writeText "matugen-config.toml" ''
@@ -165,5 +144,32 @@ in
     mkdir -p "${config.xdg.configHome}/mako"
     mkdir -p "${config.xdg.configHome}/wofi"
     mkdir -p "${config.xdg.configHome}/ghostty"
+  '';
+
+  # Seed matugen outputs before Hyprland starts so `source = ...` is always valid.
+  # Prefer a real random wallpaper from Favorites; fall back to a minimal valid file.
+  home.activation.seedMatugenTheme = lib.hm.dag.entryAfter [ "createMatugenDirs" ] ''
+    cache_dir="${config.xdg.cacheHome}/matugen"
+    hypr_file="$cache_dir/hyprland-colors.conf"
+    wallpaper_dir="${wallpaperDir}"
+    seeded=0
+
+    mkdir -p "$cache_dir"
+
+    if [ -d "$wallpaper_dir" ]; then
+      wallpaper="$(${pkgs.findutils}/bin/find "$wallpaper_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) | ${pkgs.coreutils}/bin/shuf -n 1 || true)"
+
+      if [ -n "$wallpaper" ]; then
+        if ${pkgs.matugen}/bin/matugen image "$wallpaper" --config "${config.xdg.configHome}/matugen/config.toml"; then
+          if [ -s "$hypr_file" ]; then
+            seeded=1
+          fi
+        fi
+      fi
+    fi
+
+    if [ "$seeded" -ne 1 ]; then
+      printf '%s\n' '# fallback matugen seed file' > "$hypr_file"
+    fi
   '';
 }
