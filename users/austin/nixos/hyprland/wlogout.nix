@@ -1,6 +1,6 @@
 # users/austin/nixos/hyprland/wlogout.nix
 # Wlogout power menu configuration
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   programs.wlogout = {
@@ -40,6 +40,8 @@
     ];
 
     style = ''
+      @import url("${builtins.toString config.xdg.configHome}/wlogout/colors.css");
+
       * {
         background-image: none;
         font-size: 10pt;
@@ -47,29 +49,46 @@
       }
 
       window {
-        background-color: rgba(30, 30, 46, 0.95);
+        background-color: alpha(@bg, 0.94);
       }
 
       button {
-        color: #FFFFFF;
-        background-color: rgba(255, 255, 255, 0.1);
+        color: @fg;
+        background-color: alpha(@surface, 0.90);
         border-style: solid;
         border-width: 2px;
-        border-radius: 8px;
-        border-color: rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        border-color: alpha(@border, 0.85);
         background-repeat: no-repeat;
         background-position: center;
         background-size: 25%;
-        margin: 5px;
-        min-width: 80px;
-        min-height: 80px;
-        padding: 5px;
+        margin: 10px;
+        min-width: 120px;
+        min-height: 120px;
+        padding: 12px;
       }
 
       button:focus, button:active, button:hover {
-        background-color: rgba(94, 129, 172, 0.5);
-        border-color: rgba(94, 129, 172, 1);
+        color: @on-accent;
+        background-color: alpha(@accent, 0.95);
+        border-color: alpha(@accent-alt, 0.95);
         outline-style: none;
+      }
+
+      #shutdown,
+      #reboot {
+        border-color: alpha(@urgent, 0.9);
+      }
+
+      #shutdown:hover,
+      #shutdown:focus,
+      #shutdown:active,
+      #reboot:hover,
+      #reboot:focus,
+      #reboot:active {
+        background-color: alpha(@urgent, 0.95);
+        border-color: alpha(@urgent, 1.0);
+        color: @bg;
       }
 
       #lock {

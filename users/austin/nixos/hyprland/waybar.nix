@@ -108,8 +108,8 @@ in
       }
 
       window#waybar {
-        background-color: alpha(@bg, 0.90);
-        border-bottom: 2px solid alpha(@accent, 0.50);
+        background-color: alpha(@surface, 0.94);
+        border-bottom: 2px solid alpha(@accent, 0.80);
         color: @fg;
         transition-property: background-color;
         transition-duration: .5s;
@@ -120,28 +120,35 @@ in
       }
 
       #workspaces button {
-        padding: 0 5px;
-        background-color: transparent;
+        padding: 0 10px;
+        background-color: alpha(@surface-alt, 0.45);
         color: @fg;
-        border-bottom: 2px solid transparent;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        margin: 5px 4px;
       }
 
       #workspaces button:hover {
-        background: alpha(@accent, 0.20);
+        background: alpha(@accent-soft, 0.75);
+        border-color: alpha(@accent, 0.40);
       }
 
       #workspaces button.focused {
         background-color: @accent;
-        border-bottom: 2px solid @muted;
+        color: @on-accent;
+        border-color: alpha(@accent-alt, 0.85);
+        box-shadow: inset 0 -2px @accent-alt;
       }
 
       #workspaces button.urgent {
-        background-color: @accent;
+        background-color: @urgent;
+        color: @bg;
       }
 
       #mode {
-        background-color: @muted;
-        border-bottom: 2px solid @fg;
+        background-color: @accent-alt;
+        color: @bg;
+        border-radius: 10px;
       }
 
       #clock,
@@ -161,12 +168,33 @@ in
         font-size: 16px;
       }
 
+      #clock {
+        background: alpha(@accent, 0.92);
+        color: @on-accent;
+        border-radius: 12px;
+        margin: 4px 2px;
+      }
+
       #network,
       #battery,
-      #custom-power {
-        background: alpha(@muted, 0.55);
-        border-radius: 8px;
+      #custom-power,
+      #tray {
+        background: alpha(@surface-alt, 0.90);
+        border: 1px solid alpha(@border, 0.75);
+        border-radius: 12px;
         margin: 4px 2px;
+      }
+
+      #custom-power {
+        background: alpha(@accent-alt, 0.88);
+        color: @bg;
+      }
+
+      #window {
+        background: alpha(@surface-alt, 0.72);
+        border: 1px solid alpha(@border, 0.55);
+        border-radius: 12px;
+        padding: 0 14px;
       }
 
       #window,
@@ -192,8 +220,8 @@ in
       }
 
       #battery.critical:not(.charging) {
-        background-color: @accent;
-        color: @fg;
+        background-color: @urgent;
+        color: @bg;
         animation-name: blink;
         animation-duration: 0.5s;
         animation-timing-function: linear;
@@ -214,7 +242,14 @@ in
       }
 
       #temperature.critical {
-        background-color: @accent;
+        background-color: @urgent;
+        color: @bg;
+      }
+
+      #battery.warning,
+      #network.disconnected {
+        background-color: @warning;
+        color: @bg;
       }
     '';
   };
