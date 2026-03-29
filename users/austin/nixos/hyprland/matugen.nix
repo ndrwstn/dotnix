@@ -54,8 +54,10 @@ in
       }
       
       decoration {
-        col.shadow = rgba({{colors.shadow.default.hex_stripped}}aa)
-        col.shadow_inactive = rgba({{colors.shadow.default.hex_stripped}}55)
+        shadow {
+          color = rgba({{colors.shadow.default.hex_stripped}}aa)
+          color_inactive = rgba({{colors.shadow.default.hex_stripped}}55)
+        }
       }
     '';
 
