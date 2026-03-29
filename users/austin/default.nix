@@ -63,6 +63,12 @@ lib.mkMerge [
         };
       };
 
+      oh-my-posh = {
+        enable = true;
+        enableZshIntegration = true;
+        configFile = "${config.xdg.configHome}/oh-my-posh/wallpaper.yaml";
+      };
+
       # Bat configuration
       bat = {
         enable = true;
@@ -116,11 +122,6 @@ lib.mkMerge [
 
       # nixvim
       nixvim = import ./nixvim { inherit config pkgs lib texlivePackage unstable; };
-
-      # oh-my-posh
-      oh-my-posh = {
-        enable = true;
-      };
 
       # ripgrep
       ripgrep = {
