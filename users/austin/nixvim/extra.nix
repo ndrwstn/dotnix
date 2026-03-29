@@ -15,6 +15,18 @@
       if ok and type(result) == "table" then
         local colors = result
 
+        local transparent_bg = ${if pkgs.stdenv.isLinux then "true" else "false"}
+
+        if transparent_bg then
+          local set = vim.api.nvim_set_hl
+          set(0, "Normal", { fg = colors.fg, bg = "NONE" })
+          set(0, "NormalNC", { fg = colors.fg, bg = "NONE" })
+          set(0, "EndOfBuffer", { fg = colors.bg, bg = "NONE" })
+          set(0, "SignColumn", { bg = "NONE" })
+          set(0, "FoldColumn", { bg = "NONE" })
+          set(0, "LineNr", { fg = colors.muted, bg = "NONE" })
+        end
+
         local ok_lualine, lualine = pcall(require, "lualine")
         if ok_lualine then
           lualine.setup({
@@ -50,7 +62,6 @@
     end
   '';
 }
-
 
 
 

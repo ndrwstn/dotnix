@@ -218,17 +218,17 @@ in
       set -g @matugen_border '{{colors.outline_variant.default.hex}}'
       set -g @matugen_urgent '{{colors.error.default.hex}}'
 
-      set -g status-style "bg=#{@matugen_surface},fg=#{@matugen_fg}"
-      set -g message-style "bg=#{@matugen_accent},fg={{colors.on_primary.default.hex}}"
-      set -g message-command-style "bg=#{@matugen_accent_alt},fg={{colors.on_tertiary.default.hex}}"
+      set -g status-style "bg=default,fg=#{@matugen_fg}"
+      set -g message-style "bg=default,fg=#{@matugen_accent}"
+      set -g message-command-style "bg=default,fg=#{@matugen_accent_alt}"
       set -g pane-border-style "fg=#{@matugen_border}"
       set -g pane-active-border-style "fg=#{@matugen_accent}"
-      set -g status-left-style "bg=#{@matugen_accent},fg={{colors.on_primary.default.hex}}"
-      set -g status-right-style "bg=#{@matugen_surface_alt},fg=#{@matugen_fg}"
-      set -g window-status-style "bg=#{@matugen_surface},fg=#{@matugen_fg}"
-      set -g window-status-current-style "bg=#{@matugen_accent_alt},fg={{colors.on_tertiary.default.hex}},bold"
-      set -g window-status-activity-style "bg=#{@matugen_surface_alt},fg=#{@matugen_accent}"
-      set -g window-status-bell-style "bg=#{@matugen_urgent},fg={{colors.on_error.default.hex}},bold"
+      set -g status-left-style "bg=default,fg=#{@matugen_accent}"
+      set -g status-right-style "bg=default,fg=#{@matugen_fg}"
+      set -g window-status-style "bg=default,fg=#{@matugen_fg}"
+      set -g window-status-current-style "bg=default,fg=#{@matugen_accent_alt},bold"
+      set -g window-status-activity-style "bg=default,fg=#{@matugen_accent}"
+      set -g window-status-bell-style "bg=default,fg=#{@matugen_urgent},bold"
     '';
 
     # Neovim wallpaper theme template
@@ -299,14 +299,14 @@ in
       {
         "$schema": "https://opencode.ai/theme.json",
         "theme": {
-          "primary": "{{colors.primary.default.hex}}",
-          "secondary": "{{colors.tertiary.default.hex}}",
-          "accent": "{{colors.primary_container.default.hex}}",
-          "text": "{{colors.on_surface.default.hex}}",
-          "textMuted": "{{colors.outline.default.hex}}",
-          "background": "{{colors.background.default.hex}}",
-          "backgroundPanel": "{{colors.surface.default.hex}}",
-          "backgroundElement": "{{colors.surface_container_high.default.hex}}",
+        "primary": "{{colors.primary.default.hex}}",
+        "secondary": "{{colors.tertiary.default.hex}}",
+        "accent": "{{colors.primary_container.default.hex}}",
+        "text": "{{colors.on_surface.default.hex}}",
+        "textMuted": "{{colors.outline.default.hex}}",
+        "background": "none",
+        "backgroundPanel": "none",
+        "backgroundElement": "{{colors.surface_container_high.default.hex}}",
           "border": "{{colors.outline_variant.default.hex}}",
           "borderActive": "{{colors.primary.default.hex}}",
           "borderSubtle": "{{colors.surface_container_highest.default.hex}}",

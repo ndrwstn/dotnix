@@ -15,7 +15,7 @@
       term = "xterm-256color";
 
       # Subtle desktop transparency
-      background-opacity = 0.92;
+      background-opacity = 0.80;
 
       # Include matugen-generated colors (if available)
       config-file = "${config.xdg.configHome}/ghostty/colors.conf";
