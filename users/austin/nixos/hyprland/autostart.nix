@@ -1,6 +1,6 @@
 # users/austin/nixos/hyprland/autostart.nix
 # Autostart applications for Hyprland
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 
 {
   services.mako = {
@@ -16,6 +16,12 @@
     };
   };
 
+  # Create wallpaper directories on activation
+  home.activation.createWallpaperDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/favorites"
+    mkdir -p "${config.home.homeDirectory}/Pictures/Wallpapers/staging"
+  '';
+
   wayland.windowManager.hyprland.settings.exec-once = [
     # Start Waybar
     "${pkgs.waybar}/bin/waybar"
@@ -30,8 +36,10 @@
     # Note: 1Password starts via systemd user service (WantedBy=graphical-session.target)
     # No manual start needed - systemd.enable = true in default.nix handles session target
 
-    # Set background wallpaper using swww
+    # Initialize swww wallpaper daemon
     "${pkgs.swww}/bin/swww init"
-    "${pkgs.swww}/bin/swww img ~/.wallpaper.jpg"
+
+    # Note: First wallpaper is set by the wallpaper-rotate service after boot
+    # To set manually: swww img ~/Pictures/Wallpapers/favorites/your-image.jpg
   ];
 }

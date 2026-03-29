@@ -47,6 +47,7 @@
     networkmanagerapplet
     pavucontrol
     swww
+    matugen
     ## unstable
     unstable.ghostty
   ];
