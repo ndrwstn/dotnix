@@ -24,7 +24,20 @@ let
       echo "No wallpapers found in $WALLPAPER_DIR"
       exit 0
     fi
-    
+
+    # Wait briefly for the swww daemon/socket to be ready
+    for _ in $(seq 1 10); do
+      if ${pkgs.swww}/bin/swww query >/dev/null 2>&1; then
+        break
+      fi
+      sleep 1
+    done
+
+    if ! ${pkgs.swww}/bin/swww query >/dev/null 2>&1; then
+      echo "swww daemon is not ready"
+      exit 1
+    fi
+
     # Set wallpaper with swww (fade + slight zoom transition)
     ${pkgs.swww}/bin/swww img "$WALLPAPER" \
       --transition-type grow \
@@ -38,22 +51,47 @@ let
       # Reload Hyprland only if the generated source file exists
       if [ -s "${config.xdg.cacheHome}/matugen/hyprland-colors.conf" ]; then
         ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
+        systemctl --user restart waybar.service 2>/dev/null || true
       fi
     fi
   '';
 in
 {
+  systemd.user.services.swww-daemon = {
+    Unit = {
+      Description = "swww wallpaper daemon";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.swww}/bin/swww-daemon";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
   # Systemd user service for wallpaper rotation
   systemd.user.services.wallpaper-rotate = {
     Unit = {
       Description = "Rotate wallpapers with dynamic theming";
-      After = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" "swww-daemon.service" ];
+      Requires = [ "swww-daemon.service" ];
       PartOf = [ "graphical-session.target" ];
     };
 
     Service = {
       Type = "oneshot";
       ExecStart = wallpaperRotate;
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
@@ -64,7 +102,6 @@ in
     };
 
     Timer = {
-      OnBootSec = "1m";
       OnUnitActiveSec = "30m";
       Unit = "wallpaper-rotate.service";
     };

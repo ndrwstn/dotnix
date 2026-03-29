@@ -17,6 +17,7 @@ in
 {
   programs.waybar = {
     enable = true;
+    systemd.enable = true;
 
     settings = [
       {
@@ -107,9 +108,9 @@ in
       }
 
       window#waybar {
-        background-color: rgba(46, 52, 64, 0.9);
-        border-bottom: 2px solid rgba(94, 129, 172, 0.5);
-        color: #D8DEE9;
+        background-color: alpha(@bg, 0.90);
+        border-bottom: 2px solid alpha(@accent, 0.50);
+        color: @fg;
         transition-property: background-color;
         transition-duration: .5s;
       }
@@ -121,26 +122,26 @@ in
       #workspaces button {
         padding: 0 5px;
         background-color: transparent;
-        color: #D8DEE9;
+        color: @fg;
         border-bottom: 2px solid transparent;
       }
 
       #workspaces button:hover {
-        background: rgba(94, 129, 172, 0.2);
+        background: alpha(@accent, 0.20);
       }
 
       #workspaces button.focused {
-        background-color: #5E81AC;
-        border-bottom: 2px solid #88C0D0;
+        background-color: @accent;
+        border-bottom: 2px solid @muted;
       }
 
       #workspaces button.urgent {
-        background-color: #BF616A;
+        background-color: @accent;
       }
 
       #mode {
-        background-color: #64727D;
-        border-bottom: 2px solid #ffffff;
+        background-color: @muted;
+        border-bottom: 2px solid @fg;
       }
 
       #clock,
@@ -152,7 +153,7 @@ in
       #idle_inhibitor,
       #scratchpad {
         padding: 0 10px;
-        color: #D8DEE9;
+        color: @fg;
       }
 
       #custom-power {
@@ -163,7 +164,7 @@ in
       #network,
       #battery,
       #custom-power {
-        background: rgba(59, 66, 82, 0.55);
+        background: alpha(@muted, 0.55);
         border-radius: 8px;
         margin: 4px 2px;
       }
@@ -185,14 +186,14 @@ in
 
       @keyframes blink {
         to {
-          background-color: #ffffff;
-          color: #000000;
+          background-color: @fg;
+          color: @bg;
         }
       }
 
       #battery.critical:not(.charging) {
-        background-color: #BF616A;
-        color: #D8DEE9;
+        background-color: @accent;
+        color: @fg;
         animation-name: blink;
         animation-duration: 0.5s;
         animation-timing-function: linear;
@@ -201,19 +202,19 @@ in
       }
 
       label:focus {
-        background-color: #000000;
+        background-color: @bg;
       }
 
       #pulseaudio.muted {
-        color: #BF616A;
+        color: @accent;
       }
 
       #wireplumber.muted {
-        color: #BF616A;
+        color: @accent;
       }
 
       #temperature.critical {
-        background-color: #BF616A;
+        background-color: @accent;
       }
     '';
   };
