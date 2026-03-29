@@ -70,9 +70,6 @@ lib.mkMerge [
           };
         };
 
-        # Source matugen-generated colors (if available)
-        source = "${config.xdg.cacheHome}/matugen/hyprland-colors.conf";
-
         # Animation settings
         animations = {
           enabled = true;
@@ -106,6 +103,11 @@ lib.mkMerge [
           "5,monitor:HDMI-A-1,default"
         ];
       };
+
+      extraConfig = ''
+        # Source matugen-generated colors
+        source = ${config.xdg.cacheHome}/matugen/hyprland-colors.conf
+      '';
     };
 
   }
