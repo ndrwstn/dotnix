@@ -212,6 +212,7 @@ in
       {
         "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
         "extends": "${config.xdg.configHome}/oh-my-posh/ohmyposh-default.json",
+        "final_space": true,
         "palette": {
           "black": "{{colors.background.default.hex}}",
           "blue": "{{colors.primary.default.hex}}",
