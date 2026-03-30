@@ -8,6 +8,14 @@
     "red": "#D81E5B",
     "white": "#E0DEF4",
     "yellow": "#F3AE35",
+    "userFg": "p:black",
+    "userBg": "p:yellow",
+    "dirFg": "p:white",
+    "dirBg": "p:orange",
+    "statusOkFg": "p:white",
+    "statusOkBg": "p:blue",
+    "statusErrFg": "p:white",
+    "statusErrBg": "p:red",
     "gitAhead": "#49416D",
     "gitBehind": "#7A306C"
   },
@@ -37,8 +45,8 @@
           "leading_diamond": "",
           "trailing_diamond": "",
           "template": " {{ if .SSHSession }} {{ end }}{{ .UserName }} ",
-          "foreground": "p:black",
-          "background": "p:yellow",
+          "foreground": "p:userFg",
+          "background": "p:userBg",
           "type": "session",
           "style": "diamond"
         },
@@ -47,9 +55,9 @@
             "style": "folder"
           },
           "template": "  {{ path .Path .Location }} ",
-          "foreground": "p:white",
+          "foreground": "p:dirFg",
           "powerline_symbol": "",
-          "background": "p:orange",
+          "background": "p:dirBg",
           "type": "path",
           "style": "powerline"
         },
@@ -92,11 +100,19 @@
           "leading_diamond": "<transparent,background></>",
           "trailing_diamond": "",
           "template": " {{ if gt .Code 0 }}{{ else }}{{ end }} ",
-          "foreground": "p:white",
-          "background": "p:blue",
+          "foreground": "p:statusOkFg",
+          "background": "p:statusOkBg",
           "type": "status",
           "style": "diamond",
-          "background_templates": ["{{ if gt .Code 0 }}p:red{{ end }}"]
+          "foreground_templates": ["{{ if gt .Code 0 }}p:statusErrFg{{ end }}"],
+          "background_templates": ["{{ if gt .Code 0 }}p:statusErrBg{{ end }}"]
+        },
+        {
+          "template": " ",
+          "foreground": "transparent",
+          "background": "transparent",
+          "type": "text",
+          "style": "plain"
         }
       ]
     },

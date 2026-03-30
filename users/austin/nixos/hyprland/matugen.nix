@@ -220,6 +220,14 @@ in
           "red": "{{colors.error.default.hex}}",
           "white": "{{colors.on_surface.default.hex}}",
           "yellow": "{{colors.primary_container.default.hex}}",
+          "userFg": "{{colors.on_primary_container.default.hex}}",
+          "userBg": "{{colors.primary_container.default.hex}}",
+          "dirFg": "{{colors.on_secondary_container.default.hex}}",
+          "dirBg": "{{colors.secondary_container.default.hex}}",
+          "statusOkFg": "{{colors.on_tertiary.default.hex}}",
+          "statusOkBg": "{{colors.tertiary.default.hex}}",
+          "statusErrFg": "{{colors.on_error.default.hex}}",
+          "statusErrBg": "{{colors.error.default.hex}}",
           "gitAhead": "{{colors.tertiary.default.hex}}",
           "gitBehind": "{{colors.error.default.hex}}"
         }
