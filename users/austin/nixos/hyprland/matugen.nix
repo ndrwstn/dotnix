@@ -17,7 +17,7 @@ let
     mako = { input_path = "${config.xdg.configHome}/matugen/templates/mako-config.tpl", output_path = "${config.xdg.configHome}/mako/config" }
     wofi = { input_path = "${config.xdg.configHome}/matugen/templates/wofi-colors.css", output_path = "${config.xdg.configHome}/wofi/colors.css" }
     ghostty = { input_path = "${config.xdg.configHome}/matugen/templates/ghostty-colors.conf", output_path = "${config.xdg.configHome}/ghostty/colors.conf" }
-    ohmyposh = { input_path = "${config.xdg.configHome}/matugen/templates/oh-my-posh-base.yaml", output_path = "${config.xdg.configHome}/oh-my-posh/wallpaper.yaml" }
+    ohmyposh = { input_path = "${config.xdg.configHome}/matugen/templates/ohmyposh-wallpaper.json", output_path = "${config.xdg.configHome}/oh-my-posh/wallpaper.json" }
     tmux = { input_path = "${config.xdg.configHome}/matugen/templates/tmux-colors.conf", output_path = "${config.xdg.configHome}/tmux/tmux-colors.conf" }
     nixvim = { input_path = "${config.xdg.configHome}/matugen/templates/nvim-matugen.lua", output_path = "${config.xdg.configHome}/nvim/lua/generated/matugen.lua" }
     opencode = { input_path = "${config.xdg.configHome}/matugen/templates/opencode-theme.json", output_path = "${config.xdg.configHome}/opencode/themes/wallpaper.json" }
@@ -207,8 +207,24 @@ in
       palette = 15={{colors.on_surface.default.hex}}
     '';
 
-    # oh-my-posh base prompt template (repo-managed, default-derived)
-    "${config.xdg.configHome}/matugen/templates/oh-my-posh-base.yaml".source = ../../shell/oh-my-posh-base.yaml;
+    # oh-my-posh wallpaper override template
+    "${config.xdg.configHome}/matugen/templates/ohmyposh-wallpaper.json".text = ''
+      {
+        "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+        "extends": "${config.xdg.configHome}/oh-my-posh/ohmyposh-default.json",
+        "palette": {
+          "black": "{{colors.background.default.hex}}",
+          "blue": "{{colors.primary.default.hex}}",
+          "green": "{{colors.tertiary.default.hex}}",
+          "orange": "{{colors.secondary.default.hex}}",
+          "red": "{{colors.error.default.hex}}",
+          "white": "{{colors.on_surface.default.hex}}",
+          "yellow": "{{colors.primary_container.default.hex}}",
+          "gitAhead": "{{colors.tertiary.default.hex}}",
+          "gitBehind": "{{colors.error.default.hex}}"
+        }
+      }
+    '';
 
     # tmux color template
     "${config.xdg.configHome}/matugen/templates/tmux-colors.conf".text = ''

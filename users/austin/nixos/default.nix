@@ -32,6 +32,9 @@ lib.mkMerge [
   # nixos packages
   (import ./packages.nix { inherit config pkgs unstable; })
 
+  # NixOS-only shell theming
+  (import ./ohmyposh.nix { inherit config; })
+
   # Hyprland configuration
   (import ./hyprland { inherit config pkgs unstable lib; })
 ]
