@@ -14,8 +14,6 @@ lib.mkMerge [
       EDITOR = "nvim";
       # 1Password CLI integration
       OP_PLUGIN_ALIASES_SOURCED = "1";
-      # Prevent GNOME keyring conflicts with 1Password SSH agent
-      GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
       # Force SSH to use 1Password agent socket
       SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
     };

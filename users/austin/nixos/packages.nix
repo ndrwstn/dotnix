@@ -5,8 +5,6 @@
 , ...
 }: {
   home.packages = with pkgs; [
-    _1password-cli
-    _1password-gui
     alsa-utils
     blender
     # calibre ## fails to build 2025-08-31

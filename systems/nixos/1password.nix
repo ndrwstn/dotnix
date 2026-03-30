@@ -1,9 +1,14 @@
 # systems/nixos/1password.nix
 # 1Password configuration for NixOS systems
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  onePasswordGui = lib.getExe pkgs._1password-gui;
+in
 {
   # Enable 1Password CLI and GUI programs
+  # Keep package ownership here so NixOS provides the wrapped `op`
+  # binary and desktop-app integration.
   programs._1password = {
     enable = true;
   };
@@ -32,7 +37,7 @@
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs._1password-gui}/bin/1password --silent";
+      ExecStart = "${onePasswordGui} --silent";
       Restart = "on-failure";
       Type = "simple";
     };
