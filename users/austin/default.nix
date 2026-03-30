@@ -304,6 +304,7 @@ lib.mkMerge [
       # stern
       talosctl
       taplo
+      termpdfpy # terminal pdf viewer
       pay-respects
       tlrc
       tree-sitter
