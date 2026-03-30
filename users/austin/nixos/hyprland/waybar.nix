@@ -33,7 +33,6 @@ in
           "network"
           "battery"
           "clock"
-          "custom/power"
         ];
 
         "hyprland/workspaces" = {
@@ -83,12 +82,6 @@ in
           format-plugged = "🔌 {capacity}%";
           format-icons = [ "🪫" "🪫" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" ];
           tooltip-format = "{timeTo}, {power:0.1f}W";
-          on-click = "${pkgs.wlogout}/bin/wlogout";
-        };
-
-        "custom/power" = {
-          format = "⏻";
-          tooltip = false;
           on-click = "${pkgs.wlogout}/bin/wlogout";
         };
 
@@ -154,18 +147,12 @@ in
       #clock,
       #battery,
       #network,
-      #custom-power,
       #tray,
       #mode,
       #idle_inhibitor,
       #scratchpad {
         padding: 0 10px;
         color: @fg;
-      }
-
-      #custom-power {
-        padding-right: 14px;
-        font-size: 16px;
       }
 
       #clock {
@@ -177,17 +164,11 @@ in
 
       #network,
       #battery,
-      #custom-power,
       #tray {
         background: alpha(@surface-alt, 0.90);
         border: 1px solid alpha(@border, 0.75);
         border-radius: 12px;
         margin: 4px 2px;
-      }
-
-      #custom-power {
-        background: alpha(@accent-alt, 0.88);
-        color: @bg;
       }
 
       #window {
