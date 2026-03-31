@@ -335,7 +335,7 @@ in
         "textMuted": "{{colors.outline.default.hex}}",
         "background": "none",
         "backgroundPanel": "none",
-        "backgroundElement": "{{colors.surface_container_high.default.hex}}",
+        "backgroundElement": "none",
           "border": "{{colors.outline_variant.default.hex}}",
           "borderActive": "{{colors.primary.default.hex}}",
           "borderSubtle": "{{colors.surface_container_highest.default.hex}}",

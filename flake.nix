@@ -101,12 +101,15 @@
         })
         ({ config
          , pkgs
+         , lib
          , ...
          }:
           let
+            nixosOverlays = import ./overlays;
             unstable = import nixpkgs-unstable {
               system = pkgs.stdenv.hostPlatform.system;
               config.allowUnfree = true;
+              overlays = lib.optionals pkgs.stdenv.isLinux nixosOverlays;
             };
             autopkgs = nixautopkgs.packages.${pkgs.stdenv.hostPlatform.system};
             mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system};
@@ -172,6 +175,7 @@
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
+            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays);
           };
 
           autopkgs = nixautopkgs.packages.${systemType};

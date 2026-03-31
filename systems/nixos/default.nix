@@ -11,6 +11,8 @@
     ./hyprland.nix
   ];
 
+  nixpkgs.overlays = import ../../overlays;
+
   # Allow unfree packages (required for copilot-language-server)
   nixpkgs.config.allowUnfree = true;
 
