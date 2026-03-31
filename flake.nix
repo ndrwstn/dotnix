@@ -175,6 +175,7 @@
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
+            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays);
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
