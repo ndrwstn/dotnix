@@ -40,9 +40,6 @@ in
       ExecStart = "${onePasswordGui} --silent";
       Restart = "on-failure";
       Type = "simple";
-      # Force XWayland to fix auth dialog rendering on Hyprland/Wayland
-      # https://1password.community/discussions/1password/authetication-prompt-not-showing-up-on-wayland-hyprland/109939
-      Environment = [ "ELECTRON_OZONE_PLATFORM_HINT=x11" ];
     };
   };
 }
