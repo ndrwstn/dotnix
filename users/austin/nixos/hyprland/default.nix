@@ -10,6 +10,7 @@ lib.mkMerge [
   (import ./wlogout.nix { inherit pkgs unstable lib config; })
   (import ./swww.nix { inherit pkgs unstable lib config; })
   (import ./matugen.nix { inherit pkgs unstable lib config; })
+  (import ./windows.nix { inherit pkgs unstable lib config; })
   {
     wayland.windowManager.hyprland = {
       enable = true;
