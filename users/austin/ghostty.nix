@@ -20,8 +20,10 @@
       # can be enabled there too or set to a different value.
       background-opacity = lib.mkIf (!pkgs.stdenv.isDarwin) 0.80;
 
-      # Include matugen-generated colors (if available)
-      config-file = "${config.xdg.configHome}/ghostty/colors.conf";
+      # Include matugen-generated colors (NixOS only)
+      # Matugen only runs on NixOS with hyprland; macOS theming not yet implemented
+      config-file = lib.mkIf (!pkgs.stdenv.isDarwin)
+        "${config.xdg.configHome}/ghostty/colors.conf";
 
       # Keybinding configurations
       keybind = [
