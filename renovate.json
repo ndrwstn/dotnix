@@ -1,13 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": ["regex"],
+  "enabledManagers": ["custom.regex"],
   "customManagers": [
     {
       "customType": "regex",
       "description": "Track broadcom-sta version in permittedInsecurePackages",
-      "managerFilePatterns": ["machines/.*/configuration\\.nix$"],
+      "managerFilePatterns": ["**/configuration.nix"],
       "matchStrings": ["broadcom-sta-(?<currentValue>[^\"]+)"],
-      "depNameTemplate": "nixpkgs stable 25.11/broadcom-sta",
+      "depNameTemplate": "nixpkgs_25_11/broadcom-sta",
       "datasourceTemplate": "repology",
       "versioningTemplate": "loose"
     }
@@ -15,7 +15,7 @@
   "packageRules": [
     {
       "matchManagers": ["regex"],
-      "matchDepNames": ["nixpkgs stable 25.11/broadcom-sta"],
+      "matchDepNames": ["nixpkgs_25_11/broadcom-sta"],
       "reviewers": ["ndrwstn"],
       "assignees": ["ndrwstn"],
       "schedule": ["before 4am on Thursday"]
