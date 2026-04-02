@@ -10,7 +10,7 @@
       "description": "Track broadcom-sta version in permittedInsecurePackages",
       "managerFilePatterns": ["machines/.*/configuration\\.nix$"],
       "matchStrings": ["broadcom-sta-(?<currentValue>[^\"]+)"],
-      "depNameTemplate": "nixpkgs_unstable/broadcom-sta",
+      "depNameTemplate": "nixpkgs stable 25.11/broadcom-sta",
       "datasourceTemplate": "repology",
       "versioningTemplate": "loose"
     }
@@ -18,7 +18,7 @@
   "packageRules": [
     {
       "matchManagers": ["regex"],
-      "matchDepNames": ["nixpkgs_unstable/broadcom-sta"],
+      "matchDepNames": ["nixpkgs stable 25.11/broadcom-sta"],
       "reviewers": ["ndrwstn"],
       "assignees": ["ndrwstn"],
       "schedule": ["before 4am on Thursday"]
