@@ -4,18 +4,18 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track broadcom-sta version in permittedInsecurePackages",
-      "managerFilePatterns": ["**/configuration.nix"],
-      "matchStrings": ["broadcom-sta-(?<currentValue>[^\"]+)"],
-      "depNameTemplate": "nixpkgs_25_11/broadcom-sta",
+      "description": "Track broadcom-sta insecure package pin",
+      "managerFilePatterns": ["machines/[^/]+/configuration\\.nix$"],
+      "matchStrings": ["\"broadcom-sta-(?<currentValue>[^\"]+)\""],
+      "packageNameTemplate": "nix_stable_25_11/broadcom-sta",
       "datasourceTemplate": "repology",
       "versioningTemplate": "loose"
     }
   ],
   "packageRules": [
     {
-      "matchManagers": ["regex"],
-      "matchDepNames": ["nixpkgs_25_11/broadcom-sta"],
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["nix_stable_25_11/broadcom-sta"],
       "reviewers": ["ndrwstn"],
       "assignees": ["ndrwstn"],
       "schedule": ["before 4am on Thursday"]
