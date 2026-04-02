@@ -4,14 +4,24 @@
   "nix": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track broadcom-sta version in permittedInsecurePackages",
+      "managerFilePatterns": ["machines/.*/configuration\\.nix$"],
+      "matchStrings": ["broadcom-sta-(?<currentValue>[^\"]+)"],
+      "depNameTemplate": "nixpkgs_unstable/broadcom-sta",
+      "datasourceTemplate": "repology",
+      "versioningTemplate": "loose"
+    }
+  ],
   "packageRules": [
     {
-      "matchPackageNames": ["broadcom-sta"],
-      "matchManagers": ["nix"],
-      "groupName": "broadcom drivers",
-      "schedule": ["before 4am on Thursday"],
+      "matchManagers": ["regex"],
+      "matchDepNames": ["nixpkgs_unstable/broadcom-sta"],
       "reviewers": ["ndrwstn"],
-      "assignees": ["ndrwstn"]
+      "assignees": ["ndrwstn"],
+      "schedule": ["before 4am on Thursday"]
     }
   ]
 }
