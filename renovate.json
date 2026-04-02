@@ -5,11 +5,10 @@
     {
       "customType": "regex",
       "description": "Track broadcom-sta insecure package pin",
-      "managerFilePatterns": ["machines/[^/]+/configuration\\.nix$"],
-      "matchStrings": ["\"broadcom-sta-(?<currentValue>[^\"]+)\""],
-      "packageNameTemplate": "nix_stable_25_11/broadcom-sta",
-      "datasourceTemplate": "repology",
-      "versioningTemplate": "loose"
+      "managerFilePatterns": ["machines/*/configuration.nix"],
+      "matchStrings": [
+        "renovate:\\s+datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)\\s+versioning=(?<versioning>\\S+)[\\s\\S]*?\"broadcom-sta-(?<currentValue>[^\"]+)\""
+      ]
     }
   ],
   "packageRules": [

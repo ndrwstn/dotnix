@@ -13,6 +13,7 @@
   nix.settings.download-buffer-size = 1000000000;
 
   # Allow the insecure broadcom-sta package for WiFi
+  # renovate: datasource=repology packageName=nix_stable_25_11/broadcom-sta versioning=loose
   nixpkgs.config.permittedInsecurePackages = [
     "broadcom-sta-6.30.223.271-59-6.12.78"
   ];
