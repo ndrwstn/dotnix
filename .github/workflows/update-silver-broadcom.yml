@@ -1,0 +1,69 @@
+name: Update Silver Broadcom Pin
+
+on:
+  schedule:
+    - cron: "0 4 * * 4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-silver-broadcom-pin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Update nixpkgs lock input
+        run: nix flake lock --update-input nixpkgs
+
+      - name: Detect flake.lock changes
+        id: lock
+        run: |
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update Silver Broadcom pin
+        run: python3 scripts/update-silver-broadcom-pin.py
+
+      - name: Detect Broadcom pin changes
+        id: broadcom
+        run: |
+          if git diff --quiet -- machines/silver/configuration.nix; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Re-evaluate permitted insecure packages
+        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        run: |
+          nix eval --json .#nixosConfigurations.silver.config.nixpkgs.config.permittedInsecurePackages
+
+      - name: Build Silver system
+        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        run: |
+          nix build .#nixosConfigurations.silver.config.system.build.toplevel
+
+      - name: Create pull request
+        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: ci/update-silver-broadcom-pin
+          delete-branch: true
+          commit-message: Update Silver Broadcom insecure pin
+          title: Update Silver Broadcom insecure pin
+          body: |
+            ## Summary
+            - update `nixpkgs` in `flake.lock`
+            - update Silver's `broadcom-sta` insecure package pin from evaluated Nix state
+            - validate by building `.#nixosConfigurations.silver.config.system.build.toplevel`
