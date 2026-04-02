@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "nix": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["broadcom-sta"],
+      "matchManagers": ["nix"],
+      "groupName": "broadcom drivers",
+      "schedule": ["before 4am on Thursday"],
+      "reviewers": ["ndrwstn"],
+      "assignees": ["ndrwstn"]
+    }
+  ]
+}
