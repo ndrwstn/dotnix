@@ -2,8 +2,14 @@ name: Update Silver Broadcom Pin
 
 on:
   schedule:
-    - cron: "0 4 * * 4"
+    - cron: "0 4 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - master
+      - dev
+    paths:
+      - flake.lock
 
 permissions:
   contents: write
@@ -45,17 +51,17 @@ jobs:
           fi
 
       - name: Re-evaluate permitted insecure packages
-        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
         run: |
           nix eval --json .#nixosConfigurations.silver.config.nixpkgs.config.permittedInsecurePackages
 
       - name: Build Silver system
-        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
         run: |
           nix build .#nixosConfigurations.silver.config.system.build.toplevel
 
       - name: Create pull request
-        if: steps.lock.outputs.changed == 'true' && steps.broadcom.outputs.changed == 'true'
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           branch: ci/update-silver-broadcom-pin
