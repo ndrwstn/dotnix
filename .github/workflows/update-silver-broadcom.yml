@@ -61,6 +61,7 @@ jobs:
           nix build .#nixosConfigurations.silver.config.system.build.toplevel
 
       - name: Create pull request
+        id: cpr
         if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
@@ -73,3 +74,10 @@ jobs:
             - update `nixpkgs` in `flake.lock`
             - update Silver's `broadcom-sta` insecure package pin from evaluated Nix state
             - validate by building `.#nixosConfigurations.silver.config.system.build.toplevel`
+
+      - name: Enable auto-merge
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
