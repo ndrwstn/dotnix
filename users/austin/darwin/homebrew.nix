@@ -68,7 +68,7 @@
       # "pdf-expert" # $$$
       "pearcleaner"
       # "plex"
-      "postgres-unofficial"
+      "postgres-app"
       # "privatevpn" # 2023-03-16 does not work - "can't communicate with helper application"
       # "pycharm-ce"
       "qlmarkdown"
