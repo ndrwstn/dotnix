@@ -97,11 +97,8 @@ lib.mkMerge [
 
         # Workspace configuration
         workspace = [
-          "1,monitor:HDMI-A-1,default"
-          "2,monitor:HDMI-A-1,default"
-          "3,monitor:HDMI-A-1,default"
-          "4,monitor:HDMI-A-1,default"
-          "5,monitor:HDMI-A-1,default"
+          "1,persistent:true"
+          "10,persistent:true"
         ];
       };
 
