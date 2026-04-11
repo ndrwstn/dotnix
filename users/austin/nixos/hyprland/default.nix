@@ -90,6 +90,12 @@ lib.mkMerge [
           "float,class:^(gnome-disks)$"
           "float,class:^(gparted)$"
 
+          # OpenCode - ignore app-requested maximize and float project picker
+          "suppressevent maximize,class:^\\.OpenCode-unwrapped$"
+          "float,title:^(Open project)$"
+          "size 90% 90%,title:^(Open project)$"
+          "center,title:^(Open project)$"
+
           # GCS - GURPS Character Sheet (XWayland/GLFW application)
           "tile,class:^(GCS)$"
           "nomaxsize,class:^(GCS)$"
