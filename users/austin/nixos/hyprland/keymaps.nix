@@ -5,15 +5,6 @@
 let
   mod = "SUPER";
   onePasswordGui = lib.getExe pkgs._1password-gui;
-  cliphistMenu = pkgs.writeShellScript "cliphist-menu" ''
-    set -eu
-
-    selection="$(${pkgs.cliphist}/bin/cliphist list | ${pkgs.wofi}/bin/wofi --dmenu --prompt 'Clipboard')"
-
-    if [ -n "''${selection}" ]; then
-      printf '%s' "''${selection}" | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
-    fi
-  '';
 in
 {
   wayland.windowManager.hyprland.settings = {
@@ -22,9 +13,9 @@ in
       "${mod},Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
 
       # Application launcher
-      "${mod},Space,exec,${pkgs.wofi}/bin/wofi --show drun"
+      "${mod},Space,exec,vicinae launcher"
       "${mod},B,exec,${pkgs.ungoogled-chromium}/bin/chromium"
-      "${mod},C,exec,${cliphistMenu}"
+      "${mod},C,exec,vicinae clipboard"
       "${mod},P,exec,${onePasswordGui}"
       "${mod},E,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
       "${mod},N,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
@@ -99,7 +90,7 @@ in
 
       # Common laptop helper keys
       ",XF86Explorer,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
-      ",XF86Launch1,exec,${pkgs.wofi}/bin/wofi --show drun"
+      ",XF86Launch1,exec,vicinae launcher"
       ",XF86Launch2,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
     ];
 

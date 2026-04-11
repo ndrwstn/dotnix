@@ -36,7 +36,6 @@
     mako
     cliphist
     waybar
-    wofi
     polkit_gnome
     grim
     slurp

@@ -35,4 +35,7 @@ lib.mkMerge [
 
   # Hyprland configuration
   (import ./hyprland { inherit config pkgs unstable lib; })
+
+  # Vicinae launcher configuration
+  (import ./vicinae.nix { inherit config pkgs lib; })
 ]
