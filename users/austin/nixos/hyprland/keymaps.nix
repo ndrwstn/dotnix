@@ -13,7 +13,7 @@ in
       "${mod},Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
 
       # Application launcher
-      "${mod},Space,exec,vicinae launcher"
+      "${mod},Space,exec,vicinae toggle"
       "${mod},B,exec,${pkgs.ungoogled-chromium}/bin/chromium"
       "${mod},C,exec,vicinae clipboard"
       "${mod},P,exec,${onePasswordGui}"
@@ -90,7 +90,7 @@ in
 
       # Common laptop helper keys
       ",XF86Explorer,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
-      ",XF86Launch1,exec,vicinae launcher"
+      ",XF86Launch1,exec,vicinae toggle"
       ",XF86Launch2,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
     ];
 
