@@ -17,13 +17,13 @@
         label = "logout";
         action = "hyprctl dispatch exit";
         text = "Logout";
-        keybind = "e";
+        keybind = "x";
       }
       {
-        label = "suspend";
-        action = "systemctl suspend";
-        text = "Suspend";
-        keybind = "u";
+        label = "sleep";
+        action = "${pkgs.bash}/bin/bash -c 'echo s2idle > /sys/power/mem_sleep && systemctl suspend'";
+        text = "Sleep";
+        keybind = "e";
       }
       {
         label = "reboot";
@@ -36,6 +36,12 @@
         action = "systemctl poweroff";
         text = "Shutdown";
         keybind = "s";
+      }
+      {
+        label = "suspend";
+        action = "systemctl suspend";
+        text = "Suspend";
+        keybind = "u";
       }
     ];
 
@@ -97,6 +103,10 @@
 
       #logout {
         background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/logout.png"));
+      }
+
+      #sleep {
+        background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"));
       }
 
       #suspend {
