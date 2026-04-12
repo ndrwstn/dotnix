@@ -104,7 +104,7 @@
               "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
               "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
               "nixvim.cachix.org-1:5itLbq7pKz5BB8h3QvE93s1zZOSX3XjKBpJZM+Upn7Q="
-              "vicinae.cachix.org-1:JkCn3O+VC0dzdcqT6fV+gV4mLMHl/qdF8TzoUoM8BX8="
+              "vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc="
             ];
           };
         })
