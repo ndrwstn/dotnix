@@ -21,9 +21,15 @@
       }
       {
         label = "sleep";
-        action = "${pkgs.bash}/bin/bash -c 'echo s2idle > /sys/power/mem_sleep && systemctl suspend'";
+        action = "systemctl suspend";
         text = "Sleep";
         keybind = "e";
+      }
+      {
+        label = "hibernate";
+        action = "systemctl hibernate";
+        text = "Hibernate";
+        keybind = "h";
       }
       {
         label = "reboot";
@@ -36,12 +42,6 @@
         action = "systemctl poweroff";
         text = "Shutdown";
         keybind = "s";
-      }
-      {
-        label = "suspend";
-        action = "systemctl suspend";
-        text = "Suspend";
-        keybind = "u";
       }
     ];
 
@@ -109,8 +109,8 @@
         background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"));
       }
 
-      #suspend {
-        background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"));
+      #hibernate {
+        background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png"));
       }
 
       #reboot {

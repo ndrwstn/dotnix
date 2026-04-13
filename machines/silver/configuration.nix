@@ -73,4 +73,11 @@
   # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   system.stateVersion = "24.05";
+
+  # Use s2idle instead of S3 deep sleep for MacBookPro11,1
+  # This fixes the 36-38 second immediate wake bug on this hardware
+  # s2idle keeps the CPU in a low-power state instead of powering down RAM
+  systemd.sleep.extraConfig = ''
+    SuspendState=freeze
+  '';
 }
