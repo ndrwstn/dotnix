@@ -93,6 +93,81 @@
       "61" = { enabled = false; }; # Next input source (⌥⌘Space)
     };
   };
+
+  # ============================================================================
+  # WINDOW TILING SHORTCUTS (macOS SEQUOIA 15+) - DISABLED
+  # ============================================================================
+  # These are menu-based shortcuts under Window → Move & Resize, NOT symbolic
+  # hotkeys. They must be disabled via NSUserKeyEquivalents in NSGlobalDomain.
+  # 
+  # We disable them by assigning a zero-width space (\U200B) which effectively
+  # removes the keyboard shortcut while keeping the menu item functional.
+  #
+  # Default shortcuts being disabled:
+  #   - Tile Left Half:        Fn+Ctrl+Left Arrow
+  #   - Tile Right Half:       Fn+Ctrl+Right Arrow
+  #   - Tile Top Half:         Fn+Ctrl+Up Arrow
+  #   - Tile Bottom Half:      Fn+Ctrl+Down Arrow
+  #   - Fill:                  Fn+Ctrl+F
+  #   - Center:                Fn+Ctrl+C
+  #   - Return to Previous:    Fn+Ctrl+R
+  #   - Left & Right:          Fn+Ctrl+Shift+Left
+  #   - Right & Left:          Fn+Ctrl+Shift+Right
+  #   - Top & Bottom:          Fn+Ctrl+Shift+Up
+  #   - Bottom & Top:          Fn+Ctrl+Shift+Down
+  #   - Top Left Quarter:      Fn+Ctrl+Option+Shift+Left
+  #   - Top Right Quarter:     Fn+Ctrl+Option+Shift+Right
+  #   - Bottom Left Quarter:   Fn+Ctrl+Option+Shift+Down
+  #   - Bottom Right Quarter:  Fn+Ctrl+Option+Shift+Up
+  #
+  # Reference: https://support.apple.com/guide/mac-help/mchl9674d0b0/mac
+  #
+  targets.darwin.defaults."NSGlobalDomain" = {
+    NSUserKeyEquivalents = {
+      # Individual tiling actions (may work for some apps)
+      "Left" = "\U200B";
+      "Right" = "\U200B";
+      "Top" = "\U200B";
+      "Bottom" = "\U200B";
+      "Fill" = "\U200B";
+      "Center" = "\U200B";
+      "Return to Previous Size" = "\U200B";
+
+      # Arrangement actions
+      "Left & Right" = "\U200B";
+      "Right & Left" = "\U200B";
+      "Top & Bottom" = "\U200B";
+      "Bottom & Top" = "\U200B";
+
+      # Quarter tiles
+      "Top Left" = "\U200B";
+      "Top Right" = "\U200B";
+      "Bottom Left" = "\U200B";
+      "Bottom Right" = "\U200B";
+
+      # Full screen tiles
+      "Full Screen Tile Left" = "\U200B";
+      "Full Screen Tile Right" = "\U200B";
+
+      # Window → Move & Resize → [Item] format (ESC-separated submenu)
+      # Using \033 (ASCII ESC) as separator for submenu paths
+      "Window\033Move & Resize\033Left" = "\U200B";
+      "Window\033Move & Resize\033Right" = "\U200B";
+      "Window\033Move & Resize\033Top" = "\U200B";
+      "Window\033Move & Resize\033Bottom" = "\U200B";
+      "Window\033Move & Resize\033Fill" = "\U200B";
+      "Window\033Move & Resize\033Center" = "\U200B";
+      "Window\033Move & Resize\033Return to Previous Size" = "\U200B";
+      "Window\033Move & Resize\033Left & Right" = "\U200B";
+      "Window\033Move & Resize\033Right & Left" = "\U200B";
+      "Window\033Move & Resize\033Top & Bottom" = "\U200B";
+      "Window\033Move & Resize\033Bottom & Top" = "\U200B";
+      "Window\033Move & Resize\033Top Left" = "\U200B";
+      "Window\033Move & Resize\033Top Right" = "\U200B";
+      "Window\033Move & Resize\033Bottom Left" = "\U200B";
+      "Window\033Move & Resize\033Bottom Right" = "\U200B";
+    };
+  };
 }
 # NOTES:
 # - Window tiling shortcuts (Sequoia 15+) are menu-based, NOT symbolic hotkeys.
