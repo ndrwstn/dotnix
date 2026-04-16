@@ -9,7 +9,10 @@ lib.mkMerge [
   # systems, so we need this extra isDarwin check. This should be fixed at the flake
   # level so darwin-specific modules are never evaluated on non-Darwin systems.
   (lib.mkIf pkgs.stdenv.isDarwin
-    (import ./appprefs.nix { inherit config lib pkgs; }))
+    (lib.mkMerge [
+      (import ./appprefs.nix { inherit config lib pkgs; })
+      (import ./keyboard.nix { inherit config lib pkgs; })
+    ]))
 
   # Environmental Variables
   {
