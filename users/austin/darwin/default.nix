@@ -2,6 +2,7 @@
 { config
 , pkgs
 , lib
+, autopkgs
 , ...
 }:
 lib.mkMerge [
@@ -11,6 +12,8 @@ lib.mkMerge [
   (lib.mkIf pkgs.stdenv.isDarwin
     (lib.mkMerge [
       (import ./appprefs.nix { inherit config lib pkgs; })
+      (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin")
+        (import ./apple-silicon.nix { inherit config lib pkgs autopkgs; }))
       (import ./keyboard.nix { inherit config lib pkgs; })
     ]))
 

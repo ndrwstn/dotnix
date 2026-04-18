@@ -363,7 +363,7 @@ lib.mkMerge [
   (import ./tmux.nix { inherit config pkgs lib; })
 
   # Import Darwin-specific flakes
-  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib; }))
+  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib autopkgs; }))
 
   # Import NixOS-specific flakes
   (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib; }))

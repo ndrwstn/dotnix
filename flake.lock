@@ -258,11 +258,11 @@
         "opencode": "opencode"
       },
       "locked": {
-        "lastModified": 1776477660,
-        "narHash": "sha256-a94FuF0fIE1gL7YayJB7pzblHCXiC1IMuub7lGsvmwg=",
+        "lastModified": 1776538028,
+        "narHash": "sha256-MG7VaecEJeYhtgKBRCbct0sIh19t3klITE3LO2mBNIs=",
         "owner": "ndrwstn",
         "repo": "nixautopkgs",
-        "rev": "df6d80fd47c56ba7a609d40b1317807edd6ccaba",
+        "rev": "e6180cde94eb666a6e079bc6c6a846991d2c8298",
         "type": "github"
       },
       "original": {
