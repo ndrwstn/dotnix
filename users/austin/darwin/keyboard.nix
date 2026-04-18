@@ -115,10 +115,10 @@
   #   - Right & Left:          Fn+Ctrl+Shift+Right
   #   - Top & Bottom:          Fn+Ctrl+Shift+Up
   #   - Bottom & Top:          Fn+Ctrl+Shift+Down
-  #   - Top Left Quarter:      Fn+Ctrl+Option+Shift+Left
-  #   - Top Right Quarter:     Fn+Ctrl+Option+Shift+Right
-  #   - Bottom Left Quarter:   Fn+Ctrl+Option+Shift+Down
-  #   - Bottom Right Quarter:  Fn+Ctrl+Option+Shift+Up
+  #   - Left & Quarters:       Fn+Ctrl+Option+Shift+Left
+  #   - Right & Quarters:      Fn+Ctrl+Option+Shift+Right
+  #   - Top & Quarters:        Fn+Ctrl+Option+Shift+Up
+  #   - Bottom & Quarters:     Fn+Ctrl+Option+Shift+Down
   #
   # Reference: https://support.apple.com/guide/mac-help/mchl9674d0b0/mac
   #
@@ -139,15 +139,15 @@
       "Top & Bottom" = "\U200B";
       "Bottom & Top" = "\U200B";
 
-      # Quarter tiles
-      "Top Left" = "\U200B";
-      "Top Right" = "\U200B";
-      "Bottom Left" = "\U200B";
-      "Bottom Right" = "\U200B";
+      # Quarter arrangements
+      "Left & Quarters" = "\U200B";
+      "Right & Quarters" = "\U200B";
+      "Top & Quarters" = "\U200B";
+      "Bottom & Quarters" = "\U200B";
 
-      # Full screen tiles
-      "Full Screen Tile Left" = "\U200B";
-      "Full Screen Tile Right" = "\U200B";
+      # Split View tiles
+      "Left of Screen" = "\U200B";
+      "Right of Screen" = "\U200B";
 
       # Window → Move & Resize → [Item] format (ESC-separated submenu)
       # Using \033 (ASCII ESC) as separator for submenu paths
@@ -162,10 +162,14 @@
       "Window\033Move & Resize\033Right & Left" = "\U200B";
       "Window\033Move & Resize\033Top & Bottom" = "\U200B";
       "Window\033Move & Resize\033Bottom & Top" = "\U200B";
-      "Window\033Move & Resize\033Top Left" = "\U200B";
-      "Window\033Move & Resize\033Top Right" = "\U200B";
-      "Window\033Move & Resize\033Bottom Left" = "\U200B";
-      "Window\033Move & Resize\033Bottom Right" = "\U200B";
+      "Window\033Move & Resize\033Left & Quarters" = "\U200B";
+      "Window\033Move & Resize\033Right & Quarters" = "\U200B";
+      "Window\033Move & Resize\033Top & Quarters" = "\U200B";
+      "Window\033Move & Resize\033Bottom & Quarters" = "\U200B";
+
+      # Window → Full Screen Tile → [Item] format
+      "Window\033Full Screen Tile\033Left of Screen" = "\U200B";
+      "Window\033Full Screen Tile\033Right of Screen" = "\U200B";
     };
   };
 }
