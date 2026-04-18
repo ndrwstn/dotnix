@@ -56,10 +56,9 @@
     };
 
     # Vicinae launcher (Raycast-like for Linux)
-    vicinae = {
-      url = "github:vicinaehq/vicinae";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    # Note: Not using 'follows' to ensure we use upstream's nixpkgs pin,
+    # which aligns with their Cachix cache and avoids unnecessary rebuilds
+    vicinae.url = "github:vicinaehq/vicinae";
   };
 
   outputs =
