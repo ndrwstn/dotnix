@@ -298,6 +298,7 @@ lib.mkMerge [
       sqls
       statix
       stylua
+      tesseract5
       imagemagick
       ghostscript
       nodePackages.mermaid-cli # Provides mmdc command for diagram rendering
