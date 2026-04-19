@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>B&amp;W 1U 1S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 1U 1S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>None</string>
+			<key>DuplexBindingEdge</key>
+			<integer>3</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>1</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 1U 1Sｘ4</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 1U 1Sｘ4</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>None</string>
+			<key>DuplexBindingEdge</key>
+			<integer>3</integer>
+			<key>com.apple.print.PrintSettings.PMCopies</key>
+			<integer>4</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>1</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 1U 2S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 1U 2S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>DuplexNoTumble</string>
+			<key>DuplexBindingEdge</key>
+			<integer>2</integer>
+			<key>com.apple.print.PMPresetUsed</key>
+			<string>B&amp;W 1U 1S</string>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>2</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 1U 2Sｘ4</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 1U 2Sｘ4</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>DuplexNoTumble</string>
+			<key>DuplexBindingEdge</key>
+			<integer>2</integer>
+			<key>com.apple.print.PageToPaperMappingAllowScalingUp</key>
+			<true/>
+			<key>com.apple.print.PrintSettings.PMCopies</key>
+			<integer>4</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>2</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 5 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 2U 2S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 2U 2S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>DuplexNoTumble</string>
+			<key>DuplexBindingEdge</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutColumns</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutNUp</key>
+			<true/>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 4U 1S 200%</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 4U 1S 200%</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>None</string>
+			<key>DuplexBindingEdge</key>
+			<integer>3</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>1</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutColumns</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutNUp</key>
+			<true/>
+			<key>com.apple.print.PrintSettings.PMLayoutRows</key>
+			<integer>2</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>B&amp;W 4U 2S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>B&amp;W 4U 2S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>Gray</string>
+			<key>Duplex</key>
+			<string>DuplexNoTumble</string>
+			<key>DuplexBindingEdge</key>
+			<integer>2</integer>
+			<key>com.apple.print.PMPresetUsed</key>
+			<string>B&amp;W 2U 2S</string>
+			<key>com.apple.print.PageFormat.PMOrientation</key>
+			<integer>1</integer>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutColumns</key>
+			<integer>2</integer>
+			<key>com.apple.print.PrintSettings.PMLayoutNUp</key>
+			<true/>
+			<key>com.apple.print.PrintSettings.PMLayoutRows</key>
+			<integer>2</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+			<key>com.apple.print.preset.Orientation</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>Color 1U 1S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>Color 1U 1S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>RGB</string>
+			<key>Duplex</key>
+			<string>None</string>
+			<key>DuplexBindingEdge</key>
+			<integer>3</integer>
+			<key>com.apple.print.PMPresetUsed</key>
+			<string>B&amp;W 1U 1S</string>
+			<key>com.apple.print.PageToPaperMappingAllowScalingUp</key>
+			<true/>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>1</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>Color 1U 2S</key>
+	<dict>
+		<key>com.apple.print.preset.behavior</key>
+		<integer>0</integer>
+		<key>com.apple.print.preset.id</key>
+		<string>Color 1U 2S</string>
+		<key>com.apple.print.preset.settings</key>
+		<dict>
+			<key>ColorModel</key>
+			<string>RGB</string>
+			<key>Duplex</key>
+			<string>DuplexNoTumble</string>
+			<key>DuplexBindingEdge</key>
+			<integer>2</integer>
+			<key>com.apple.print.PMPresetUsed</key>
+			<string>B&amp;W 1U 2S</string>
+			<key>com.apple.print.PageToPaperMappingAllowScalingUp</key>
+			<true/>
+			<key>com.apple.print.PrintSettings.PMDuplexing</key>
+			<integer>2</integer>
+			<key>com.apple.print.pageRange</key>
+			<string>All 100 Pages</string>
+		</dict>
+	</dict>
+	<key>com.apple.print.customPresetsInfo</key>
+	<array>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 1U 1S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 1U 1Sｘ4</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 1U 2S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 2U 2S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 4U 1S 200%</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 4U 2S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>Color 1U 1S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>Color 1U 2S</string>
+		</dict>
+		<dict>
+			<key>PresetBehavior</key>
+			<integer>0</integer>
+			<key>PresetName</key>
+			<string>B&amp;W 1U 2Sｘ4</string>
+		</dict>
+	</array>
+	<key>com.apple.print.lastPresetUsedPref</key>
+	<string>Color 1U 1S</string>
+	<key>com.apple.print.lastPresetUsedPrefType</key>
+	<integer>3</integer>
+	<key>com.apple.print.v2.lastUsedSettingsPref</key>
+	<dict>
+		<key>ColorModel</key>
+		<string>RGB</string>
+		<key>Duplex</key>
+		<string>None</string>
+		<key>DuplexBindingEdge</key>
+		<integer>3</integer>
+		<key>com.apple.print.DialogDismissedBy</key>
+		<string>Print</string>
+		<key>com.apple.print.PDEsUsed</key>
+		<string>Preview</string>
+		<key>com.apple.print.PMPresetUsed</key>
+		<string>Color 1U 1S</string>
+		<key>com.apple.print.PageToPaperMappingAllowScalingUp</key>
+		<true/>
+		<key>com.apple.print.PrintSettings.PMDuplexing</key>
+		<integer>1</integer>
+		<key>com.apple.print.pageRange</key>
+		<string>All 13 Pages</string>
+		<key>com.apple.print.totalPages</key>
+		<integer>13</integer>
+	</dict>
+</dict>
+</plist>
