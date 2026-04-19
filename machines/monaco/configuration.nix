@@ -25,6 +25,8 @@
     systemPackages = with pkgs; [
       coreutils
       gnused
+      blueutil
+      switchaudio-osx
       #      spacenavd # <- future spacenav support?
     ];
   };
