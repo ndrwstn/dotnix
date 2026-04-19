@@ -55,6 +55,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Claude Code - Anthropic's AI coding assistant
+    nix-claude-code = {
+      url = "github:ryoppippi/nix-claude-code";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Vicinae launcher (Raycast-like for Linux)
     # Note: Not using 'follows' to ensure we use upstream's nixpkgs pin,
     # which aligns with their Cachix cache and avoids unnecessary rebuilds
@@ -74,6 +80,7 @@
     , mcp-servers-nix
     , nur
     , vicinae
+    , nix-claude-code
 
     , ...
     }:
@@ -117,7 +124,7 @@
             unstable = import nixpkgs-unstable {
               system = pkgs.stdenv.hostPlatform.system;
               config.allowUnfree = true;
-              overlays = lib.optionals pkgs.stdenv.isLinux nixosOverlays;
+              overlays = lib.optionals pkgs.stdenv.isLinux nixosOverlays ++ [ nix-claude-code.overlays.default ];
             };
             autopkgs = nixautopkgs.packages.${pkgs.stdenv.hostPlatform.system};
             mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system};
@@ -183,7 +190,7 @@
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
-            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays);
+            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays) ++ [ nix-claude-code.overlays.default ];
           };
 
           autopkgs = nixautopkgs.packages.${systemType};

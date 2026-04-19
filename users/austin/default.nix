@@ -326,6 +326,7 @@ lib.mkMerge [
 
 
       ## overlays
+      claude-code
       autopkgs.agent-browser
       autopkgs.gcs
       # autopkgs.marker
