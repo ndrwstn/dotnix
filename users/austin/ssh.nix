@@ -14,7 +14,7 @@ let
       hostname = "monaco.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" "ios-devices" ];
+      capabilities = [ "setup-key" "ios-devices" "home-assistant" ];
     };
 
     silver = {
@@ -62,6 +62,11 @@ let
     mckinley = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzAvkC7u31iGU33SxdvhytEf+T3uqhxqFsK/9qZ0qt0";
       description = "Windows device - mckinley";
+    };
+
+    mckean = {
+      key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJ/X4/0/gzWK0bIAUGZ7J+XE9VBRY1xcjBtT2uTrbzT";
+      description = "Home Assistant server - mckean";
     };
   };
 
@@ -185,6 +190,11 @@ let
       description = "Machines that accept iOS device connections";
       authorizedKeys = [ "bradley" "halsey" "nimitz" "mckinley" ];
     };
+
+    home-assistant = {
+      description = "Machines that accept Home Assistant server connections";
+      authorizedKeys = [ "mckean" ];
+    };
   };
 
   # ============================================================================
@@ -235,12 +245,24 @@ let
       machineKeys = lib.mapAttrsToList (name: machineData: machineData.key) machines;
 
       # Add device keys if machine has ios-devices capability
-      deviceKeys =
+      iosDeviceKeys =
         if hasCapability "ios-devices" machine
         then lib.mapAttrsToList (name: deviceData: deviceData.key) devices
         else [ ];
+
+      # Add Home Assistant keys if machine has home-assistant capability
+      homeAssistantKeys =
+        if hasCapability "home-assistant" machine
+        then
+          lib.mapAttrsToList (name: deviceData: deviceData.key)
+            (lib.filterAttrs
+              (name: deviceData:
+                lib.elem name capabilities.home-assistant.authorizedKeys
+              )
+              devices)
+        else [ ];
     in
-    machineKeys ++ deviceKeys;
+    machineKeys ++ iosDeviceKeys ++ homeAssistantKeys;
 
   # Generate SSH client configuration from match rules (deprecated - kept for reference)
   # generateSSHMatches = matches:
