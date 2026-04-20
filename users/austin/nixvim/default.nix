@@ -24,6 +24,21 @@ lib.mkMerge [
       pkgs.stdenv.cc # Complete C/C++ toolchain with headers
       pkgs.pkg-config # Library discovery tool often needed by build systems
       pkgs.gnumake # Make build tool (commonly required)
+      # Prose/writing toolchain:
+      pkgs.vale # style linter (proselint-port + LegalRules via ~/.config/vale)
+      pkgs.ltex-ls-plus # LSP server; remote LanguageTool for grammar
+      pkgs.markdownlint-cli # markdown structural linter
+      pkgs.codespell # typo catcher for code + prose
+    ];
+
+    # Enable native spellcheck only on prose filetypes so code buffers
+    # stay clean. spelllang defaults come from options.nix (en_us).
+    autoCmd = [
+      {
+        event = "FileType";
+        pattern = [ "markdown" "text" "tex" "gitcommit" ];
+        command = "setlocal spell";
+      }
     ];
   }
   (import ./keymaps.nix)

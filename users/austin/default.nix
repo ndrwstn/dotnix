@@ -11,6 +11,23 @@
 }:
 let
   texlivePackage = import ./texlive.nix { inherit pkgs; };
+
+  # Vale style packs, pinned by rev + hash for reproducibility.
+  # Replace lib.fakeHash with the real sha256 on first build (nix prints it).
+  # If the fetched repo layout differs, point .source at "${valeProselint}"
+  # (or similar) directly rather than a subdirectory.
+  valeProselint = pkgs.fetchFromGitHub {
+    owner = "errata-ai";
+    repo = "proselint";
+    rev = "v0.3.2";
+    hash = lib.fakeHash;
+  };
+  valeLegalRules = pkgs.fetchFromGitHub {
+    owner = "PureLegalTech";
+    repo = "LegalRules";
+    rev = "v0.0.7";
+    hash = lib.fakeHash;
+  };
 in
 lib.mkMerge [
   #####################
@@ -40,6 +57,25 @@ lib.mkMerge [
     xdg.configFile."latexmk/latexmkrc".text = ''
       push @generated_exts, "toa";
     '';
+
+    # Vale styles live under ~/.config/vale/styles so vale resolves them
+    # relative to vale.ini's StylesPath. Subdirectory name inside each
+    # fetched source may need verification on first build.
+    xdg.configFile."vale/styles/proselint".source = "${valeProselint}/proselint";
+    xdg.configFile."vale/styles/LegalRules".source = "${valeLegalRules}/LegalRules";
+
+    xdg.configFile."vale/vale.ini".text = ''
+      StylesPath = styles
+      MinAlertLevel = suggestion
+      Packages = proselint, LegalRules
+
+      [*.{md,txt,tex,rst}]
+      BasedOnStyles = proselint, LegalRules
+    '';
+
+    # Point vale at the generated config regardless of cwd so it matches
+    # how nvim-lint launches the binary.
+    home.sessionVariables.VALE_CONFIG_PATH = "${config.xdg.configHome}/vale/vale.ini";
 
     programs = {
       home-manager.enable = true;

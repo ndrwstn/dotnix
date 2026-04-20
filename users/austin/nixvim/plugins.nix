@@ -3,7 +3,14 @@
 , texlivePackage
 , lib
 , ...
-}: {
+}:
+let
+  # Self-hosted LanguageTool endpoint used by ltex_plus.
+  # Edit this one line when the host changes. Include the /v2 path;
+  # ltex-ls appends /check etc. automatically.
+  ltexServerUri = "http://YOUR-HOST:8010/v2";
+in
+{
   clipboard = { register = "unnamedplus"; };
 
   # Disable nixvim's auto-installed AI CLI dependencies
@@ -240,6 +247,27 @@
           package = pkgs.sqls;
           cmd = [ "${pkgs.sqls}/bin/sqls" ];
         };
+        # Grammar/spelling via remote LanguageTool (self-hosted).
+        # Scoped to prose filetypes; checks are offloaded to ltexServerUri,
+        # so we don't embed LT's Java runtime or language models locally.
+        # User dictionary starts empty; "add to dictionary" LSP code
+        # actions will populate ltex-ls client state.
+        ltex_plus = {
+          enable = true;
+          filetypes = [ "markdown" "tex" "text" "gitcommit" ];
+          settings = {
+            ltex = {
+              enabled = [ "markdown" "latex" "tex" "plaintext" "gitcommit" ];
+              language = "en-US";
+              languageToolHttpServerUri = ltexServerUri;
+              additionalRules = {
+                enablePickyRules = true;
+              };
+              dictionary = { en-US = [ ]; };
+              disabledRules = { en-US = [ ]; };
+            };
+          };
+        };
       };
     };
 
@@ -340,6 +368,31 @@
     # ============================================================================
     trouble = {
       enable = true;
+    };
+
+    # ============================================================================
+    # LINTING (prose + typos)
+    # ============================================================================
+    # Design Decision: nvim-lint for linters that don't fit conform.nvim's
+    # formatter model. Scope:
+    #   - vale:         prose style/legal writing on markdown/text/tex
+    #                   (driven by ~/.config/vale/vale.ini -> proselint + LegalRules)
+    #   - markdownlint: markdown structural issues (headings, whitespace, lists)
+    #   - codespell:    typos in comments/identifiers for prose AND code filetypes
+    # Grammar is handled separately by ltex_plus LSP (remote LanguageTool).
+    lint = {
+      enable = true;
+      lintersByFt = {
+        markdown = [ "vale" "markdownlint" "codespell" ];
+        text = [ "vale" "codespell" ];
+        tex = [ "vale" "codespell" ];
+        python = [ "codespell" ];
+        nix = [ "codespell" ];
+        lua = [ "codespell" ];
+        sh = [ "codespell" ];
+        bash = [ "codespell" ];
+        sql = [ "codespell" ];
+      };
     };
 
     # ============================================================================

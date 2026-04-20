@@ -16,5 +16,6 @@
     signcolumn = "yes";
     guifont = "Inconsolata Nerd Font:h17";
     completeopt = "menu,menuone,noinsert,noselect";
+    spelllang = "en_us";
   };
 }
