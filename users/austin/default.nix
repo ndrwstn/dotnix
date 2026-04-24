@@ -232,6 +232,7 @@ lib.mkMerge [
       btop
       clippy
       # cloudflared
+      csvkit
       csvlens
       curlie
       deadnix
