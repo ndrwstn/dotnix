@@ -83,9 +83,9 @@ jobs:
             - update Silver's `broadcom-sta` insecure package pin from evaluated Nix state
             - validate by building `.#nixosConfigurations.silver.config.system.build.toplevel`
 
-      - name: Enable auto-merge
+      - name: Merge pull request
         if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
+          gh pr merge --squash "${{ steps.cpr.outputs.pull-request-number }}"
