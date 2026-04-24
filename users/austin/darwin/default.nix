@@ -11,7 +11,8 @@ lib.mkMerge [
   # level so darwin-specific modules are never evaluated on non-Darwin systems.
   (lib.mkIf pkgs.stdenv.isDarwin
     (lib.mkMerge [
-      (import ./appprefs.nix { inherit config lib pkgs; })
+      (import ./group-container-prefs.nix { inherit config lib pkgs; })
+      (import ./printing-presets.nix { inherit config lib pkgs; })
       (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin")
         (import ./apple-silicon.nix { inherit config lib pkgs autopkgs; }))
     ]))
