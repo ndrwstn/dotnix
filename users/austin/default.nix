@@ -243,6 +243,7 @@ lib.mkMerge [
       fd
       figlet
       firefox
+      librewolf
       fluxcd
       # gcc
       gh
