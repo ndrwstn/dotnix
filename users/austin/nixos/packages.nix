@@ -24,7 +24,6 @@
     openscad
     orca-slicer
     # plex-desktop
-    python313
     rtl-sdr
     ungoogled-chromium
     vlc

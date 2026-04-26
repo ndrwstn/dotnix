@@ -284,6 +284,7 @@ lib.mkMerge [
       poppler-utils
       # printrun
       python3
+      python313Packages.markitdown
       pyright
       # rsync
       qpdf
