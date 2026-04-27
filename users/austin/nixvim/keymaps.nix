@@ -249,9 +249,10 @@
 
     # Symbols & Lists
     { key = "<leader>xs"; mode = "n"; action = "<cmd>Trouble symbols toggle focus=false<CR>"; options.desc = "Symbols"; }
-    { key = "<leader>xl"; mode = "n"; action = "<cmd>Trouble lsp toggle focus=false win.position=right<CR>"; options.desc = "LSP Lists"; }
+    { key = "<leader>xl"; mode = "n"; action = "<cmd>lua require('lint').try_lint()<CR>"; options.desc = "Lint"; }
     { key = "<leader>xL"; mode = "n"; action = "<cmd>Trouble loclist toggle<CR>"; options.desc = "Location List"; }
     { key = "<leader>xQ"; mode = "n"; action = "<cmd>Trouble qflist toggle<CR>"; options.desc = "Quickfix List"; }
+    { key = "<leader>xT"; mode = "n"; action = "<cmd>Trouble lsp toggle focus=false win.position=right<CR>"; options.desc = "LSP Lists"; }
 
 
 
