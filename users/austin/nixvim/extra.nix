@@ -10,6 +10,15 @@
   ];
 
   extraConfigLua = ''
+    local prose_spell_group = vim.api.nvim_create_augroup("prose-spell", { clear = true })
+    vim.api.nvim_create_autocmd("FileType", {
+      group = prose_spell_group,
+      pattern = { "gitcommit", "markdown", "plaintex", "tex", "text" },
+      callback = function()
+        vim.opt_local.spell = true
+      end,
+    })
+
     do
       local ok, result = pcall(dofile, vim.fn.expand("${config.xdg.configHome}/nvim/lua/generated/matugen.lua"))
       if ok and type(result) == "table" then
@@ -62,7 +71,6 @@
     end
   '';
 }
-
 
 
 
