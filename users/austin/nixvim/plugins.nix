@@ -129,6 +129,21 @@
     };
 
     # ============================================================================
+    # LINTING
+    # ============================================================================
+    lint = {
+      enable = true;
+      autoLoad = true;
+      lintersByFt = {
+        gitcommit = [ "typos" ];
+        markdown = [ "typos" ];
+        plaintex = [ "chktex" ];
+        tex = [ "chktex" "typos" ];
+        text = [ "typos" ];
+      };
+    };
+
+    # ============================================================================
     # GIT INTEGRATION
     # ============================================================================
     gitsigns = {
@@ -233,6 +248,24 @@
           # Use marksman binary from user packages (already installed via default.nix)
           package = null;
           cmd = [ "/etc/profiles/per-user/austin/bin/marksman" ];
+        };
+        # prose / grammar
+        ltex_plus = {
+          enable = true;
+          package = pkgs.ltex-ls-plus;
+          settings = {
+            ltex = {
+              language = "en-US";
+              languageToolHttpServerUri = "https://languagetool.impetuo.us";
+              enabled = [
+                "markdown"
+                "tex"
+                "plaintex"
+                "text"
+                "gitcommit"
+              ];
+            };
+          };
         };
         # sql
         sqlls = {

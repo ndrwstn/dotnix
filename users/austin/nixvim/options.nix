@@ -17,6 +17,7 @@
     guifont = "Inconsolata Nerd Font:h17";
     completeopt = "menu,menuone,noinsert,noselect";
     exrc = true;
+    spelllang = [ "en_us" ];
     # NOTE: `secure` may be unnecessary with modern Neovim's trust database,
     # but enabled as a safety net for now.
     secure = true;
