@@ -15,6 +15,15 @@ lib.mkMerge [
       (import ./printing-presets.nix { inherit config lib pkgs; })
       (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin")
         (import ./apple-silicon.nix { inherit config lib pkgs autopkgs; }))
+
+      # whisper.cpp with Metal acceleration (auto-enabled on aarch64-darwin).
+      # Intel Macs deferred: CPU-only inference is too slow to be useful.
+      # Future: remote inference via k8s OpenVINO cluster for Intel machines.
+      {
+        home.packages = with pkgs; [
+          whisper-cpp
+        ];
+      }
     ]))
 
   # Environmental Variables

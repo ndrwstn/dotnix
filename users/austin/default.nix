@@ -365,6 +365,10 @@ lib.mkMerge [
   (import ./tmux.nix { inherit config pkgs lib; })
 
   # Import Darwin-specific flakes
+  # NOTE: whisper-cpp is installed Darwin-only because Metal acceleration
+  # makes it practical on Apple Silicon. Intel Macs (future NixOS machines)
+  # will use remote inference via a k8s OpenVINO cluster; CPU-only whisper
+  # is too slow on older Intel hardware to be useful.
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib autopkgs; }))
 
   # Import NixOS-specific flakes
