@@ -144,7 +144,7 @@ Examples:
 - `change(homebrew): replace logi-options with bettermouse`
 - `add(nixvim): enable project-local exrc files`
 - `fix(vicinae): use upstream nixpkgs pin for cache compatibility`
-- `ci(silver/broadcom): update insecure package pin`
+- `update(insecure/broadcom): update Silver package pin`
 
 #### Allowed Keywords (Closed Vocabulary)
 - `add` - introduce a new package, module, machine config, or capability
@@ -154,7 +154,7 @@ Examples:
 - `refactor` - restructure code/config without intended behavior change
 - `update` - bump pins, lockfiles, versions, generated values, or routine dependency state
 - `docs` - documentation-only changes
-- `ci` - automation, workflows, scripted repo maintenance
+- `ci` - changes to automation, workflows, CI configuration, or scripted repo maintenance itself
 - `secrets` - encrypted secret definitions, recipients, or secret-related wiring
 - `revert` - revert a prior change
 
@@ -162,7 +162,7 @@ Do not invent new leading keywords unless this document is updated first.
 
 #### Module Naming Rules
 - Prefer **semantic modules** over raw file paths
-- Use short module names that describe the area being changed: `lock`, `homebrew`, `nixvim`, `darwin/dock`, `silver/broadcom`
+- Use short module names that describe the area being changed: `lock`, `homebrew`, `nixvim`, `darwin/dock`, `insecure/broadcom`
 - Use slash-separated modules only when the extra specificity is genuinely useful
 - Avoid redundant modules like `darwin/homebrew` when `homebrew` already identifies the area
 - Use machine names only for machine-specific work: `silver`, `monaco`, `plutonium`, `siberia`
@@ -183,12 +183,14 @@ Avoid messages like:
 Rewrite them as:
 - `update(lock): refresh flake inputs`
 - `add(monaco): add blueutil and switchaudio-osx packages`
-- `ci(silver/broadcom): update insecure package pin`
+- `update(insecure/broadcom): update Silver package pin`
 
 ### CI / Automation Commit & PR Naming
 - Automated commits and PR titles should follow the same naming convention whenever possible
 - For lockfile-only automation, prefer `update(lock): ...`
-- For the Silver Broadcom workflow, prefer `ci(silver/broadcom): update insecure package pin`
+- Use `ci(...)` only when the change itself is to CI/workflow/automation code
+- If automation creates a content update, name the commit after the content change rather than the bot that produced it
+- For the Silver Broadcom workflow, prefer `update(insecure/broadcom): update Silver package pin`
 - Keep commit and PR titles aligned so generated history stays readable
 - Relevant automation currently lives in:
   - `.github/workflows/update-silver-broadcom.yml`
