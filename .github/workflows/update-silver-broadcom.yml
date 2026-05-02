@@ -75,8 +75,8 @@ jobs:
         with:
           branch: ci/update-silver-broadcom-pin
           delete-branch: true
-          commit-message: Update Silver Broadcom insecure pin
-          title: Update Silver Broadcom insecure pin
+          commit-message: "update(insecure/broadcom): update Silver package pin"
+          title: "update(insecure/broadcom): update Silver package pin"
           body: |
             ## Summary
             - update `nixpkgs` in `flake.lock`
