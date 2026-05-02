@@ -22,6 +22,7 @@
       # "araxis-merge" # $$$
       # "autodesk-fusion" # $$$
       "balenaetcher"
+      "bettermouse"
       "blender"
       "brave-browser"
       "calibre"
@@ -53,7 +54,7 @@
       # "krita"
       "little-snitch" # $$$
       # "localsend"
-      "logi-options+"
+      # "logi-options+" # 2026-05-02 deprecated
       # "maccy"
       "megasync"
       "monitorcontrol"
