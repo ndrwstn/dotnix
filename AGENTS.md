@@ -14,6 +14,15 @@ darwin-rebuild build --flake .#<hostname>   # macOS machines
 # nix-build tests/auto-discovery-tests.nix
 ```
 
+### Validation Expectations
+
+- **Documentation-only changes** (`AGENTS.md`, `README.md`, `DARWIN.md`, notes): review for correctness, examples, and internal consistency. Full Nix validation is usually not required.
+- **Nix/module/workflow/script changes**: run `nix flake check` before considering work complete.
+- **Machine-specific configuration changes**: when practical, also run the relevant dry-run build:
+  - `nixos-rebuild build --flake .#<hostname>`
+  - `darwin-rebuild build --flake .#<hostname>`
+- **Never use `--switch` commands**. Agents may validate and build, but must not apply system changes.
+
 ## Code Architecture & Patterns
 
 ### Repository Structure
@@ -60,6 +69,12 @@ _astn.machineSystem = "x86_64-linux";  # or "aarch64-darwin"
 - **User-level**: Common packages → OS-specific packages → Machine-specific packages
 - **Secrets**: Common secrets → Machine-specific secrets (layered approach)
 
+#### 3.5 Current Flake/Cache Patterns
+- Stable channels are split by platform (`nixpkgs` for NixOS, `nixpkgs-darwin` for Darwin)
+- `nixpkgs-unstable` is imported selectively for newer packages
+- Shared caches include `nix-community`, `nixvim`, `vicinae`, and `ndrwstn-dotnix` Cachix
+- Some inputs intentionally do **not** follow the main nixpkgs pin when upstream cache compatibility matters (for example `vicinae`)
+
 #### 4. Conditional Imports
 Use `lib.mkIf` for OS-specific configurations:
 ```nix
@@ -97,23 +112,87 @@ Use `lib.mkIf` for OS-specific configurations:
 ### Secrets Management
 
 #### Current Approach
-- Uses `age` encryption (not agenix for development work)
-- Secrets directory contains both `.age` files and `.json` files (gitignored)
-- For development: decrypt `.age` → edit `.json` → review changes → re-encrypt
+- The repository uses **agenix** for secret management and recipient definitions
+- Secret payloads are stored as `.age` files in `secrets/`
+- A manual development workflow may still use direct `age` decryption to a temporary `.json` file for easier review/editing
+- Any decrypted `.json` files must remain gitignored and must never be committed
 
 #### Secret Structure
 ```bash
 secrets/
-├── secrets.nix           # agenix configuration (who can decrypt what)
+├── secrets.nix           # agenix configuration / recipients
 ├── *.age                 # Encrypted secrets
-└── *.json                # Unencrypted JSON (gitignored, for development)
+└── *.json                # Optional decrypted JSON (gitignored, local-only)
 ```
 
 #### Working with Secrets
-1. Decrypt age file: `age -d -i ~/.ssh/id_ed25519 secret.age > secret.json`
-2. Edit the JSON file for ease of review
-3. Re-encrypt when ready: `age -e -r age1... secret.json > secret.age`
-4. Never commit unencrypted JSON files
+1. Prefer updating secrets through the repo's agenix-managed workflow when possible
+2. If doing manual development work, decrypt an age file locally: `age -d -i ~/.ssh/id_ed25519 secret.age > secret.json`
+3. Edit the JSON file for ease of review
+4. Re-encrypt when ready: `age -e -r age1... secret.json > secret.age`
+5. Never commit unencrypted JSON files
+
+### Git Commit Naming
+
+#### Required Format
+```text
+<keyword>(<module>): <description>
+```
+
+Examples:
+- `update(lock): refresh flake inputs`
+- `change(homebrew): replace logi-options with bettermouse`
+- `add(nixvim): enable project-local exrc files`
+- `fix(vicinae): use upstream nixpkgs pin for cache compatibility`
+- `ci(silver/broadcom): update insecure package pin`
+
+#### Allowed Keywords (Closed Vocabulary)
+- `add` - introduce a new package, module, machine config, or capability
+- `change` - modify existing behavior or configuration without being primarily a fix
+- `fix` - correct broken or incorrect behavior
+- `remove` - delete a package, module, setting, or capability
+- `refactor` - restructure code/config without intended behavior change
+- `update` - bump pins, lockfiles, versions, generated values, or routine dependency state
+- `docs` - documentation-only changes
+- `ci` - automation, workflows, scripted repo maintenance
+- `secrets` - encrypted secret definitions, recipients, or secret-related wiring
+- `revert` - revert a prior change
+
+Do not invent new leading keywords unless this document is updated first.
+
+#### Module Naming Rules
+- Prefer **semantic modules** over raw file paths
+- Use short module names that describe the area being changed: `lock`, `homebrew`, `nixvim`, `darwin/dock`, `silver/broadcom`
+- Use slash-separated modules only when the extra specificity is genuinely useful
+- Avoid redundant modules like `darwin/homebrew` when `homebrew` already identifies the area
+- Use machine names only for machine-specific work: `silver`, `monaco`, `plutonium`, `siberia`
+- Use broader modules for cross-cutting areas: `flake`, `overlays`, `users/austin`, `systems/darwin`, `ci`
+
+#### Commit Description Rules
+- Keep descriptions concise and specific
+- Prefer imperative phrasing: `enable`, `replace`, `remove`, `refresh`, `pin`
+- Describe the meaningful change, not just the touched file
+- Avoid vague summaries like `update stuff`, `misc fixes`, or `cleanup`
+
+#### Anti-Examples
+Avoid messages like:
+- `Update flake.lock`
+- `Add blueutil and switchaudio-osx to Monaco system packages`
+- `Update Silver Broadcom insecure pin`
+
+Rewrite them as:
+- `update(lock): refresh flake inputs`
+- `add(monaco): add blueutil and switchaudio-osx packages`
+- `ci(silver/broadcom): update insecure package pin`
+
+### CI / Automation Commit & PR Naming
+- Automated commits and PR titles should follow the same naming convention whenever possible
+- For lockfile-only automation, prefer `update(lock): ...`
+- For the Silver Broadcom workflow, prefer `ci(silver/broadcom): update insecure package pin`
+- Keep commit and PR titles aligned so generated history stays readable
+- Relevant automation currently lives in:
+  - `.github/workflows/update-silver-broadcom.yml`
+  - `scripts/update-silver-broadcom-pin.py`
 
 ### Error Handling & Validation
 - Use `lib.warn` for missing optional attributes
@@ -125,4 +204,4 @@ secrets/
 - **NEVER use `--switch` commands** - system modifications must be done manually by user
 - **Test builds first** with `nixos-rebuild build` or `darwin-rebuild build`
 - **Auto-discovery tests are optional** - the system is stable and rarely changes
-- **Always validate** with `nix flake check` before considering work complete
+- **Always validate Nix/module/workflow/script changes** with `nix flake check` before considering work complete
