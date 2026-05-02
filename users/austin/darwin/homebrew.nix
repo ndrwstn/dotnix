@@ -47,7 +47,7 @@
       # "iina"
       # "inkscape"
       "jdownloader"
-      "jordanbaird-ice"
+      # "jordanbaird-ice" # 05/01/2026 deactivated 
       "keka"
       # "kicad"
       # "krita"
