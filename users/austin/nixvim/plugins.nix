@@ -252,7 +252,7 @@
         # prose / grammar
         ltex_plus = {
           enable = true;
-          package = pkgs.ltex-ls-plus;
+          package = pkgs."ltex-ls-plus";
           settings = {
             ltex = {
               language = "en-US";
