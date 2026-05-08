@@ -36,6 +36,7 @@ pkgs.texlive.combine {
     multirow
     nowidow
     nth
+    paracol
     pdflscape
     pdfpages
     pgfopts
