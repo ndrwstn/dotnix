@@ -257,6 +257,7 @@
             ltex = {
               language = "en-US";
               languageToolHttpServerUri = "https://languagetool.impetuo.us";
+              checkFrequency = "save";
               enabled = [
                 "markdown"
                 "tex"
@@ -338,6 +339,18 @@
     lualine.enable = true;
     noice = {
       enable = true;
+      settings = {
+        lsp = {
+          override = {
+            "vim.lsp.util.convert_input_to_markdown_lines" = true;
+            "vim.lsp.util.stylize_markdown" = true;
+            "cmp.entry.get_documentation" = true;
+          };
+        };
+        presets = {
+          lsp_doc_border = true;
+        };
+      };
     };
 
     # Design Decision: REMOVED dressing.nvim - using snacks.input instead
@@ -627,19 +640,5 @@
   extraConfigLua = ''
     -- Set diffview configuration early before plugin loads (removed - using plugin settings instead)
     -- vim.g.diffview_hg_cmd = false  -- Moved to plugin.diffview.settings
-    
-    -- Configure LSP markdown conversion functions
-    require("noice").setup({
-      lsp = {
-        override = {
-            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-            ["vim.lsp.util.stylize_markdown"] = true,
-            ["cmp.entry.get_documentation"] = true,
-          },
-        },
-        presets = {
-          lsp_doc_border = true;
-        },
-      })
   '';
 }
