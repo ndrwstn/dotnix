@@ -9,6 +9,7 @@
     ./users.nix
     ./secrets.nix
     ./clamav.nix
+    ./llm.nix
   ];
 
   options = {
