@@ -31,6 +31,13 @@
     ];
   };
 
+  llm = {
+    enable = true;
+    llamaCpp.enable = true;
+    mlxLm.enable = true;
+    lmStudio.enable = true;
+  };
+
   # homebrew
   homebrew.brews = [
     "m1ddc"
