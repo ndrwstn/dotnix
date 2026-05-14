@@ -26,6 +26,7 @@
       "blender"
       "brave-browser"
       "calibre"
+      "chatgpt"
       "carbon-copy-cloner" # $$$
       # "claude" # NOTE 2026-03-13 out of date compared to claude download page
       # "cleanshot"

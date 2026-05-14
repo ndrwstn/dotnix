@@ -16,7 +16,7 @@
           "/System/Applications/Messages.app"
           "/Applications/Safari.app"
           "/Applications/Ghostty.app"
-          "/System/Volumes/Data/Applications/Claude.app"
+          "/Applications/ChatGPT.app"
           "/Applications/Nix Apps/Neovide.app"
           # "/System/Applications/iPhone Mirroring.app"
         ];
