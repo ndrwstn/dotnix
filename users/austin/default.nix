@@ -97,6 +97,7 @@ lib.mkMerge [
       fzf = {
         enable = true;
         enableZshIntegration = true;
+        tmux.enableShellIntegration = true;
         defaultOptions = [
           "--height 50%"
           "--border"
@@ -365,6 +366,9 @@ lib.mkMerge [
 
   # Import tmux configuration
   (import ./tmux.nix { inherit config pkgs lib; })
+
+  # Import sesh session manager
+  (import ./sesh.nix { inherit config pkgs lib; })
 
   # Import Darwin-specific flakes
   # NOTE: whisper-cpp is installed Darwin-only because Metal acceleration
