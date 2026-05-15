@@ -23,7 +23,6 @@ in
   environment.etc = {
     "1password/custom_allowed_browsers" = {
       text = ''
-        chromium
         ungoogled-chromium
         firefox
       '';
