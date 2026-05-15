@@ -22,7 +22,7 @@
         "source-file ${config.xdg.configHome}/tmux/tmux-colors.conf"
 
       # --- SPLITS ---
-      bind \ split-window -h    # vertical split (pane on right)
+      bind \\ split-window -h    # vertical split (pane on right)
       bind - split-window -v    # horizontal split (pane below)
 
       # --- STATUS BAR ---
