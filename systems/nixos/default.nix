@@ -46,17 +46,17 @@
       vulkan-loader
 
       # X11/graphics support (for opencode-desktop)
-      xorg.libX11
-      xorg.libXext
-      xorg.libXrender
-      xorg.libXcursor
-      xorg.libXfixes
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXrandr
-      xorg.libxcb
-      xorg.libXScrnSaver
-      xorg.libxshmfence
+      libx11
+      libxext
+      libxrender
+      libxcursor
+      libxfixes
+      libxcomposite
+      libxdamage
+      libxrandr
+      libxcb
+      libxscrnsaver
+      libxshmfence
 
       # Additional desktop dependencies
       gtk3
