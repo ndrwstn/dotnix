@@ -17,6 +17,15 @@
       # Enable kitty graphics protocol passthrough
       set -g allow-passthrough on
 
+      # Tell tmux that Ghostty supports true color for both the current
+      # xterm-256color TERM and Ghostty's native xterm-ghostty TERM.
+      set -as terminal-features ',xterm-256color:RGB'
+      set -as terminal-features ',xterm-ghostty:RGB'
+
+      # Report descriptive tmux titles to the outer terminal (e.g. Ghostty)
+      set -g set-titles on
+      set -g set-titles-string "tmux / #{session_name} / #{window_name}"
+
       # Load wallpaper-driven colors if present
       if-shell "test -f ${config.xdg.configHome}/tmux/tmux-colors.conf" \
         "source-file ${config.xdg.configHome}/tmux/tmux-colors.conf"
