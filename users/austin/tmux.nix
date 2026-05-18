@@ -3,6 +3,7 @@
 {
   programs.tmux = {
     enable = true;
+    tmuxp.enable = true;
     terminal = "tmux-256color";
     baseIndex = 1;
     historyLimit = 50000;
