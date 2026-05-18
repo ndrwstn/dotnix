@@ -1,6 +1,90 @@
 # users/austin/tmux.nix
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
+let
+  mkTmuxpWorkspace = { sessionName, startDirectory }: {
+    text = ''
+      session_name: ${sessionName}
+      start_directory: ${startDirectory}
+
+      windows:
+        - window_name: opencode
+          focus: true
+          panes:
+            - shell_command:
+                - opencode
+
+        - window_name: lazygit
+          panes:
+            - shell_command:
+                - lazygit
+
+        - window_name: shell
+          panes:
+            - shell_command:
+                - zsh
+    '';
+  };
+
+  workspaceBase = "${config.home.homeDirectory}/Documents";
+
+  tmuxpWorkspaces = {
+    "nix.yaml" = {
+      sessionName = "NIX";
+      startDirectory = "${workspaceBase}/90__CONFIG/NIX";
+    };
+
+    "mckean.yaml" = {
+      sessionName = "MCKEAN";
+      startDirectory = "${workspaceBase}/90__CONFIG/MCKEAN";
+    };
+
+    "uslegal.yaml" = {
+      sessionName = "USLEGAL";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/USLEGAL";
+    };
+
+    "impetuous.yaml" = {
+      sessionName = "IMPETUOUS";
+      startDirectory = "${workspaceBase}/04__NETWORKING/01__KHC-PROD__IMPETUOUS";
+    };
+
+    "opencode-app.yaml" = {
+      sessionName = "OPENCODE-APP";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/OPENCODE-APP";
+    };
+
+    "opencode.yaml" = {
+      sessionName = "OPENCODE";
+      startDirectory = "${workspaceBase}/90__CONFIG/OPENCODE";
+    };
+
+    "dropzone-actions.yaml" = {
+      sessionName = "DROPZONE-ACTIONS";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/DROPZONE-ACTIONS";
+    };
+
+    "nixautopkgs.yaml" = {
+      sessionName = "NIXAUTOPKGS";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/NIXAUTOPKGS";
+    };
+
+    "tdf-app.yaml" = {
+      sessionName = "TDF-APP";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/TDF-APP";
+    };
+
+    "avery-latex.yaml" = {
+      sessionName = "AVERY-LATEX";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/AVERY-LATEX";
+    };
+  };
+in
 {
+  xdg.configFile = lib.mapAttrs'
+    (fileName: workspace:
+      lib.nameValuePair "tmuxp/${fileName}" (mkTmuxpWorkspace workspace))
+    tmuxpWorkspaces;
+
   programs.tmux = {
     enable = true;
     tmuxp.enable = true;
