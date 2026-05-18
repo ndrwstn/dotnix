@@ -1,27 +1,31 @@
 # users/austin/tmux.nix
 { pkgs, config, lib, ... }:
 let
-  mkTmuxpWorkspace = { sessionName, startDirectory }: {
+  defaultTmuxpWindows = ''
+    - window_name: opencode
+      focus: true
+      panes:
+        - shell_command:
+            - opencode
+
+    - window_name: lazygit
+      panes:
+        - shell_command:
+            - lazygit
+
+    - window_name: shell
+      panes:
+        - shell_command:
+            - zsh
+  '';
+
+  mkTmuxpWorkspace = { sessionName, startDirectory, windows ? defaultTmuxpWindows }: {
     text = ''
       session_name: ${sessionName}
       start_directory: ${startDirectory}
 
       windows:
-        - window_name: opencode
-          focus: true
-          panes:
-            - shell_command:
-                - opencode
-
-        - window_name: lazygit
-          panes:
-            - shell_command:
-                - lazygit
-
-        - window_name: shell
-          panes:
-            - shell_command:
-                - zsh
+      ${windows}
     '';
   };
 
@@ -46,6 +50,28 @@ let
     "impetuous.yaml" = {
       sessionName = "IMPETUOUS";
       startDirectory = "${workspaceBase}/04__NETWORKING/01__KHC-PROD__IMPETUOUS";
+      windows = ''
+        - window_name: k9s
+          focus: true
+          panes:
+            - shell_command:
+                - k9s
+
+        - window_name: opencode
+          panes:
+            - shell_command:
+                - opencode
+
+        - window_name: lazygit
+          panes:
+            - shell_command:
+                - lazygit
+
+        - window_name: shell
+          panes:
+            - shell_command:
+                - zsh
+      '';
     };
 
     "opencode-app.yaml" = {
