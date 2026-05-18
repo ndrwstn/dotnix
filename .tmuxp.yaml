@@ -1,5 +1,5 @@
 session_name: NIX
-start_directory: ./
+start_directory: ~/Documents/90__CONFIG/NIX/
 
 windows:
   - window_name: opencode
