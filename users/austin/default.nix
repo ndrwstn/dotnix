@@ -231,6 +231,7 @@ lib.mkMerge [
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       bats
       btop
+      chafa
       clippy
       # cloudflared
       csvkit
@@ -242,6 +243,7 @@ lib.mkMerge [
       eza
       # ffmpeg_7
       fd
+      ffmpegthumbnailer
       figlet
       firefox
       unstable.librewolf
@@ -291,7 +293,7 @@ lib.mkMerge [
       # rsync
       qpdf
       rage
-      ranger
+      yazi
       ruff
       rust-analyzer
       rustfmt
