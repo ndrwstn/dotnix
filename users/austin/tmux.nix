@@ -133,6 +133,10 @@ in
       set -as terminal-features ',xterm-256color:RGB'
       set -as terminal-features ',xterm-ghostty:RGB'
 
+      # Forward modified keys like Ctrl+Enter using CSI-u when supported.
+      set -s extended-keys on
+      set -s extended-keys-format csi-u
+
       # Report descriptive tmux titles to the outer terminal (e.g. Ghostty)
       set -g set-titles on
       set -g set-titles-string "tmux / #{session_name} / #{window_name}"
