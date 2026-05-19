@@ -330,6 +330,7 @@ lib.mkMerge [
 
       ## unstable
       unstable.tea
+      unstable.zmk-studio
 
 
       ## overlays
