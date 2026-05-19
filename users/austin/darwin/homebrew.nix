@@ -112,10 +112,10 @@
       # "Grab2Text" = 6475956137; # removed from mac apple store?
       "Home Assistant" = 1099568401;
       # "iMovie" = 408981434;
-      # "Keynote" = 409183694;
+      "Keynote" = 361285480;
       # "LiquidText" = 922765270;
-      # "Numbers" = 409203825;
-      # "Pages" = 409201541;
+      "Numbers" = 361304891;
+      "Pages" = 361309726;
       "RECAP Uploader" = 1600281788;
       "SnippetsLab" = 1006087419;
       "The Camelizer" = 1532579087;
