@@ -51,13 +51,8 @@ let
       sessionName = "IMPETUOUS";
       startDirectory = "${workspaceBase}/04__NETWORKING/01__KHC-PROD__IMPETUOUS";
       windows = ''
-        - window_name: k9s
-          focus: true
-          panes:
-            - shell_command:
-                - k9s
-
         - window_name: opencode
+          focus: true
           panes:
             - shell_command:
                 - opencode
@@ -71,6 +66,16 @@ let
           panes:
             - shell_command:
                 - zsh
+
+        - window_name: k9s
+          panes:
+            - shell_command:
+                - k9s
+
+        - window_name: talosctl
+          panes:
+            - shell_command:
+                - talosctl dashboard -n 10.1.50.51,10.1.50.52,10.1.50.53 -e 10.1.50.50
       '';
     };
 
