@@ -39,7 +39,7 @@
 
     # nixautopkgs flake
     nixautopkgs = {
-      url = "github:ndrwstn/nixautopkgs/dev";
+      url = "github:ndrwstn/nixautopkgs/master";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
