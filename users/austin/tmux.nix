@@ -133,6 +133,9 @@ in
       # Enable kitty graphics protocol passthrough
       set -g allow-passthrough on
 
+      # Stay inside tmux when the current session is destroyed
+      set -g detach-on-destroy off
+
       # Tell tmux that Ghostty supports true color for both the current
       # xterm-256color TERM and Ghostty's native xterm-ghostty TERM.
       set -as terminal-features ',xterm-256color:RGB'
@@ -170,6 +173,10 @@ in
 
       # Toggle status bar (useful for fullscreen nvim focus)
       bind B set -g status
+
+      # Sesh helpers
+      bind-key W run-shell "sesh window \"$(sesh window | fzf --tmux 60%,50% --prompt '🪟  ')\""
+      bind -N "last-session (via sesh)" L run-shell "sesh last"
 
       # --- KEYBINDINGS ---
       # Shift+Enter sends line feed (inserts newline, doesn't submit)
