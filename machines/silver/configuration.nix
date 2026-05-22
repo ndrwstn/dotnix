@@ -8,6 +8,8 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
+  _astn.machine.windowManagers = [ "hyprland" ];
+
   # Increase download-buffer to 1GB
   # Rebuilds on Silver should be an exclusive activity
   nix.settings.download-buffer-size = 1000000000;

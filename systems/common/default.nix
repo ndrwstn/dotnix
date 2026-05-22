@@ -13,9 +13,27 @@
   ];
 
   options = {
-    # Define custom options for machine metadata
+    # Define custom options for machine metadata while preserving room for
+    # ad-hoc metadata consumed by flake auto-discovery and other modules.
     _astn = lib.mkOption {
-      type = lib.types.attrsOf lib.types.anything;
+      type = lib.types.submodule {
+        freeformType = lib.types.attrsOf lib.types.anything;
+        options.machine.windowManagers = lib.mkOption {
+          type = lib.types.listOf (lib.types.enum [
+            "gnome"
+            "hyprland"
+            "i3"
+          ]);
+          default = [
+            "gnome"
+            "hyprland"
+          ];
+          description = ''
+            Graphical desktop environments/window managers to enable on NixOS.
+            Hosts can set this to a subset or to an empty list for headless use.
+          '';
+        };
+      };
       default = { };
       description = "Custom namespace for machine-specific metadata";
     };

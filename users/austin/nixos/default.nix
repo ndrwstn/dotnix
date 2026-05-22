@@ -3,8 +3,16 @@
 , pkgs
 , unstable
 , lib
+, osConfig ? { }
 , ...
 }:
+let
+  windowManagers = osConfig._astn.machine.windowManagers or [
+    "gnome"
+    "hyprland"
+  ];
+  hasWindowManager = name: builtins.elem name windowManagers;
+in
 lib.mkMerge [
   {
     # nixos settings that don't deserve separate flake
@@ -34,7 +42,12 @@ lib.mkMerge [
   (import ./ohmyposh.nix { inherit config; })
 
   # Hyprland configuration
-  (import ./hyprland { inherit config pkgs unstable lib; })
+  (lib.mkIf (hasWindowManager "hyprland")
+    (import ./hyprland { inherit config pkgs unstable lib; }))
+
+  # i3 configuration
+  (lib.mkIf (hasWindowManager "i3")
+    (import ./i3 { inherit config pkgs unstable lib; }))
 
   # Vicinae launcher configuration
   (import ./vicinae.nix { inherit config pkgs lib; })

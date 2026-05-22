@@ -1,16 +1,16 @@
 # systems/nixos/hyprland.nix
 # Hyprland configuration for NixOS systems
-{ pkgs, ... }:
+{ config
+, lib
+, ...
+}:
 
-{
+lib.mkIf (builtins.elem "hyprland" config._astn.machine.windowManagers) {
   # Hyprland and Wayland support - module handles package and portal automatically
   programs.hyprland.enable = true;
 
-  # Use GDM as the display manager (already enabled in systems/nixos/default.nix)
+  # Use GDM as the display manager (enabled in systems/nixos/desktop.nix)
   # GDM will automatically detect and show Hyprland as a session option
-
-  # Polkit authentication agent will be handled in user config
-  security.polkit.enable = true;
 
   # Environment variables for Wayland
   environment.variables = {
@@ -25,6 +25,4 @@
     XDG_SESSION_TYPE = "wayland";
   };
 
-  # Required for some Wayland applications
-  hardware.graphics.enable = true;
 }

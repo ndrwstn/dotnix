@@ -8,6 +8,7 @@
   imports = [
     ./agenix.nix
     ./1password.nix
+    ./desktop.nix
     ./hyprland.nix
   ];
 
@@ -81,24 +82,6 @@
       libepoxy
     ];
   };
-
-  # Enable the X11 windowing system by default
-  services.xserver = {
-    enable = true;
-
-    # Configure keymap (display manager moved to top-level)
-    xkb = {
-      layout = "us";
-      variant = "";
-    };
-  };
-
-  # GNOME desktop environment configuration (top-level services)
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
-  # Exclude Seahorse to prevent SSH_ASKPASS interference
-  environment.gnome.excludePackages = [ pkgs.seahorse ];
 
   # Enable dbus for zathura synctex
   services.dbus.enable = true;
