@@ -8,8 +8,7 @@
   imports = [
     ./agenix.nix
     ./1password.nix
-    ./desktop.nix
-    ./hyprland.nix
+    ./desktop
   ];
 
   nixpkgs.overlays = import ../../overlays;
