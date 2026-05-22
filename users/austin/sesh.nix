@@ -7,6 +7,31 @@
     tmuxKey = "s";
     icons = true;
     enableAlias = false;
-    settings = { };
+    settings = {
+      cache = true;
+      separator_aware = true;
+
+      sort_order = [
+        "tmux"
+        "config"
+        "zoxide"
+      ];
+
+      blacklist = [
+        "scratch"
+        "tmp"
+        "popup"
+      ];
+
+      tui = {
+        prompt = "⚡  ";
+        placeholder = "Pick a session...";
+        show_icons = true;
+      };
+
+      default_session = {
+        preview_command = "eza --all --git --icons --color=always {}";
+      };
+    };
   };
 }
