@@ -217,9 +217,11 @@
 
   ];
 
-  # Ensure ClamAV database directory exists with proper permissions
+  # Ensure local state/profile directories exist with proper permissions
   systemd.tmpfiles.rules = [
     "d /home/austin/.local/share/clamav 0755 austin users -"
+    "d /home/austin/.local/state 0755 austin users -"
+    "d /home/austin/.local/state/nix 0755 austin users -"
     "d /home/austin/.local/state/nix/profiles 0755 austin users -"
     "d /nix/var/nix/profiles/per-user/austin 0755 austin users -"
   ];
