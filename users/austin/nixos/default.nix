@@ -12,7 +12,6 @@ let
     "hyprland"
   ];
   hasWindowManager = name: builtins.elem name windowManagers;
-  desktopApps = import ./desktop-apps.nix { inherit pkgs unstable lib; };
 in
 lib.mkMerge [
   {
@@ -40,18 +39,18 @@ lib.mkMerge [
   (import ./packages.nix { inherit config pkgs unstable; })
 
   # Optional application presets
-  (import ./presets { inherit config pkgs unstable lib osConfig desktopApps; })
+  (import ./presets { inherit config pkgs unstable lib osConfig; })
 
   # NixOS-only shell theming
   (import ./ohmyposh.nix { inherit config; })
 
   # Hyprland configuration
   (lib.mkIf (hasWindowManager "hyprland")
-    (import ./hyprland { inherit config pkgs unstable lib desktopApps; }))
+    (import ./hyprland { inherit config pkgs unstable lib; }))
 
   # i3 configuration
   (lib.mkIf (hasWindowManager "i3")
-    (import ./i3 { inherit config pkgs unstable lib desktopApps; }))
+    (import ./i3 { inherit config pkgs unstable lib; }))
 
   # Vicinae launcher configuration
   (import ./vicinae.nix { inherit config pkgs lib; })

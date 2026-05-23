@@ -1,12 +1,21 @@
 # users/austin/ghostty.nix
-{ pkgs, lib, unstable, ... }:
+{ pkgs, lib, unstable, osConfig ? { }, ... }:
+let
+  windowManagers = osConfig._astn.machine.windowManagers or [
+    "gnome"
+    "hyprland"
+  ];
+  hasHyprland = builtins.elem "hyprland" windowManagers;
+  enableGhostty = pkgs.stdenv.isDarwin || hasHyprland;
+in
 {
   programs.ghostty = {
-    enable = true;
+    enable = enableGhostty;
 
-    # Only install package on NixOS, use unstable version
+    # Only install package on Hyprland NixOS, use unstable version.
+    # Darwin installs Ghostty with Homebrew.
     package = lib.mkMerge [
-      (lib.mkIf (!pkgs.stdenv.isDarwin) unstable.ghostty)
+      (lib.mkIf (!pkgs.stdenv.isDarwin && hasHyprland) unstable.ghostty)
       (lib.mkIf (pkgs.stdenv.isDarwin) null)
     ];
 

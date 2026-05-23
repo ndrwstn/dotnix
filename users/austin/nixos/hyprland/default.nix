@@ -1,11 +1,29 @@
 # users/austin/nixos/hyprland/default.nix
 # Main Hyprland configuration
-{ pkgs, unstable, lib, config, desktopApps, ... }:
+{ pkgs, unstable, lib, config, ... }:
+
+let
+  terminalPackage = unstable.ghostty;
+  terminalCommand = "${terminalPackage}/bin/ghostty --working-directory=\"$HOME\"";
+  browserPackage = unstable.librewolf;
+  browserCommand = lib.getExe browserPackage;
+  passwordManagerPackage = pkgs._1password-gui;
+  passwordManagerCommand = lib.getExe passwordManagerPackage;
+  fileManagerPackage = pkgs.xdg-utils;
+  fileManagerCommand = "${fileManagerPackage}/bin/xdg-open $HOME";
+  networkEditorPackage = pkgs.networkmanagerapplet;
+  networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
+  audioControlPackage = pkgs.pavucontrol;
+  audioControlCommand = "${audioControlPackage}/bin/pavucontrol";
+in
 
 lib.mkMerge [
   (import ./autostart.nix { inherit pkgs unstable lib config; })
   (import ./gestures.nix { inherit pkgs unstable lib config; })
-  (import ./keymaps.nix { inherit pkgs unstable lib config desktopApps; })
+  (import ./keymaps.nix {
+    inherit pkgs terminalCommand browserCommand passwordManagerCommand
+      fileManagerCommand networkEditorCommand audioControlCommand;
+  })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
   (import ./wlogout.nix { inherit pkgs unstable lib config; })
   (import ./swww.nix { inherit pkgs unstable lib config; })
@@ -13,13 +31,17 @@ lib.mkMerge [
   (import ./windows.nix { inherit pkgs unstable lib config; })
   {
     home.packages = with pkgs; [
+      terminalPackage
+      browserPackage
+      passwordManagerPackage
+      fileManagerPackage
       brightnessctl
       cliphist
       grim
       mako
       matugen
-      networkmanagerapplet
-      pavucontrol
+      networkEditorPackage
+      audioControlPackage
       polkit_gnome
       slurp
       swww

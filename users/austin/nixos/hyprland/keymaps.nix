@@ -1,6 +1,14 @@
 # users/austin/nixos/hyprland/keymaps.nix
 # Hyprland keybindings configuration
-{ pkgs, desktopApps, ... }:
+{ pkgs
+, terminalCommand
+, browserCommand
+, passwordManagerCommand
+, fileManagerCommand
+, networkEditorCommand
+, audioControlCommand
+, ...
+}:
 
 let
   mod = "SUPER";
@@ -9,16 +17,16 @@ in
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Terminal
-      "${mod},Return,exec,${desktopApps.terminal.command}"
+      "${mod},Return,exec,${terminalCommand}"
 
       # Application launcher
       "${mod},Space,exec,vicinae toggle"
-      "${mod},B,exec,${desktopApps.browser.command}"
+      "${mod},B,exec,${browserCommand}"
       "${mod},C,exec,vicinae clipboard"
-      "${mod},P,exec,${desktopApps.passwordManager.command}"
-      "${mod},E,exec,${desktopApps.fileManager.command}"
-      "${mod},N,exec,${desktopApps.networkEditor.command}"
-      "${mod},M,exec,${desktopApps.audioControl.command}"
+      "${mod},P,exec,${passwordManagerCommand}"
+      "${mod},E,exec,${fileManagerCommand}"
+      "${mod},N,exec,${networkEditorCommand}"
+      "${mod},M,exec,${audioControlCommand}"
 
       # Window management
       "${mod},Q,killactive,"
@@ -88,9 +96,9 @@ in
       ",XF86AudioRewind,exec,${pkgs.playerctl}/bin/playerctl position 5-"
 
       # Common laptop helper keys
-      ",XF86Explorer,exec,${desktopApps.fileManager.command}"
+      ",XF86Explorer,exec,${fileManagerCommand}"
       ",XF86Launch1,exec,vicinae toggle"
-      ",XF86Launch2,exec,${desktopApps.networkEditor.command}"
+      ",XF86Launch2,exec,${networkEditorCommand}"
     ];
 
     binde = [

@@ -3,13 +3,25 @@
 { config
 , pkgs
 , lib
-, desktopApps
+, unstable
 , ...
 }:
 
 let
   mod = "Mod4";
   screenshotDir = "${config.home.homeDirectory}/Pictures";
+  terminalPackage = pkgs.alacritty;
+  terminalCommand = lib.getExe terminalPackage;
+  browserPackage = unstable.librewolf;
+  browserCommand = lib.getExe browserPackage;
+  passwordManagerPackage = pkgs._1password-gui;
+  passwordManagerCommand = lib.getExe passwordManagerPackage;
+  fileManagerPackage = pkgs.xdg-utils;
+  fileManagerCommand = "${fileManagerPackage}/bin/xdg-open $HOME";
+  networkEditorPackage = pkgs.networkmanagerapplet;
+  networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
+  audioControlPackage = pkgs.pavucontrol;
+  audioControlCommand = "${audioControlPackage}/bin/pavucontrol";
 in
 {
   xsession = {
@@ -19,7 +31,7 @@ in
       enable = true;
       config = {
         modifier = mod;
-        terminal = desktopApps.terminal.command;
+        terminal = terminalCommand;
         menu = "vicinae toggle";
 
         fonts = {
@@ -63,14 +75,14 @@ in
         ];
 
         keybindings = {
-          "${mod}+Return" = "exec ${desktopApps.terminal.command}";
+          "${mod}+Return" = "exec ${terminalCommand}";
           "${mod}+space" = "exec vicinae toggle";
-          "${mod}+b" = "exec ${desktopApps.browser.command}";
+          "${mod}+b" = "exec ${browserCommand}";
           "${mod}+c" = "exec vicinae clipboard";
-          "${mod}+p" = "exec ${desktopApps.passwordManager.command}";
-          "${mod}+e" = "exec ${desktopApps.fileManager.command}";
-          "${mod}+n" = "exec ${desktopApps.networkEditor.command}";
-          "${mod}+m" = "exec ${desktopApps.audioControl.command}";
+          "${mod}+p" = "exec ${passwordManagerCommand}";
+          "${mod}+e" = "exec ${fileManagerCommand}";
+          "${mod}+n" = "exec ${networkEditorCommand}";
+          "${mod}+m" = "exec ${audioControlCommand}";
 
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
@@ -130,9 +142,9 @@ in
           "XF86MonBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-";
           "XF86KbdBrightnessUp" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%+";
           "XF86KbdBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%-";
-          "XF86Explorer" = "exec ${desktopApps.fileManager.command}";
+          "XF86Explorer" = "exec ${fileManagerCommand}";
           "XF86Launch1" = "exec vicinae toggle";
-          "XF86Launch2" = "exec ${desktopApps.networkEditor.command}";
+          "XF86Launch2" = "exec ${networkEditorCommand}";
         };
 
         modes.resize = {
@@ -165,14 +177,18 @@ in
   services.dunst.enable = true;
 
   home.packages = with pkgs; [
+    terminalPackage
+    browserPackage
+    passwordManagerPackage
+    fileManagerPackage
     brightnessctl
     dmenu
     dunst
     feh
     i3status
     maim
-    networkmanagerapplet
-    pavucontrol
+    networkEditorPackage
+    audioControlPackage
     polkit_gnome
     slop
     xclip
