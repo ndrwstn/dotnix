@@ -8,7 +8,16 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
-  _astn.machine.windowManagers = [ "hyprland" ];
+  _astn.machine.windowManagers = [ "gnome" "hyprland" ];
+
+  _astn.presets = {
+    gui.enable = true;
+    graphics.enable = true;
+    maker.enable = true;
+    recording.enable = true;
+    office.enable = true;
+    radio.enable = true;
+  };
 
   # Increase download-buffer to 1GB
   # Rebuilds on Silver should be an exclusive activity
