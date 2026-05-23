@@ -16,6 +16,13 @@ Schema (example):
     "brother_mfc_l8900": {
       "uri": "ipp://printer.example.local:631/ipp/print"
     }
+  },
+  "wifi": {
+    "home": {
+      "id": "example-connection-name",
+      "ssid": "Example Wi-Fi",
+      "psk": "example-passphrase"
+    }
   }
 }
 ```

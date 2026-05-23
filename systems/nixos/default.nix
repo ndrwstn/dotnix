@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./agenix.nix
+    ./wifi.nix
     ./1password.nix
     ./desktop
     ./presets
