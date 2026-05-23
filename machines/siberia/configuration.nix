@@ -8,13 +8,24 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
+  _astn.machine.windowManagers = [ "hyprland" ];
+  _astn.presets = {
+    # Keep Siberia lean while testing Hyprland: only the baseline GUI preset.
+    gui.enable = true;
+    graphics.enable = false;
+    maker.enable = false;
+    recording.enable = false;
+    office.enable = false;
+    radio.enable = false;
+  };
+
   # Increase download-buffer to 1GB
-  # Rebuilds on Silver should be an exclusive activity
+  # Rebuilds on Siberia should be an exclusive activity
   nix.settings.download-buffer-size = 1000000000;
 
   # Allow the insecure broadcom-sta package for WiFi
   nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-57-6.12.52"
+    "broadcom-sta-6.30.223.271-59-6.12.90"
   ];
 
   # Use new OpenGL renderer on old MacBook Pro

@@ -40,6 +40,14 @@ let
       port = 22;
       capabilities = [ "setup-key" ];
     };
+
+    siberia = {
+      key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI";
+      hostname = "siberia.impetuo.us";
+      user = "austin";
+      port = 22;
+      capabilities = [ "setup-key" ];
+    };
   };
 
   # Device keys (iOS devices, Windows machines, etc.)
@@ -85,6 +93,11 @@ let
 
     "silver.impetuo.us" = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEasqUb7EN/yKS02tfVNvz8nYzgOhw0DDLz/rTR86Nw";
+      keyType = "ssh-ed25519";
+    };
+
+    "siberia.impetuo.us" = {
+      key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI";
       keyType = "ssh-ed25519";
     };
 
@@ -233,6 +246,7 @@ let
         silver = "SHA256:wLzldigjBJabY5UxoEnqv7GlSA4m7cJWE272GkEDtU";
         plutonium = "SHA256:hXkM+c7yfxEXbYrxhW4zOyzd7xV+04WlRJEezy8F2DU";
         molybdenum = "SHA256:kmWudCpmzZJ8T3ppGx+B0W+jRVf25JLUQGmt1isac/Q";
+        siberia = "SHA256:FG87j2k1+hthlK0/t/GO5msVx2QxspoMqWkWgToSnhE";
         "nietzsche-monaco" = "SHA256:NfbmzZUKXR4TU0krknzd227+DNd/1M+87SEcF7t/BaE";
       };
     in
