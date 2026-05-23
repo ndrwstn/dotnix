@@ -1,9 +1,5 @@
 # users/austin/ghostty.nix
-{ config, pkgs, lib, unstable, osConfig ? { }, ... }:
-let
-  windowManagers = osConfig._astn.machine.windowManagers or [ ];
-  hasHyprland = builtins.elem "hyprland" windowManagers;
-in
+{ pkgs, lib, unstable, ... }:
 {
   programs.ghostty = {
     enable = true;
@@ -23,12 +19,6 @@ in
       # with the default macOS window chrome. If/when macOS gets themed, this
       # can be enabled there too or set to a different value.
       background-opacity = lib.mkIf (!pkgs.stdenv.isDarwin) 0.80;
-
-      # TODO(2026-05-23): This consumer-side matugen guard is a hack.
-      # Wallpaper-generated theming should be centralized/scoped to a single
-      # Hyprland/theming module instead of scattered across app configs.
-      config-file = lib.mkIf ((!pkgs.stdenv.isDarwin) && hasHyprland)
-        "${config.xdg.configHome}/ghostty/colors.conf";
 
       # Keybinding configurations
       keybind = [

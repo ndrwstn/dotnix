@@ -369,6 +369,74 @@ in
     '';
   };
 
+  # Hyprland is the only scope that opts cross-desktop apps into mutable
+  # matugen theme fragments. Common app modules intentionally remain unaware of
+  # these files so i3 and Darwin keep their normal/default app behavior.
+  programs.ghostty.settings.config-file =
+    "?${config.xdg.configHome}/ghostty/colors.conf";
+
+  programs.oh-my-posh.configFile =
+    "${config.xdg.configHome}/oh-my-posh/wallpaper.json";
+
+  programs.tmux.extraConfig = lib.mkAfter ''
+    # Load Hyprland-owned wallpaper colors if matugen has produced them.
+    if-shell "test -f ${config.xdg.configHome}/tmux/tmux-colors.conf" \
+      "source-file ${config.xdg.configHome}/tmux/tmux-colors.conf"
+  '';
+
+  programs.nixvim.extraConfigLua = lib.mkAfter ''
+    do
+      local ok, result = pcall(dofile, vim.fn.expand("${config.xdg.configHome}/nvim/lua/generated/matugen.lua"))
+      if ok and type(result) == "table" then
+        local colors = result
+
+        local transparent_bg = ${if pkgs.stdenv.isLinux then "true" else "false"}
+
+        if transparent_bg then
+          local set = vim.api.nvim_set_hl
+          set(0, "Normal", { fg = colors.fg, bg = "NONE" })
+          set(0, "NormalNC", { fg = colors.fg, bg = "NONE" })
+          set(0, "EndOfBuffer", { fg = colors.bg, bg = "NONE" })
+          set(0, "SignColumn", { bg = "NONE" })
+          set(0, "FoldColumn", { bg = "NONE" })
+          set(0, "LineNr", { fg = colors.muted, bg = "NONE" })
+        end
+
+        local ok_lualine, lualine = pcall(require, "lualine")
+        if ok_lualine then
+          lualine.setup({
+            options = {
+              theme = {
+                normal = {
+                  a = { bg = colors.accent, fg = colors.on_accent, gui = "bold" },
+                  b = { bg = colors.surface_alt, fg = colors.fg },
+                  c = { bg = colors.surface, fg = colors.fg },
+                },
+                insert = {
+                  a = { bg = colors.accent_alt, fg = colors.bg, gui = "bold" },
+                  b = { bg = colors.surface_alt, fg = colors.fg },
+                },
+                visual = {
+                  a = { bg = colors.warn, fg = colors.bg, gui = "bold" },
+                  b = { bg = colors.surface_alt, fg = colors.fg },
+                },
+                replace = {
+                  a = { bg = colors.err, fg = colors.bg, gui = "bold" },
+                  b = { bg = colors.surface_alt, fg = colors.fg },
+                },
+                inactive = {
+                  a = { bg = colors.surface, fg = colors.muted },
+                  b = { bg = colors.surface, fg = colors.muted },
+                  c = { bg = colors.surface, fg = colors.muted },
+                },
+              },
+            },
+          })
+        end
+      end
+    end
+  '';
+
   # Ensure directories exist
   home.activation.createMatugenDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "${config.xdg.configHome}/matugen/templates"
@@ -387,27 +455,196 @@ in
   # Seed matugen outputs before Hyprland starts so `source = ...` is always valid.
   # Prefer a real random wallpaper from Favorites; fall back to a minimal valid file.
   home.activation.seedMatugenTheme = lib.hm.dag.entryAfter [ "createMatugenDirs" ] ''
-    cache_dir="${config.xdg.cacheHome}/matugen"
-    hypr_file="$cache_dir/hyprland-colors.conf"
-    wallpaper_dir="${wallpaperDir}"
-    seeded=0
+          cache_dir="${config.xdg.cacheHome}/matugen"
+          hypr_file="$cache_dir/hyprland-colors.conf"
+          ghostty_file="${config.xdg.configHome}/ghostty/colors.conf"
+          ohmyposh_file="${config.xdg.configHome}/oh-my-posh/wallpaper.json"
+          tmux_file="${config.xdg.configHome}/tmux/tmux-colors.conf"
+          nixvim_file="${config.xdg.configHome}/nvim/lua/generated/matugen.lua"
+          waybar_file="${config.xdg.configHome}/waybar/colors.css"
+          wlogout_file="${config.xdg.configHome}/wlogout/colors.css"
+          mako_file="${config.xdg.configHome}/mako/config"
+          wofi_file="${config.xdg.configHome}/wofi/colors.css"
+          wallpaper_dir="${wallpaperDir}"
+          seeded=0
 
-    mkdir -p "$cache_dir"
+          mkdir -p "$cache_dir"
 
-    if [ -d "$wallpaper_dir" ]; then
-      wallpaper="$(${pkgs.findutils}/bin/find "$wallpaper_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) | ${pkgs.coreutils}/bin/shuf -n 1 || true)"
+          if [ -d "$wallpaper_dir" ]; then
+            wallpaper="$(${pkgs.findutils}/bin/find "$wallpaper_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) | ${pkgs.coreutils}/bin/shuf -n 1 || true)"
 
-      if [ -n "$wallpaper" ]; then
-        if ${pkgs.matugen}/bin/matugen image "$wallpaper" --config "${config.xdg.configHome}/matugen/config.toml"; then
-          if [ -s "$hypr_file" ]; then
-            seeded=1
+            if [ -n "$wallpaper" ]; then
+              if ${pkgs.matugen}/bin/matugen image "$wallpaper" --config "${config.xdg.configHome}/matugen/config.toml"; then
+                if [ -s "$hypr_file" ]; then
+                  seeded=1
+                fi
+              fi
+            fi
           fi
-        fi
+
+          if [ "$seeded" -ne 1 ]; then
+            printf '%s\n' '# fallback matugen seed file' > "$hypr_file"
+          fi
+
+      if [ ! -s "$ghostty_file" ]; then
+        printf '%s\n' \
+          '# fallback Ghostty matugen seed file' \
+          'background = #1e1e2e' \
+          'foreground = #cdd6f4' \
+          'cursor-color = #cba6f7' \
+          'cursor-text = #1e1e2e' \
+          'selection-background = #45475a' \
+          'selection-foreground = #cdd6f4' \
+          'search-background = #f9e2af' \
+          'search-foreground = #1e1e2e' \
+          'search-selected-background = #cba6f7' \
+          'search-selected-foreground = #1e1e2e' \
+          'split-divider-color = #45475a' \
+          'unfocused-split-fill = #313244' \
+          'palette = 0=#45475a' \
+          'palette = 1=#f38ba8' \
+          'palette = 2=#a6e3a1' \
+          'palette = 3=#f9e2af' \
+          'palette = 4=#89b4fa' \
+          'palette = 5=#cba6f7' \
+          'palette = 6=#94e2d5' \
+          'palette = 7=#bac2de' \
+          'palette = 8=#585b70' \
+          'palette = 9=#f38ba8' \
+          'palette = 10=#a6e3a1' \
+          'palette = 11=#f9e2af' \
+          'palette = 12=#89b4fa' \
+          'palette = 13=#cba6f7' \
+          'palette = 14=#94e2d5' \
+          'palette = 15=#cdd6f4' \
+          > "$ghostty_file"
       fi
+
+      if [ ! -s "$ohmyposh_file" ]; then
+        printf '%s\n' \
+          '{' \
+          '  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",' \
+          '  "extends": "${config.xdg.configHome}/oh-my-posh/ohmyposh-default.json",' \
+          '  "final_space": true' \
+          '}' \
+          > "$ohmyposh_file"
+      fi
+
+      if [ ! -s "$tmux_file" ]; then
+        printf '%s\n' \
+          '# fallback tmux matugen seed file' \
+          "set -g @matugen_bg '#1e1e2e'" \
+          "set -g @matugen_surface '#313244'" \
+          "set -g @matugen_surface_alt '#45475a'" \
+          "set -g @matugen_fg '#cdd6f4'" \
+          "set -g @matugen_accent '#cba6f7'" \
+          "set -g @matugen_accent_alt '#94e2d5'" \
+          "set -g @matugen_border '#585b70'" \
+          "set -g @matugen_urgent '#f38ba8'" \
+          "set -g status-style 'bg=default,fg=#{@matugen_fg}'" \
+          "set -g message-style 'bg=default,fg=#{@matugen_accent}'" \
+          "set -g message-command-style 'bg=default,fg=#{@matugen_accent_alt}'" \
+          "set -g pane-border-style 'fg=#{@matugen_border}'" \
+          "set -g pane-active-border-style 'fg=#{@matugen_accent}'" \
+          "set -g status-left-style 'bg=default,fg=#{@matugen_accent}'" \
+          "set -g status-right-style 'bg=default,fg=#{@matugen_fg}'" \
+          "set -g window-status-style 'bg=default,fg=#{@matugen_fg}'" \
+          "set -g window-status-current-style 'bg=default,fg=#{@matugen_accent_alt},bold'" \
+          "set -g window-status-activity-style 'bg=default,fg=#{@matugen_accent}'" \
+          "set -g window-status-bell-style 'bg=default,fg=#{@matugen_urgent},bold'" \
+          > "$tmux_file"
+      fi
+
+      if [ ! -s "$nixvim_file" ];
+    then
+    printf '%s\n' \
+    '-- fallback Neovim matugen seed file' \
+    'return {' \
+    '  bg = "#1e1e2e",' \
+    '  surface = "#313244",' \
+    '  surface_alt = "#45475a",' \
+    '  fg = "#cdd6f4",' \
+    '  muted = "#6c7086",' \
+    '  border = "#585b70",' \
+    '  accent = "#cba6f7",' \
+    '  accent_alt = "#94e2d5",' \
+    '  accent_soft = "#45475a",' \
+    '  on_accent = "#1e1e2e",' \
+    '  ok = "#a6e3a1",' \
+    '  warn = "#f9e2af",' \
+    '  err = "#f38ba8",' \
+    '}' \
+    > "$nixvim_file"
     fi
 
-    if [ "$seeded" -ne 1 ]; then
-      printf '%s\n' '# fallback matugen seed file' > "$hypr_file"
+    if [ ! -s "$waybar_file" ];
+    then
+    printf '%s\n' \
+    '/* fallback Waybar matugen seed file */' \
+    '@define-color bg #1e1e2e;' \
+    '@define-color surface #313244;' \
+    '@define-color surface-alt #45475a;' \
+    '@define-color fg #cdd6f4;' \
+    '@define-color accent #cba6f7;' \
+    '@define-color accent-alt #94e2d5;' \
+    '@define-color accent-soft #45475a;' \
+    '@define-color on-accent #1e1e2e;' \
+    '@define-color muted #6c7086;' \
+    '@define-color border #585b70;' \
+    '@define-color warning #f9e2af;' \
+    '@define-color urgent #f38ba8;' \
+    '* { color: @fg; }' \
+    '#workspaces button.active { background-color: @accent; color: @on-accent; }' \
+    '#battery.warning,' \
+    '#temperature.critical,' \
+    '#network.disconnected { background-color: @warning; color: @bg; }' \
+    > "$waybar_file"
+    fi
+
+    if [ ! -s "$wlogout_file" ]; then
+    printf '%s\n' \
+    '/* fallback wlogout matugen seed file */' \
+    '@define-color bg #1e1e2e;' \
+    '@define-color surface #313244;' \
+    '@define-color surface-alt #45475a;' \
+    '@define-color fg #cdd6f4;' \
+    '@define-color accent #cba6f7;' \
+    '@define-color accent-alt #94e2d5;' \
+    '@define-color on-accent #1e1e2e;' \
+    '@define-color border #585b70;' \
+    '@define-color urgent #f38ba8;' \
+    > "$wlogout_file"
+    fi
+
+    if [ ! -s "$mako_file" ]; then
+    printf '%s\n' \
+    '# fallback mako matugen seed file' \
+    'background-color=#313244' \
+    'text-color=#cdd6f4' \
+    'border-color=#cba6f7' \
+    'progress-color=over #45475a' \
+    'default-timeout=5000' \
+    'group-by=summary' \
+    'max-visible=5' \
+    'border-size=2' \
+    'border-radius=8' \
+    'font=Sans 10' \
+    > "$mako_file"
+    fi
+
+    if [ ! -s "$wofi_file" ];
+    then
+    printf '%s\n' \
+    '/* fallback wofi matugen seed file */' \
+    'window { background-color: #313244; color: #cdd6f4; border: 2px solid #cba6f7; border-radius: 12px; }' \
+    '#input { background-color: #45475a; color: #cdd6f4; border: 2px solid #585b70; border-radius: 10px; margin: 10px; padding: 10px 12px; }' \
+    '#inner-box { margin: 8px; }' \
+    '#entry { border-radius: 10px; margin: 4px 8px; padding: 10px 12px; }' \
+    '#entry:nth-child(even) { background-color: #45475a; }' \
+    '#entry:selected { background-color: #cba6f7; color: #1e1e2e; outline: none; }' \
+    '#text:selected,' \
+    '#img:selected { color: #1e1e2e; }' \
+    > "$wofi_file"
     fi
   '';
 }

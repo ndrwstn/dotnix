@@ -1,9 +1,6 @@
 # users/austin/tmux.nix
-{ pkgs, config, lib, osConfig ? { }, ... }:
+{ pkgs, config, lib, ... }:
 let
-  windowManagers = osConfig._astn.machine.windowManagers or [ ];
-  hasHyprland = builtins.elem "hyprland" windowManagers;
-
   defaultTmuxpWindows = ''
     - window_name: opencode
       focus: true
@@ -152,39 +149,20 @@ in
       set -g set-titles on
       set -g set-titles-string "tmux / #{session_name} / #{window_name}"
 
-      # TODO(2026-05-23): This consumer-side matugen guard is a hack.
-      # Wallpaper-generated theming should be centralized/scoped to a single
-      # Hyprland/theming module instead of scattered across app configs.
-    '' + lib.optionalString hasHyprland ''
-      # Load wallpaper-driven colors if present
-      if-shell "test -f ${config.xdg.configHome}/tmux/tmux-colors.conf" \
-        "source-file ${config.xdg.configHome}/tmux/tmux-colors.conf"
-
-    '' + ''
       # --- SPLITS ---
       bind \\ split-window -h    # vertical split (pane on right)
       bind - split-window -v    # horizontal split (pane below)
 
       # --- STATUS BAR ---
       set -g status-position bottom
-    '' + lib.optionalString hasHyprland ''
-      set -g status-style "bg=default,fg=#{@matugen_fg}"
-    '' + lib.optionalString (!hasHyprland) ''
       set -g status-style "bg=default"
-    '' + ''
       set -g status-justify centre
       set -g status-left-length 32
       set -g status-right-length 80
       set -g status-left " #[bold]#S "
-    '' + lib.optionalString hasHyprland ''
-      set -g status-right " #[fg=#{@matugen_accent}]#(whoami)@#H#[default] "
-      set -g window-status-current-style "fg=#{@matugen_accent},bold"
-      set -g window-status-activity-style "fg=#{@matugen_accent}"
-    '' + lib.optionalString (!hasHyprland) ''
       set -g status-right " #(whoami)@#H "
       set -g window-status-current-style "bold"
       set -g window-status-activity-style "none"
-    '' + ''
       set -g window-status-style "fg=#45475a"
       set -g window-status-format " #I:#W "
       set -g window-status-current-format " #I:#W#{?window_zoomed_flag, 󰊓,} "
