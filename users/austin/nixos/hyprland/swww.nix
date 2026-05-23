@@ -47,7 +47,9 @@ let
       --transition-bezier 0.4,0.0,0.2,1
     
     # Generate colors and app configs with matugen templates
-    if ${pkgs.matugen}/bin/matugen image "$WALLPAPER" --config "${config.xdg.configHome}/matugen/config.toml"; then
+    if ${pkgs.matugen}/bin/matugen image "$WALLPAPER" \
+      --source-color-index 0 \
+      --config "${config.xdg.configHome}/matugen/config.toml"; then
       # Reload Hyprland only if the generated source file exists
       if [ -s "${config.xdg.cacheHome}/matugen/hyprland-colors.conf" ]; then
         ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
@@ -102,6 +104,7 @@ in
     };
 
     Timer = {
+      OnBootSec = "1m";
       OnUnitActiveSec = "30m";
       Unit = "wallpaper-rotate.service";
     };
