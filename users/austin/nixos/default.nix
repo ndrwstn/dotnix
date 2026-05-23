@@ -43,7 +43,7 @@ lib.mkMerge [
   (import ./presets { inherit config pkgs unstable lib osConfig desktopApps; })
 
   # NixOS-only shell theming
-  (import ./ohmyposh.nix { inherit config; })
+  (import ./ohmyposh.nix { inherit config lib osConfig; })
 
   # Hyprland configuration
   (lib.mkIf (hasWindowManager "hyprland")

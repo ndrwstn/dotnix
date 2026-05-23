@@ -24,9 +24,9 @@ in
       # can be enabled there too or set to a different value.
       background-opacity = lib.mkIf (!pkgs.stdenv.isDarwin) 0.80;
 
-      # TODO(2026-05-23): This is a hack. Ghostty theming should be
-      # handled properly so non-Hyprland machines get a managed fallback
-      # instead of simply skipping the matugen-generated config-file.
+      # TODO(2026-05-23): This consumer-side matugen guard is a hack.
+      # Wallpaper-generated theming should be centralized/scoped to a single
+      # Hyprland/theming module instead of scattered across app configs.
       config-file = lib.mkIf ((!pkgs.stdenv.isDarwin) && hasHyprland)
         "${config.xdg.configHome}/ghostty/colors.conf";
 

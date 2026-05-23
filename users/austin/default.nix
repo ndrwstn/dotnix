@@ -121,7 +121,7 @@ lib.mkMerge [
       };
 
       # nixvim
-      nixvim = import ./nixvim { inherit config pkgs lib texlivePackage unstable; };
+      nixvim = import ./nixvim { inherit config pkgs lib texlivePackage unstable osConfig; };
 
       # ripgrep
       ripgrep = {
@@ -370,7 +370,7 @@ lib.mkMerge [
   (import ./ghostty.nix { inherit config pkgs lib unstable osConfig; })
 
   # Import tmux configuration
-  (import ./tmux.nix { inherit config pkgs lib; })
+  (import ./tmux.nix { inherit config pkgs lib osConfig; })
 
   # Import sesh session manager
   (import ./sesh.nix { inherit config pkgs lib; })

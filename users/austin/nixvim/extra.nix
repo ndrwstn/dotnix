@@ -1,5 +1,10 @@
 # users/austin/nixvim/extra.nix
-{ pkgs, unstable, config }: {
+{ pkgs, unstable, config, osConfig ? { } }:
+let
+  windowManagers = osConfig._astn.machine.windowManagers or [ ];
+  hasHyprland = builtins.elem "hyprland" windowManagers;
+in
+{
   extraPlugins = with pkgs.vimPlugins; [
     codewindow-nvim
     nvim-notify # Keep for snacks.notifier integration
@@ -19,7 +24,10 @@
       end,
     })
 
-    do
+    -- TODO(2026-05-23): This consumer-side matugen guard is a hack.
+    -- Wallpaper-generated theming should be centralized/scoped to a single
+    -- Hyprland/theming module instead of scattered across app configs.
+    if ${if hasHyprland then "true" else "false"} then
       local ok, result = pcall(dofile, vim.fn.expand("${config.xdg.configHome}/nvim/lua/generated/matugen.lua"))
       if ok and type(result) == "table" then
         local colors = result
@@ -71,7 +79,6 @@
     end
   '';
 }
-
 
 
 
