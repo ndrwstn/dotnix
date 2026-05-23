@@ -474,12 +474,6 @@ in
         $DRY_RUN_CMD mv "$HOME/.ssh/authorized_keys.tmp" "$HOME/.ssh/authorized_keys"
       fi
       
-      if [ -f "$HOME/.ssh/config" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/config" "$HOME/.ssh/config.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/config.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config"
-      fi
-      
       # Public host data (644 permissions)
       if [ -f "$HOME/.ssh/known_hosts_nix" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/known_hosts_nix" "$HOME/.ssh/known_hosts_nix.tmp"
