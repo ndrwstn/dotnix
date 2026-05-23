@@ -13,7 +13,7 @@
   age.secrets = {
     # Shared syncthing configuration (all machines can decrypt)
     syncthing = {
-      file = ../../secrets/syncthing.age;
+      file = ../../secrets/syncthing/config-shared.age;
       mode = "0400";
       owner = "austin";
       group = if pkgs.stdenv.isDarwin then "staff" else "users";

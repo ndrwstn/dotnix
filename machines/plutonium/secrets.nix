@@ -14,7 +14,7 @@
 
     # Syncthing secrets for Plutonium (consolidated JSON)
     syncthing-plutonium = {
-      file = ../../secrets/syncthing-plutonium.age;
+      file = ../../secrets/syncthing/config-plutonium.age;
       mode = "0400";
       owner = "austin";
       group = "staff";

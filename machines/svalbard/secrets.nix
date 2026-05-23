@@ -1,8 +1,8 @@
-# machines/molybdenum/secrets.nix
+# machines/svalbard/secrets.nix
 { ... }:
 
 {
-  # Molybdenum-specific agenix secrets configuration
+  # Svalbard-specific agenix secrets configuration
   age.secrets = {
     # SSH setup key for remote access
     ssh-setup = {
@@ -12,13 +12,12 @@
       group = "users";
     };
 
-    # Syncthing secrets for Molybdenum (consolidated JSON)
-    syncthing-molybdenum = {
-      file = ../../secrets/syncthing/config-molybdenum.age;
+    # Syncthing secrets for Svalbard (consolidated JSON)
+    syncthing-svalbard = {
+      file = ../../secrets/syncthing/config-svalbard.age;
       mode = "0400";
       owner = "austin";
       group = "users";
     };
-
   };
 }

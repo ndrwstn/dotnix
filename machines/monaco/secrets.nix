@@ -14,7 +14,7 @@
 
     # Syncthing secrets for Monaco (consolidated JSON)
     syncthing-monaco = {
-      file = ../../secrets/syncthing-monaco.age;
+      file = ../../secrets/syncthing/config-monaco.age;
       mode = "0400";
       owner = "austin";
       group = "staff";

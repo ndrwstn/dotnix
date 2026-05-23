@@ -14,7 +14,7 @@
 
     # Syncthing secrets for Silver (consolidated JSON)
     syncthing-silver = {
-      file = ../../secrets/syncthing-silver.age;
+      file = ../../secrets/syncthing/config-silver.age;
       mode = "0400";
       owner = "austin";
       group = "users";

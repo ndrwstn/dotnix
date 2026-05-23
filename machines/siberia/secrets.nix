@@ -14,7 +14,7 @@
 
     # Syncthing secrets for Siberia (consolidated JSON)
     syncthing-siberia = {
-      file = ../../secrets/syncthing-siberia.age;
+      file = ../../secrets/syncthing/config-siberia.age;
       mode = "0400";
       owner = "austin";
       group = "users";

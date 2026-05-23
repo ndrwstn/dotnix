@@ -17,15 +17,5 @@
     secretsDir = "/run/agenix";
     secretsMountPoint = "/run/agenix.d";
 
-    # Secrets directory
-    secrets = {
-      # WiFi secrets (consolidated JSON)
-      wifi-home = {
-        file = ../../secrets/wifi-home.age;
-        mode = "0400";
-        owner = "austin";
-        group = "users";
-      };
-    };
   };
 }

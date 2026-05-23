@@ -1,39 +1,35 @@
 # secrets/secrets.nix - agenix secrets configuration
 let
   # User keys
-  austin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOT2lOzk90kux62qppI55MyN/mjQS8UPrz9H6tCdMJSR austin@impetuo.us";
+  austin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIq17FR5ZqbN7a1uVVwojvvES/f7mgagiixc6OcZicnG austin@impetuo.us";
 
   # Machine host keys (SSH ed25519 keys)
   monaco = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSystV+gQ3/tiYxrk/Cmvr0WQBrz6UjA2cVwL8vxtgX";
   silver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEasqUb7EN/yKS02tfVNvz8nYzgOhw0DDLz/rTR86Nw";
-  # Note: Plutonium and Siberia keys will be added when those machines are activated
-  # For now, using placeholder keys that will be updated when machines are deployed
-  plutonium = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAYrqn/+SZCfR4TCjIUWCmn1/Os4scpP1fI/pcRtSwnn";
-  molybdenum = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINmELnQH/n96+5+eK3JPsDHG4QCY0BhtBalTVg0MPYG4";
-  # siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPlaceholder-key-for-siberia-will-be-updated";
+  plutonium = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGE2j6qGZgIoU2KHQV/1kJSy4nqE2Z11firQ1QlfcWxH plutonium";
+  molybdenum = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF5YYde/IMNhabc3FDTMyxoVbGu8Kc/MdBz4DMWunEBx molybdenum";
+  siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI siberia";
+  svalbard = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsbGccaMJhs8CjjRaLR+fdDowttD22ecETFsgjhT+if svalbard";
 
   # Key groups for active machines
   allUsers = [ austin ];
-  # activeMachines = [ monaco silver plutonium siberia molybdenum ];
-  activeMachines = [ monaco silver plutonium molybdenum ];
+  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard ];
 
   # Machines with setup-key capability (can receive the universal setup private key)
-  # setupKeyMachines = [ monaco silver plutonium siberia molybdenum ];
-  setupKeyMachines = [ monaco silver plutonium molybdenum ];
+  setupKeyMachines = [ monaco silver plutonium siberia molybdenum svalbard ];
 in
 {
-  # Consolidated secrets with same access control as before
-  "wifi-home.age".publicKeys = allUsers ++ activeMachines;
-
   # Individual SSH key files
   "ssh-setup.age".publicKeys = allUsers ++ setupKeyMachines;
 
   # Syncthing secrets (consolidated)
-  "syncthing.age".publicKeys = allUsers ++ activeMachines; # Shared config for all machines
-  "syncthing-monaco.age".publicKeys = allUsers ++ [ monaco ];
-  "syncthing-silver.age".publicKeys = allUsers ++ [ silver ];
-  "syncthing-plutonium.age".publicKeys = allUsers ++ [ plutonium ];
-  "syncthing-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
+  "syncthing/config-shared.age".publicKeys = allUsers ++ activeMachines;
+  "syncthing/config-monaco.age".publicKeys = allUsers ++ [ monaco ];
+  "syncthing/config-silver.age".publicKeys = allUsers ++ [ silver ];
+  "syncthing/config-plutonium.age".publicKeys = allUsers ++ [ plutonium ];
+  "syncthing/config-siberia.age".publicKeys = allUsers ++ [ siberia ];
+  "syncthing/config-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
+  "syncthing/config-svalbard.age".publicKeys = allUsers ++ [ svalbard ];
 
   # Atuin shared encryption key (all machines)
   "atuin.age".publicKeys = allUsers ++ activeMachines;
@@ -46,7 +42,9 @@ in
   "ssh/machine-monaco.age".publicKeys = allUsers ++ [ monaco ];
   "ssh/machine-silver.age".publicKeys = allUsers ++ [ silver ];
   "ssh/machine-plutonium.age".publicKeys = allUsers ++ [ plutonium ];
+  "ssh/machine-siberia.age".publicKeys = allUsers ++ [ siberia ];
   "ssh/machine-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
+  "ssh/machine-svalbard.age".publicKeys = allUsers ++ [ svalbard ];
 
   # Service SSH keys (new pattern)
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
