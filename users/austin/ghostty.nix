@@ -1,5 +1,9 @@
 # users/austin/ghostty.nix
-{ config, pkgs, lib, unstable, ... }:
+{ config, pkgs, lib, unstable, osConfig ? { }, ... }:
+let
+  windowManagers = osConfig._astn.machine.windowManagers or [ ];
+  hasHyprland = builtins.elem "hyprland" windowManagers;
+in
 {
   programs.ghostty = {
     enable = true;
@@ -20,9 +24,10 @@
       # can be enabled there too or set to a different value.
       background-opacity = lib.mkIf (!pkgs.stdenv.isDarwin) 0.80;
 
-      # Include matugen-generated colors (NixOS only)
-      # Matugen only runs on NixOS with hyprland; macOS theming not yet implemented
-      config-file = lib.mkIf (!pkgs.stdenv.isDarwin)
+      # TODO(2026-05-23): This is a hack. Ghostty theming should be
+      # handled properly so non-Hyprland machines get a managed fallback
+      # instead of simply skipping the matugen-generated config-file.
+      config-file = lib.mkIf ((!pkgs.stdenv.isDarwin) && hasHyprland)
         "${config.xdg.configHome}/ghostty/colors.conf";
 
       # Keybinding configurations

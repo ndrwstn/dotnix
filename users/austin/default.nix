@@ -367,7 +367,7 @@ lib.mkMerge [
 
 
   # Import Ghostty terminal configuration
-  (import ./ghostty.nix { inherit config pkgs lib unstable; })
+  (import ./ghostty.nix { inherit config pkgs lib unstable osConfig; })
 
   # Import tmux configuration
   (import ./tmux.nix { inherit config pkgs lib; })
