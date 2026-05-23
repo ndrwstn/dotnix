@@ -2,7 +2,7 @@
 
 {
   systemd.services.astn-wifi = {
-    description = "Provision configured Wi-Fi NetworkManager profile";
+    description = "Provision configured Wi-Fi NetworkManager profiles";
     after = [ "NetworkManager.service" "agenix.service" ];
     requires = [ "NetworkManager.service" ];
     wantedBy = [ "multi-user.target" ];
@@ -20,55 +20,66 @@
 
     script = ''
       secretFile="/run/agenix/general"
-      connectionUuid="0fbc99c6-070c-4f6a-9a2d-bdf9e59d7eaa"
+      legacyConnectionId="astn-home-wifi"
+      legacyConnectionUuid="0fbc99c6-070c-4f6a-9a2d-bdf9e59d7eaa"
 
       if [ ! -f "$secretFile" ]; then
         echo "Shared secret $secretFile not found; skipping Wi-Fi setup."
         exit 0
       fi
 
-      connectionId="$(jq -r '.wifi.home.id // empty' "$secretFile")"
-      ssid="$(jq -r '.wifi.home.ssid // empty' "$secretFile")"
-      psk="$(jq -r '.wifi.home.psk // empty' "$secretFile")"
-
-      if [ -z "$connectionId" ] || [ -z "$ssid" ] || [ -z "$psk" ]; then
-        echo "Wi-Fi credentials missing from $secretFile; skipping Wi-Fi setup."
+      networkCount="$(jq -r '.wifi.networks // [] | length' "$secretFile")"
+      if [ "$networkCount" -eq 0 ]; then
+        echo "No Wi-Fi networks configured in $secretFile; skipping Wi-Fi setup."
         exit 0
       fi
 
-      profileFile="$(mktemp /run/astn-wifi.XXXXXX)"
-      trap 'rm -f "$profileFile"' EXIT
-      chmod 0600 "$profileFile"
+      is_desired_connection_id() {
+        jq -e --arg id "$1" \
+          '.wifi.networks // [] | any(.[]; .id == $id)' \
+          "$secretFile" >/dev/null
+      }
 
-      {
-        printf '[connection]\n'
-        printf 'id=%s\n' "$connectionId"
-        printf 'uuid=%s\n' "$connectionUuid"
-        printf 'type=wifi\n'
-        printf 'autoconnect=true\n'
-        printf 'permissions=\n\n'
+      if nmcli connection show "$legacyConnectionId" >/dev/null 2>&1; then
+        echo "Removing legacy Wi-Fi connection $legacyConnectionId."
+        nmcli connection delete "$legacyConnectionId"
+      fi
 
-        printf '[wifi]\n'
-        printf 'mode=infrastructure\n'
-        printf 'ssid=%s\n\n' "$ssid"
+      legacyUuidConnectionId="$(nmcli -g connection.id connection show "$legacyConnectionUuid" 2>/dev/null || true)"
+      if [ -n "$legacyUuidConnectionId" ] && ! is_desired_connection_id "$legacyUuidConnectionId"; then
+        echo "Removing legacy Wi-Fi connection UUID $legacyConnectionUuid."
+        nmcli connection delete "$legacyConnectionUuid"
+      fi
 
-        printf '[wifi-security]\n'
-        printf 'auth-alg=open\n'
-        printf 'key-mgmt=wpa-psk\n'
-        printf 'psk=%s\n\n' "$psk"
+      jq -c '.wifi.networks // [] | .[]' "$secretFile" | while IFS= read -r network; do
+        connectionId="$(printf '%s' "$network" | jq -r '.id // empty')"
+        ssid="$(printf '%s' "$network" | jq -r '.ssid // empty')"
+        psk="$(printf '%s' "$network" | jq -r '.psk // empty')"
 
-        printf '[ipv4]\n'
-        printf 'method=auto\n'
-        printf 'dns-search=\n\n'
+        if [ -z "$connectionId" ] || [ -z "$ssid" ] || [ -z "$psk" ]; then
+          echo "Skipping Wi-Fi network with missing id, ssid, or psk."
+          continue
+        fi
 
-        printf '[ipv6]\n'
-        printf 'addr-gen-mode=stable-privacy\n'
-        printf 'method=auto\n'
-        printf 'dns-search=\n'
-      } > "$profileFile"
+        if ! nmcli connection show "$connectionId" >/dev/null 2>&1; then
+          nmcli connection add \
+            type wifi \
+            con-name "$connectionId" \
+            ifname "*" \
+            ssid "$ssid"
+        fi
 
-      nmcli connection load "$profileFile"
-      nmcli connection reload
+        nmcli connection modify "$connectionId" \
+          connection.autoconnect yes \
+          802-11-wireless.mode infrastructure \
+          802-11-wireless.ssid "$ssid" \
+          802-11-wireless-security.auth-alg open \
+          802-11-wireless-security.key-mgmt wpa-psk \
+          802-11-wireless-security.psk "$psk" \
+          ipv4.method auto \
+          ipv6.addr-gen-mode stable-privacy \
+          ipv6.method auto
+      done
     '';
   };
 }

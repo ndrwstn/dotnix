@@ -18,11 +18,13 @@ Schema (example):
     }
   },
   "wifi": {
-    "home": {
-      "id": "example-connection-name",
-      "ssid": "Example Wi-Fi",
-      "psk": "example-passphrase"
-    }
+    "networks": [
+      {
+        "id": "example-connection-name",
+        "ssid": "Example Wi-Fi",
+        "psk": "example-passphrase"
+      }
+    ]
   }
 }
 ```
