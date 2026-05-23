@@ -33,6 +33,23 @@
             Hosts can set this to a subset or to an empty list for headless use.
           '';
         };
+
+        options.presets = {
+          gui.enable = lib.mkOption {
+            type = lib.types.bool;
+            default = config._astn.machine.windowManagers != [ ];
+            defaultText = lib.literalExpression ''config._astn.machine.windowManagers != [ ]'';
+            description = ''
+              Enable baseline GUI applications for graphical NixOS machines.
+            '';
+          };
+
+          graphics.enable = lib.mkEnableOption "graphics application preset";
+          maker.enable = lib.mkEnableOption "CAD/maker application preset";
+          recording.enable = lib.mkEnableOption "recording application preset";
+          office.enable = lib.mkEnableOption "office application preset";
+          radio.enable = lib.mkEnableOption "radio/SDR application and hardware preset";
+        };
       };
       default = { };
       description = "Custom namespace for machine-specific metadata";

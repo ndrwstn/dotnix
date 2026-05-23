@@ -9,6 +9,7 @@
     ./agenix.nix
     ./1password.nix
     ./desktop
+    ./presets
   ];
 
   nixpkgs.overlays = import ../../overlays;
@@ -207,7 +208,6 @@
       enable = true;
       enableGraphical = true;
     };
-    rtl-sdr.enable = true;
   };
 
   #

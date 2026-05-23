@@ -1,17 +1,34 @@
 # users/austin/nixos/hyprland/default.nix
 # Main Hyprland configuration
-{ pkgs, unstable, lib, config, ... }:
+{ pkgs, unstable, lib, config, desktopApps, ... }:
 
 lib.mkMerge [
   (import ./autostart.nix { inherit pkgs unstable lib config; })
   (import ./gestures.nix { inherit pkgs unstable lib config; })
-  (import ./keymaps.nix { inherit pkgs unstable lib config; })
+  (import ./keymaps.nix { inherit pkgs unstable lib config desktopApps; })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
   (import ./wlogout.nix { inherit pkgs unstable lib config; })
   (import ./swww.nix { inherit pkgs unstable lib config; })
   (import ./matugen.nix { inherit pkgs unstable lib config; })
   (import ./windows.nix { inherit pkgs unstable lib config; })
   {
+    home.packages = with pkgs; [
+      brightnessctl
+      cliphist
+      grim
+      mako
+      matugen
+      networkmanagerapplet
+      pavucontrol
+      polkit_gnome
+      slurp
+      swww
+      waybar
+      wl-clipboard
+      wlogout
+      wofi
+    ];
+
     wayland.windowManager.hyprland = {
       enable = true;
       package = null; # Use system-installed Hyprland to avoid conflicts

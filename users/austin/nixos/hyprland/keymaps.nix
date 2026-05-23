@@ -1,25 +1,24 @@
 # users/austin/nixos/hyprland/keymaps.nix
 # Hyprland keybindings configuration
-{ pkgs, unstable, lib, ... }:
+{ pkgs, desktopApps, ... }:
 
 let
   mod = "SUPER";
-  onePasswordGui = lib.getExe pkgs._1password-gui;
 in
 {
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Terminal
-      "${mod},Return,exec,${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\""
+      "${mod},Return,exec,${desktopApps.terminal.command}"
 
       # Application launcher
       "${mod},Space,exec,vicinae toggle"
-      "${mod},B,exec,${pkgs.ungoogled-chromium}/bin/chromium"
+      "${mod},B,exec,${desktopApps.browser.command}"
       "${mod},C,exec,vicinae clipboard"
-      "${mod},P,exec,${onePasswordGui}"
-      "${mod},E,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
-      "${mod},N,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
-      "${mod},M,exec,${pkgs.pavucontrol}/bin/pavucontrol"
+      "${mod},P,exec,${desktopApps.passwordManager.command}"
+      "${mod},E,exec,${desktopApps.fileManager.command}"
+      "${mod},N,exec,${desktopApps.networkEditor.command}"
+      "${mod},M,exec,${desktopApps.audioControl.command}"
 
       # Window management
       "${mod},Q,killactive,"
@@ -89,9 +88,9 @@ in
       ",XF86AudioRewind,exec,${pkgs.playerctl}/bin/playerctl position 5-"
 
       # Common laptop helper keys
-      ",XF86Explorer,exec,${pkgs.xdg-utils}/bin/xdg-open $HOME"
+      ",XF86Explorer,exec,${desktopApps.fileManager.command}"
       ",XF86Launch1,exec,vicinae toggle"
-      ",XF86Launch2,exec,${pkgs.networkmanagerapplet}/bin/nm-connection-editor"
+      ",XF86Launch2,exec,${desktopApps.networkEditor.command}"
     ];
 
     binde = [

@@ -2,14 +2,13 @@
 # Lightweight i3 configuration that mirrors the core Hyprland workflow.
 { config
 , pkgs
-, unstable
 , lib
+, desktopApps
 , ...
 }:
 
 let
   mod = "Mod4";
-  onePasswordGui = lib.getExe pkgs._1password-gui;
   screenshotDir = "${config.home.homeDirectory}/Pictures";
 in
 {
@@ -20,7 +19,7 @@ in
       enable = true;
       config = {
         modifier = mod;
-        terminal = "${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\"";
+        terminal = desktopApps.terminal.command;
         menu = "vicinae toggle";
 
         fonts = {
@@ -64,14 +63,14 @@ in
         ];
 
         keybindings = {
-          "${mod}+Return" = "exec ${unstable.ghostty}/bin/ghostty --working-directory=\"$HOME\"";
+          "${mod}+Return" = "exec ${desktopApps.terminal.command}";
           "${mod}+space" = "exec vicinae toggle";
-          "${mod}+b" = "exec ${pkgs.ungoogled-chromium}/bin/chromium";
+          "${mod}+b" = "exec ${desktopApps.browser.command}";
           "${mod}+c" = "exec vicinae clipboard";
-          "${mod}+p" = "exec ${onePasswordGui}";
-          "${mod}+e" = "exec ${pkgs.xdg-utils}/bin/xdg-open $HOME";
-          "${mod}+n" = "exec ${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
-          "${mod}+m" = "exec ${pkgs.pavucontrol}/bin/pavucontrol";
+          "${mod}+p" = "exec ${desktopApps.passwordManager.command}";
+          "${mod}+e" = "exec ${desktopApps.fileManager.command}";
+          "${mod}+n" = "exec ${desktopApps.networkEditor.command}";
+          "${mod}+m" = "exec ${desktopApps.audioControl.command}";
 
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
@@ -131,9 +130,9 @@ in
           "XF86MonBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d acpi_video0 set 5%-";
           "XF86KbdBrightnessUp" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%+";
           "XF86KbdBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%-";
-          "XF86Explorer" = "exec ${pkgs.xdg-utils}/bin/xdg-open $HOME";
+          "XF86Explorer" = "exec ${desktopApps.fileManager.command}";
           "XF86Launch1" = "exec vicinae toggle";
-          "XF86Launch2" = "exec ${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
+          "XF86Launch2" = "exec ${desktopApps.networkEditor.command}";
         };
 
         modes.resize = {
@@ -166,10 +165,15 @@ in
   services.dunst.enable = true;
 
   home.packages = with pkgs; [
+    brightnessctl
     dmenu
+    dunst
     feh
     i3status
     maim
+    networkmanagerapplet
+    pavucontrol
+    polkit_gnome
     slop
     xclip
     xorg.xev
