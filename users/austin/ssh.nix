@@ -458,8 +458,10 @@ in
     fi
   '';
 
-  # Fix SSH file permissions - home-manager files are immutable Nix store symlinks
-  # SSH requires 600 for private files and 644 for public files
+  # Fix SSH file permissions - home-manager files are immutable Nix store symlinks.
+  # SSH checks IdentityFile paths with private-key permissions even when the file
+  # contains public-key text for 1Password agent matching, so those fingerprint
+  # placeholder files must be 600. Non-IdentityFile public data can remain 644.
   home.activation.sshFilePermissions =
     let
       currentFingerprintFile = formatFingerprintFilename (getCurrentMachineFingerprint hostName);
@@ -478,35 +480,36 @@ in
         $DRY_RUN_CMD mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config"
       fi
       
-      # Public files (644 permissions)
+      # Public host data (644 permissions)
       if [ -f "$HOME/.ssh/known_hosts_nix" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/known_hosts_nix" "$HOME/.ssh/known_hosts_nix.tmp"
         $DRY_RUN_CMD chmod 644 "$HOME/.ssh/known_hosts_nix.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/known_hosts_nix.tmp" "$HOME/.ssh/known_hosts_nix"
       fi
       
+      # 1Password IdentityFile placeholders (600 permissions)
       if [ -f "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
-        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub"
       fi
       
       if [ -f "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
-        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub"
       fi
       
       if [ -f "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
-        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub"
       fi
       
       # Conditional fingerprint file (current machine's public key)
       if [ -f "$HOME/.ssh/${currentFingerprintFile}" ]; then
         $DRY_RUN_CMD cp -L "$HOME/.ssh/${currentFingerprintFile}" "$HOME/.ssh/${currentFingerprintFile}.tmp"
-        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/${currentFingerprintFile}.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/${currentFingerprintFile}.tmp"
         $DRY_RUN_CMD mv "$HOME/.ssh/${currentFingerprintFile}.tmp" "$HOME/.ssh/${currentFingerprintFile}"
       fi
     '';
