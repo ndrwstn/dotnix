@@ -8,7 +8,7 @@
 
 let
   terminalPackage = unstable.ghostty;
-  browserPackage = pkgs.librewolf;
+  browserPackage = unstable.librewolf;
   passwordManagerPackage = pkgs._1password-gui;
   fileManagerPackage = pkgs.xdg-utils;
   networkEditorPackage = pkgs.networkmanagerapplet;
