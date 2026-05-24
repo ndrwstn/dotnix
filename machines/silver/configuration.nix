@@ -39,10 +39,13 @@
   # Define hostname
   networking.hostName = "Silver";
 
-  # Laptop lid behavior: suspend by default, ignore when docked
+  # Laptop lid behavior: suspend-then-hibernate, ignore when docked
+  # This saves battery by hibernating after 30 minutes if left closed.
+  # On external power: same behavior (in case it's unplugged while closed).
+  # Docked: lid close does nothing (for external monitor use).
   services.logind.settings.Login = {
-    HandleLidSwitch = "suspend";
-    HandleLidSwitchExternalPower = "suspend";
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "suspend-then-hibernate";
     HandleLidSwitchDocked = "ignore";
     HandlePowerKey = "suspend";
   };
@@ -85,10 +88,40 @@
   # this value at the release version of the first install of this system.
   system.stateVersion = "24.05";
 
-  # Use s2idle instead of S3 deep sleep for MacBookPro11,1
-  # This fixes the 36-38 second immediate wake bug on this hardware
-  # s2idle keeps the CPU in a low-power state instead of powering down RAM
+  # ACPI wake source fix for MacBookPro11,1
+  # Disables XHC1 (USB 3.0) and LID0 (lid sensor) wake triggers to prevent
+  # the spurious 36-38 second immediate wake bug, allowing S3 deep sleep.
+  # Without LID0 as a wake source, the lid alone won't wake the machine;
+  # open the lid first, then press the power button to wake.
+  systemd.services.fix-suspend-wake = {
+    description = "Disable spurious ACPI wake sources for MacBookPro11,1";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-modules-load.service" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      echo "XHC1" > /proc/acpi/wakeup
+      echo "LID0" > /proc/acpi/wakeup
+    '';
+  };
+
+  # Kernel parameters for Mac hardware firmware compatibility
+  boot.kernelParams = [ "acpi_osi=Darwin" ];
+
+  # Hibernate configuration
+  security.protectKernelImage = false;
+  boot.resumeDevice = "/dev/disk/by-uuid/32d31193-f0e9-4a15-8ae4-fa7b35f543d5";
+
+  # Suspend then hibernate after 30 minutes
   systemd.sleep.extraConfig = ''
-    SuspendState=freeze
+    HibernateDelaySec=1800
   '';
+
+  # Post-resume WiFi module reload
+  # If WiFi drops after suspend/resume (known issue with broadcom_sta/wl),
+  # uncomment the block below to force-reload the module on every resume.
+  # powerManagement.resumeCommands = ''
+  #   ${pkgs.kmod}/bin/modprobe -r wl || true
+  #   sleep 1
+  #   ${pkgs.kmod}/bin/modprobe wl || true
+  # '';
 }
