@@ -1,6 +1,7 @@
 # users/austin/nixos/vicinae.nix
 # Vicinae launcher configuration (Raycast-like for Linux)
 { config
+, pkgs
 , lib
 , osConfig ? { }
 , ...
@@ -12,6 +13,18 @@ in
 {
   services.vicinae = {
     enable = true;
+    # Vicinae shows "uwsm app --" as a default/placeholder launch prefix, but
+    # empty/unset still allows auto-detection of uwsm. Set a non-empty no-op
+    # prefix to force direct app launching.
+    #
+    # We are not enabling uwsm (Universal Wayland Session Manager) because:
+    # - Hyprland systems already use Home Manager's systemd integration
+    # - i3/X11 should not use a Wayland session manager
+    # - The added abstraction does not measurably improve performance here
+    # See discussion in PR/commit history for full rationale.
+    settings.providers.applications.preferences.launchPrefix =
+      "${pkgs.coreutils}/bin/env --";
+
     systemd = {
       enable = true;
       environment = {
