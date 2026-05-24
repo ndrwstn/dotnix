@@ -3,10 +3,11 @@
 ## Build/Validation Commands
 
 ```bash
-# Validate flake syntax and structure (SAFE - no system changes)
+# [DEFAULT] Validate flake syntax and structure (SAFE - no system changes)
 nix flake check
 
-# Build configuration without switching (DRY RUN - no system changes)
+# [ON DEMAND] Build without switching (SAFE - no system changes, dry run)
+# Only when explicitly requested or actively debugging a specific problem
 nixos-rebuild build --flake .#<hostname>    # Linux machines
 darwin-rebuild build --flake .#<hostname>   # macOS machines
 
@@ -17,10 +18,14 @@ darwin-rebuild build --flake .#<hostname>   # macOS machines
 ### Validation Expectations
 
 - **Documentation-only changes** (`AGENTS.md`, `README.md`, `DARWIN.md`, notes): review for correctness, examples, and internal consistency. Full Nix validation is usually not required.
-- **Nix/module/workflow/script changes**: run `nix flake check` before considering work complete.
-- **Machine-specific configuration changes**: when practical, also run the relevant dry-run build:
-  - `nixos-rebuild build --flake .#<hostname>`
-  - `darwin-rebuild build --flake .#<hostname>`
+- **Nix/module/workflow/script changes**: run `nix flake check` as the default validation before considering work complete.
+- **Machine-specific configuration changes**: `nix flake check` remains sufficient by default.
+- **Builds (dry-run) are on-demand only**: Do not initiate `nixos-rebuild build`, `darwin-rebuild build`, or `nix build` unless explicitly requested or actively debugging a specific build problem.
+- **System-aware validation**: Only validate the relevant system for the change:
+  - **Darwin changes** → validate on the darwin host (monaco)
+  - **NixOS changes** → validate on the relevant NixOS host (never on darwin)
+  - **Cross-cutting changes** (lib/, overlays/, flake.nix) → validate on whatever host makes sense (monaco is the default work host)
+  - **Never build NixOS configurations on darwin** (`nix build .#nixosConfigurations.*` and `nixos-rebuild build .#<nixos-host>`) unless explicitly told to.
 - **Never use `--switch` commands**. Agents may validate and build, but must not apply system changes.
 
 ## Code Architecture & Patterns
@@ -204,6 +209,6 @@ Rewrite them as:
 
 ### Important Constraints
 - **NEVER use `--switch` commands** - system modifications must be done manually by user
-- **Test builds first** with `nixos-rebuild build` or `darwin-rebuild build`
+- **Builds (dry-run) are on-demand only**: Do not initiate `nixos-rebuild build`, `darwin-rebuild build`, or `nix build` unless explicitly requested or actively debugging a specific build problem.
 - **Auto-discovery tests are optional** - the system is stable and rarely changes
 - **Always validate Nix/module/workflow/script changes** with `nix flake check` before considering work complete
