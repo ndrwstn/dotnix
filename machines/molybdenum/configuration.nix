@@ -25,6 +25,17 @@
   # Define hostname
   networking.hostName = "Molybdenum";
 
+  # Laptop lid and power button behavior
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "suspend-then-hibernate";
+    HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "suspend";
+  };
+
+  # Kernel parameters for nouveau resume stability (NVIDIA GT 330M)
+  boot.kernelParams = [ "init_on_alloc=0" ];
+
   # Use the systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -34,4 +45,13 @@
   # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   system.stateVersion = "25.05";
+
+  # Hibernate configuration
+  security.protectKernelImage = false;
+  boot.resumeDevice = "/dev/disk/by-uuid/8726af91-4af4-43fe-8a70-9af3dce337a4";
+
+  # Suspend then hibernate after 30 minutes
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=1800
+  '';
 }
