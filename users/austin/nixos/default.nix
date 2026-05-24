@@ -53,5 +53,5 @@ lib.mkMerge [
     (import ./i3 { inherit config pkgs unstable lib; }))
 
   # Vicinae launcher configuration
-  (import ./vicinae.nix { inherit config pkgs lib; })
+  (import ./vicinae.nix { inherit config pkgs lib osConfig; })
 ]

@@ -10,6 +10,23 @@
 let
   mod = "Mod4";
   screenshotDir = "${config.home.homeDirectory}/Pictures";
+  i3SessionEnvironmentCommand = ''
+    ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd \
+      DISPLAY \
+      XAUTHORITY \
+      XDG_CURRENT_DESKTOP \
+      DESKTOP_SESSION \
+      PATH \
+      XDG_DATA_DIRS || true
+    ${pkgs.systemd}/bin/systemctl --user import-environment \
+      DISPLAY \
+      XAUTHORITY \
+      XDG_CURRENT_DESKTOP \
+      DESKTOP_SESSION \
+      PATH \
+      XDG_DATA_DIRS || true
+    ${pkgs.systemd}/bin/systemctl --user start graphical-session.target || true
+  '';
   terminalPackage = pkgs.alacritty;
   terminalCommand = lib.getExe terminalPackage;
   browserPackage = unstable.librewolf;
@@ -24,6 +41,11 @@ let
   audioControlCommand = "${audioControlPackage}/bin/pavucontrol";
 in
 {
+  home.sessionVariables = {
+    XDG_CURRENT_DESKTOP = "i3";
+    DESKTOP_SESSION = "i3";
+  };
+
   xsession = {
     enable = true;
 
@@ -64,6 +86,10 @@ in
         ];
 
         startup = [
+          {
+            command = "${pkgs.runtimeShell} -lc ${lib.escapeShellArg i3SessionEnvironmentCommand}";
+            notification = false;
+          }
           {
             command = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
             notification = false;
