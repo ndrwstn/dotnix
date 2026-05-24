@@ -114,7 +114,7 @@ Use `lib.mkIf` for OS-specific configurations:
 }
 ```
 
-### Secrets Management
+## Secrets Management
 
 #### Current Approach
 - The repository uses **agenix** for secret management and recipient definitions
@@ -137,7 +137,7 @@ secrets/
 4. Re-encrypt when ready: `age -e -r age1... secret.json > secret.age`
 5. Never commit unencrypted JSON files
 
-### Git Commit Naming
+## Git Commit Naming
 
 #### Required Format
 ```text
@@ -190,7 +190,12 @@ Rewrite them as:
 - `add(monaco): add blueutil and switchaudio-osx packages`
 - `update(insecure/broadcom): update Silver package pin`
 
-### CI / Automation Commit & PR Naming
+#### Commit Workflow
+- **If you created the branch or have made previous commits in it**: commit directly — it's your working branch
+- **If unsure whose branch it is or where changes should go**: ask first
+- **Do not commit to `master` or `dev` unprompted** — only when explicitly told to
+
+## CI / Automation Commit & PR Naming
 - Automated commits and PR titles should follow the same naming convention whenever possible
 - For lockfile-only automation, prefer `update(lock): ...`
 - Use `ci(...)` only when the change itself is to CI/workflow/automation code
@@ -201,13 +206,13 @@ Rewrite them as:
   - `.github/workflows/update-silver-broadcom.yml`
   - `scripts/update-silver-broadcom-pin.py`
 
-### Error Handling & Validation
+## Error Handling & Validation
 - Use `lib.warn` for missing optional attributes
 - Provide sensible defaults with `defaultSystemType`
 - Validate file existence with `builtins.pathExists` before importing
 - Use conditional imports for optional configurations
 
-### Important Constraints
+## Important Constraints
 - **NEVER use `--switch` commands** - system modifications must be done manually by user
 - **Builds (dry-run) are on-demand only**: Do not initiate `nixos-rebuild build`, `darwin-rebuild build`, or `nix build` unless explicitly requested or actively debugging a specific build problem.
 - **Auto-discovery tests are optional** - the system is stable and rarely changes
