@@ -11,6 +11,14 @@
   _astn.machineSystem = "x86_64-linux";
   _astn.machine.windowManagers = [ "i3" ];
 
+  _astn.presets = {
+    graphics.enable = false;
+    maker.enable = false;
+    recording.enable = false;
+    office.enable = false;
+    radio.enable = false;
+  };
+
   # Increase download-buffer to 1GB
   nix.settings.download-buffer-size = 1000000000;
 

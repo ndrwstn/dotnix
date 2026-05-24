@@ -10,8 +10,6 @@
   _astn.machineSystem = "x86_64-linux";
   _astn.machine.windowManagers = [ "hyprland" ];
   _astn.presets = {
-    # Keep Siberia lean while testing Hyprland: only the baseline GUI preset.
-    gui.enable = true;
     graphics.enable = false;
     maker.enable = false;
     recording.enable = false;
