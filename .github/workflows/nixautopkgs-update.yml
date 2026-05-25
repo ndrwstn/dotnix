@@ -1,0 +1,72 @@
+name: nixautopkgs Update
+
+on:
+  schedule:
+    - cron: "0 4 * * 1,4" # Monday and Thursday at 4 AM UTC
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write # Needed for label operations
+
+jobs:
+  update-and-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: cachix/install-nix-action@v31
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: ndrwstn-dotnix
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+
+      - name: Configure git auth for push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+      - name: Update nixautopkgs input
+        run: nix flake lock --update-input nixautopkgs
+
+      - name: Detect lock changes
+        id: lock
+        run: |
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and cache nixautopkgs packages
+        if: steps.lock.outputs.changed == 'true'
+        env:
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+        run: |
+          cachix watch-exec ndrwstn-dotnix -- \
+            nix build \
+              nixautopkgs#packages.x86_64-linux.agent-browser \
+              nixautopkgs#packages.x86_64-linux.gcs \
+              nixautopkgs#packages.x86_64-linux.opencode \
+              nixautopkgs#packages.x86_64-linux.opencode-desktop \
+              nixautopkgs#packages.x86_64-linux.clamav
+
+      - name: Commit and merge
+        if: steps.lock.outputs.changed == 'true'
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          BRANCH="ci/nixautopkgs-update-$DATE"
+          git add flake.lock
+          git commit -m "update(nixautopkgs): refresh input"
+          git push origin HEAD:"$BRANCH" --force
+          PR_URL=$(gh pr create \
+            --base master \
+            --head "$BRANCH" \
+            --title "update(nixautopkgs): refresh input" \
+            --body "Pre-built and cached to ndrwstn-dotnix.")
+          gh pr merge --squash "$PR_URL"
