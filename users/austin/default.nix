@@ -232,6 +232,7 @@ lib.mkMerge [
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science la ]))
       bats
       btop
+      cachix
       chafa
       clippy
       # cloudflared
@@ -335,7 +336,6 @@ lib.mkMerge [
 
 
       ## overlays
-      claude-code
       autopkgs.agent-browser
       autopkgs.gcs
       # autopkgs.marker

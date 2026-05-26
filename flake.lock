@@ -228,26 +228,6 @@
         "type": "github"
       }
     },
-    "nix-claude-code": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1779569414,
-        "narHash": "sha256-6Tgl9dIDkHa7KX7MID0hkVEaryR8OMWrcV43bdWEOmw=",
-        "owner": "ryoppippi",
-        "repo": "nix-claude-code",
-        "rev": "6b5a0e9bee689f0f21ad9f19c19a359ebe0593e0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ryoppippi",
-        "repo": "nix-claude-code",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -480,7 +460,6 @@
         "darwin-login-items": "darwin-login-items",
         "home-manager": "home-manager_2",
         "mcp-servers-nix": "mcp-servers-nix",
-        "nix-claude-code": "nix-claude-code",
         "nix-darwin": "nix-darwin",
         "nixautopkgs": "nixautopkgs",
         "nixpkgs": "nixpkgs_2",
