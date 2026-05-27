@@ -39,6 +39,10 @@ Temporary Items
 result
 result-*
 
+# ---- Python ----
+__pycache__/
+*.pyc
+
 
 # ---- Other ----
 # Created to help AI with troublshooting

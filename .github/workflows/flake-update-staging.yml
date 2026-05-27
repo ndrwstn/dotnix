@@ -54,5 +54,5 @@ jobs:
             --base master \
             --head "$BRANCH" \
             --title "update(lock): refresh flake inputs" \
-            --body "Auto-merge when cache is warm (0 derivations to build)." \
+            --body "Auto-merge when Hydra Status Check confirms all nixpkgs revisions are built." \
             --label "staging-pending"

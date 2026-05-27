@@ -1,0 +1,107 @@
+name: Hydra Status Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches: [master]
+  schedule:
+    - cron: "0 6 * * *" # Daily at 6 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # ── Determine PR and head SHA ──────────────────────────────────────
+      - name: Determine PR to check
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || \
+             [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PRS=$(gh pr list --label "staging-pending" --state open \
+              --json number,headRefName,headRefOid \
+              --jq -r '.[] | "\(.number):\(.headRefName):\(.headRefOid)"')
+            if [ -z "$PRS" ]; then
+              echo "No staging PRs found — nothing to check"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            FIRST=$(echo "$PRS" | head -1)
+            echo "pr_number=$(echo $FIRST | cut -d: -f1)" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(echo $FIRST | cut -d: -f3)" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "head_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── Label check (PR-triggered only) ────────────────────────────────
+      - name: Check for staging-pending label
+        if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LABELS=$(gh pr view "${{ steps.target.outputs.pr_number }}" \
+            --json labels --jq '.labels[].name')
+          if echo "$LABELS" | grep -q "^staging-pending$"; then
+            echo "PR has staging-pending label — proceeding"
+          else
+            echo "PR does not have staging-pending label — skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip if no PR to check
+        if: steps.target.outputs.skip == 'true' || steps.label-check.outputs.skip == 'true'
+        run: exit 0
+
+      # ── Checkout PR head ───────────────────────────────────────────────
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.target.outputs.head_sha }}
+          fetch-depth: 0
+
+      # ── Run hydra status check ─────────────────────────────────────────
+      - name: Run hydra status check
+        id: hydra
+        run: |
+          python3 scripts/check-hydra.py > /tmp/hydra-result.json
+          cat /tmp/hydra-result.json
+          python3 -c "import json; d=json.load(open('/tmp/hydra-result.json')); print('warm=' + ('true' if d.get('warm') else 'false'))" >> "$GITHUB_OUTPUT"
+
+      # ── Create/update check run ────────────────────────────────────────
+      - name: Update check run status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/update-check-run.py \
+            "${{ steps.target.outputs.head_sha }}" \
+            "${{ steps.hydra.outputs.warm }}"
+
+      # ── Merge if warm ──────────────────────────────────────────────────
+      - name: Merge warm staging PR
+        if: steps.hydra.outputs.warm == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUM="${{ steps.target.outputs.pr_number }}"
+          echo "Merging warm PR #$PR_NUM"
+          gh pr merge --squash "$PR_NUM"
+
+          # Close remaining staging PRs as superseded
+          for TAG in $(gh pr list \
+            --label "staging-pending" --state open \
+            --json number --jq -r '.[] | .number'); do
+            if [ "$TAG" != "$PR_NUM" ]; then
+              gh pr edit "$TAG" \
+                --remove-label "staging-pending" \
+                --add-label "ndrwstn" 2>/dev/null || true
+              gh pr close "$TAG" \
+                --comment "Superseded by merged PR #${PR_NUM}" 2>/dev/null || true
+            fi
+          done
