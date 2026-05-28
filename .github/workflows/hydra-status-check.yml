@@ -47,16 +47,36 @@ jobs:
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
+            # Try label search first (fast path)
             PR_JSON=$(gh pr list --label "staging-pending" --state open \
               --json number,headRefOid)
             PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
             if [ "$PR_COUNT" = "0" ]; then
-              echo "No staging-pending PR found — skipping"
-              echo "SKIP=true" >> "$GITHUB_ENV"
-              exit 0
+              # Retry once after a brief delay to handle API indexing latency
+              echo "Retrying label search after 10s..."
+              sleep 10
+              PR_JSON=$(gh pr list --label "staging-pending" --state open \
+                --json number,headRefOid)
+              PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
             fi
-            echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
+            if [ "$PR_COUNT" = "0" ]; then
+              # Fallback: find most recent open staging PR by branch pattern
+              echo "Label search gave up — trying branch pattern fallback"
+              BRANCH_RESULTS=$(gh pr list --head "staging/flake-update-" --state open \
+                --json number,headRefOid,createdAt)
+              BRANCH_COUNT=$(echo "$BRANCH_RESULTS" | jq -r 'length')
+              if [ "$BRANCH_COUNT" = "0" ]; then
+                echo "No staging PR found via branch pattern either — skipping"
+                echo "SKIP=true" >> "$GITHUB_ENV"
+                exit 0
+              fi
+              LATEST=$(echo "$BRANCH_RESULTS" | jq -r 'sort_by(.createdAt) | reverse | .[0]')
+              echo "pr_number=$(echo "$LATEST" | jq -r '.number')" >> "$GITHUB_OUTPUT"
+              echo "head_sha=$(echo "$LATEST" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
+            else
+              echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
+              echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "head_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
