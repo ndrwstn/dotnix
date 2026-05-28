@@ -7,7 +7,7 @@ channels.nixos.org and the GitHub compare API, to determine whether
 the nixpkgs revisions pinned in flake.lock are fully built and cached.
 
 Output: JSON to stdout with per-input status and an overall "warm" verdict.
-Exit code: 0 if warm, 1 otherwise.
+Exit code: 0 on success (warm or cold), 1 on error.
 
 Usage:
     python3 scripts/check-hydra.py [/path/to/flake.lock]
@@ -285,15 +285,15 @@ def main():
         "warm": warm,
         "inputs": results,
         "summary": (
-            "All nixpkgs dependencies confirmed built by hydra"
+            "All primary nixpkgs inputs at Hydra/channel-ready revision"
             if warm
-            else "One or more nixpkgs revisions not yet confirmed built"
+            else "One or more nixpkgs inputs not yet at Hydra/channel-ready revision"
         ),
     }
 
     print(json.dumps(output, indent=2))
 
-    sys.exit(0 if warm else 1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

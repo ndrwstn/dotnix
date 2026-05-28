@@ -3,6 +3,7 @@
 update-check-run.py — Create or update a GitHub check run with hydra status.
 
 Called from hydra-status-check.yml workflow.
+Builds a proper JSON body and pipes it via gh api --input.
 
 Usage:
     python3 .github/scripts/update-check-run.py <head_sha> <warm>
@@ -12,23 +13,50 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 
 
-def gh_api(method: str, endpoint: str, fields: dict | None = None) -> dict | None:
-    """Call gh api and return parsed JSON."""
+def gh_api(method: str, endpoint: str, body: dict | None = None) -> dict | None:
+    """Call gh api with a JSON body via --input.
+
+    Raises SystemExit on HTTP or parse errors.
+    """
     cmd = ["gh", "api", endpoint, "--method", method]
-    if fields:
-        for key, value in fields.items():
-            if isinstance(value, dict | list):
-                cmd.extend(["--field", f"{key}={json.dumps(value)}"])
-            else:
-                cmd.extend(["--field", f"{key}={value}"])
+    input_path = None
+
+    if body:
+        fd, input_path = tempfile.mkstemp(suffix=".json", prefix="gh-payload-")
+        with os.fdopen(fd, "w") as f:
+            json.dump(body, f)
+        cmd.extend(["--input", input_path])
+
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        if result.returncode == 0 and result.stdout.strip():
+    except subprocess.TimeoutExpired:
+        print(f"Timeout calling {method} {endpoint}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        if input_path and os.path.exists(input_path):
+            os.unlink(input_path)
+
+    if result.returncode != 0:
+        print(
+            f"gh api {method} {endpoint} failed (exit {result.returncode}):\n"
+            f"  stderr: {result.stderr.strip()}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if result.stdout.strip():
+        try:
             return json.loads(result.stdout.strip())
-    except (subprocess.TimeoutExpired, json.JSONDecodeError):
-        pass
+        except json.JSONDecodeError as e:
+            print(
+                f"Failed to parse response from {method} {endpoint}: {e}\n"
+                f"  response: {result.stdout.strip()[:500]}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
     return None
 
 
@@ -44,12 +72,9 @@ def main():
     try:
         with open("/tmp/hydra-result.json") as f:
             result = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        result = {
-            "warm": False,
-            "summary": "Error reading hydra check results",
-            "inputs": [],
-        }
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error reading hydra results: {e}", file=sys.stderr)
+        sys.exit(1)
 
     owner = os.environ.get("GITHUB_REPOSITORY_OWNER", "")
     repo = (
@@ -57,11 +82,14 @@ def main():
         if "/" in os.environ.get("GITHUB_REPOSITORY", "")
         else ""
     )
+    if not owner or not repo:
+        print("Missing GITHUB_REPOSITORY_OWNER or GITHUB_REPOSITORY", file=sys.stderr)
+        sys.exit(1)
 
     summary = result.get("summary", "No summary available")
 
     # Build markdown details
-    lines = ["## Hydra Status Check\n", "### Per-Input Results\n"]
+    lines = ["## Hydra/Channel Readiness Check\n", "### Per-Input Results\n"]
     lines.append("| Input | Revision | Channel | Status |")
     lines.append("|-------|----------|---------|--------|")
     for inp in result.get("inputs", []):
@@ -73,9 +101,13 @@ def main():
     for inp in result.get("inputs", []):
         lines.append(f"**{inp['name']}**: {inp.get('detail', 'N/A')}\n")
     if result.get("warm"):
-        lines.append("✅ **Verdict: WARM — all dependencies built by hydra**\n")
+        lines.append(
+            "✅ **Verdict: WARM — all primary nixpkgs inputs at Hydra-ready revision**\n"
+        )
     else:
-        lines.append("⏳ **Verdict: COLD — one or more dependencies not yet built**\n")
+        lines.append(
+            "⏳ **Verdict: COLD — one or more nixpkgs inputs not yet at Hydra-ready revision**\n"
+        )
     text = "\n".join(lines)
 
     conclusion = "success" if warm else "neutral"
@@ -89,13 +121,12 @@ def main():
                 existing_id = run.get("id")
                 break
 
-    output_payload = json.dumps(
-        {
-            "title": summary,
-            "summary": summary,
-            "text": text,
-        }
-    )
+    # Build output sub-object
+    output_object = {
+        "title": summary[:72],  # GitHub caps title at ~72 chars
+        "summary": summary,
+        "text": text,
+    }
 
     if existing_id:
         print(f"Updating check run {existing_id}")
@@ -105,7 +136,7 @@ def main():
             {
                 "status": "completed",
                 "conclusion": conclusion,
-                "output": output_payload,
+                "output": output_object,
             },
         )
     else:
@@ -118,7 +149,7 @@ def main():
                 "head_sha": head_sha,
                 "status": "completed",
                 "conclusion": conclusion,
-                "output": output_payload,
+                "output": output_object,
             },
         )
 

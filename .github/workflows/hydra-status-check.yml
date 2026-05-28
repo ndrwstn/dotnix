@@ -30,7 +30,7 @@ jobs:
               --jq -r '.[] | "\(.number):\(.headRefName):\(.headRefOid)"')
             if [ -z "$PRS" ]; then
               echo "No staging PRs found — nothing to check"
-              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
             FIRST=$(echo "$PRS" | head -1)
@@ -43,6 +43,7 @@ jobs:
 
       # ── Label check (PR-triggered only) ────────────────────────────────
       - name: Check for staging-pending label
+        id: label_check
         if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -53,29 +54,32 @@ jobs:
             echo "PR has staging-pending label — proceeding"
           else
             echo "PR does not have staging-pending label — skipping"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "SKIP=true" >> "$GITHUB_ENV"
           fi
 
-      - name: Skip if no PR to check
-        if: steps.target.outputs.skip == 'true' || steps.label-check.outputs.skip == 'true'
-        run: exit 0
-
-      # ── Checkout PR head ───────────────────────────────────────────────
+      # ── Checkout base branch (trusted scripts) ────────────────────────
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.target.outputs.head_sha }}
-          fetch-depth: 0
+        if: env.SKIP != 'true'
 
-      # ── Run hydra status check ─────────────────────────────────────────
+      # ── Extract flake.lock from PR head (untrusted data only) ─────────
+      - name: Fetch PR flake.lock
+        if: env.SKIP != 'true'
+        run: |
+          git fetch origin refs/pull/${{ steps.target.outputs.pr_number }}/head
+          git show FETCH_HEAD:flake.lock > /tmp/pr-flake.lock
+
+      # ── Run hydra status check (trusted code, PR's data) ──────────────
       - name: Run hydra status check
+        if: env.SKIP != 'true'
         id: hydra
         run: |
-          python3 scripts/check-hydra.py > /tmp/hydra-result.json
+          python3 scripts/check-hydra.py /tmp/pr-flake.lock > /tmp/hydra-result.json
           cat /tmp/hydra-result.json
           python3 -c "import json; d=json.load(open('/tmp/hydra-result.json')); print('warm=' + ('true' if d.get('warm') else 'false'))" >> "$GITHUB_OUTPUT"
 
       # ── Create/update check run ────────────────────────────────────────
       - name: Update check run status
+        if: env.SKIP != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -85,7 +89,7 @@ jobs:
 
       # ── Merge if warm ──────────────────────────────────────────────────
       - name: Merge warm staging PR
-        if: steps.hydra.outputs.warm == 'true'
+        if: env.SKIP != 'true' && steps.hydra.outputs.warm == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
