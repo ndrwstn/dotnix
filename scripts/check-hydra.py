@@ -148,10 +148,10 @@ def check_ancestry(pinned_rev: str, channel_rev: str) -> str | None:
     """Phase 3: use GitHub compare API to check if pinned rev is an ancestor
     of the current channel revision.
 
-    For compare/{base}...{head}, when {head} (channel) is ahead of {base}
-    (pinned), the pinned rev is an ancestor — confirmed built.
+    For compare/{base}...{head}, when {base} (pinned) is behind {head}
+    (channel), the pinned rev is an ancestor — confirmed built.
 
-    Returns 'built' if ahead/identical, None otherwise.
+    Returns 'built' if behind/identical, None otherwise.
     """
     if not channel_rev:
         return None
@@ -165,7 +165,7 @@ def check_ancestry(pinned_rev: str, channel_rev: str) -> str | None:
         return None
 
     status = data.get("status", "")
-    if status in ("ahead", "identical"):
+    if status in ("behind", "identical"):
         return "built"
     return None
 
@@ -312,9 +312,10 @@ def main():
         info["channel_healthy"] = healthy if healthy is not None else False
 
         if info["status"] != "built":
+            info["status"] = "cold"
             info["detail"] = (
-                "Could not confirm — revision not found in "
-                "channel, hydra latest eval, or ancestry chain"
+                "Revision not at Hydra/channel-ready revision — "
+                "not found in channel, hydra latest eval, or ancestry chain"
             )
             all_built = False
         elif info.get("channel_healthy"):
