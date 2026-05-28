@@ -62,19 +62,13 @@ def gh_api(method: str, endpoint: str, body: dict | None = None) -> dict | None:
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: update-check-run.py <head_sha> <ready>", file=sys.stderr)
+        print(
+            "Usage: update-check-run.py <head_sha> <ready|in_progress>", file=sys.stderr
+        )
         sys.exit(1)
 
     head_sha = sys.argv[1]
-    ready = sys.argv[2].lower() == "true"
-
-    # Read hydra results
-    try:
-        with open("/tmp/hydra-result.json") as f:
-            result = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error reading hydra results: {e}", file=sys.stderr)
-        sys.exit(1)
+    mode = sys.argv[2]
 
     owner = os.environ.get("GITHUB_REPOSITORY_OWNER", "")
     repo = (
@@ -84,6 +78,42 @@ def main():
     )
     if not owner or not repo:
         print("Missing GITHUB_REPOSITORY_OWNER or GITHUB_REPOSITORY", file=sys.stderr)
+        sys.exit(1)
+
+    # ── Phase 1: Create in-progress check run ──────────────────────────────
+    if mode == "in_progress":
+        output_object = {
+            "title": "Checking Hydra readiness...",
+            "summary": "Running Hydra/channel readiness check for pinned nixpkgs revisions...",
+            "text": (
+                "## Hydra/Channel Readiness Check\n\n"
+                "⏳ Checking whether pinned nixpkgs revisions are "
+                "Hydra/channel-ready...\n\n"
+                "This check will update once the API queries complete."
+            ),
+        }
+        print(f"Creating in-progress check run for {head_sha[:12]}...")
+        gh_api(
+            "POST",
+            f"/repos/{owner}/{repo}/check-runs",
+            {
+                "name": "Hydra Status Check",
+                "head_sha": head_sha,
+                "status": "in_progress",
+                "output": output_object,
+            },
+        )
+        return
+
+    # ── Phase 2: Complete the check run with results ───────────────────────
+    ready = mode.lower() == "true"
+
+    # Read hydra results
+    try:
+        with open("/tmp/hydra-result.json") as f:
+            result = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error reading hydra results: {e}", file=sys.stderr)
         sys.exit(1)
 
     summary = result.get("summary", "No summary available")
@@ -112,7 +142,7 @@ def main():
 
     conclusion = "success" if ready else "neutral"
 
-    # Check if a check run already exists
+    # Find the in-progress check run to update
     existing = gh_api("GET", f"/repos/{owner}/{repo}/commits/{head_sha}/check-runs")
     existing_id = None
     if existing:

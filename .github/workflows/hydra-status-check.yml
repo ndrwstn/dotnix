@@ -172,6 +172,16 @@ jobs:
 
           echo "PR eligibility check passed"
 
+      # ── Create in-progress check run (visible feedback while API runs) ───
+      - name: Create in-progress check run
+        if: env.SKIP != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/update-check-run.py \
+            "${{ steps.target.outputs.head_sha }}" \
+            "in_progress"
+
       # ── Extract flake.lock from PR head (untrusted data only) ─────────
       - name: Fetch PR flake.lock
         if: env.SKIP != 'true' && steps.target.outputs.pr_number != ''
