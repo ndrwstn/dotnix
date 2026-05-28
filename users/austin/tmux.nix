@@ -89,6 +89,11 @@ let
       startDirectory = "${workspaceBase}/90__CONFIG/OPENCODE";
     };
 
+    "zmk.yaml" = {
+      sessionName = "ZMK";
+      startDirectory = "${workspaceBase}/90__CONFIG/ZMK";
+    };
+
     "dropzone-actions.yaml" = {
       sessionName = "DROPZONE-ACTIONS";
       startDirectory = "${workspaceBase}/03__PROGRAMMING/DROPZONE-ACTIONS";
