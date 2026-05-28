@@ -20,6 +20,9 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      # ── Checkout base branch first (needed for gh to know the repo) ─────
+      - uses: actions/checkout@v6
+
       # ── Determine PR and head SHA ──────────────────────────────────────
       - name: Determine PR to check
         id: target
@@ -146,13 +149,9 @@ jobs:
 
           echo "PR eligibility check passed"
 
-      # ── Checkout base branch (trusted scripts) ────────────────────────
-      - uses: actions/checkout@v6
-        if: env.SKIP != 'true'
-
       # ── Extract flake.lock from PR head (untrusted data only) ─────────
       - name: Fetch PR flake.lock
-        if: env.SKIP != 'true'
+        if: env.SKIP != 'true' && steps.target.outputs.pr_number != ''
         run: |
           git fetch origin refs/pull/${{ steps.target.outputs.pr_number }}/head
           git show FETCH_HEAD:flake.lock > /tmp/pr-flake.lock
