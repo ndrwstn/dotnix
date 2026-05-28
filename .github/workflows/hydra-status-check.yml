@@ -57,6 +57,39 @@ jobs:
             echo "SKIP=true" >> "$GITHUB_ENV"
           fi
 
+      # ── Validate PR eligibility (same-repo, bot-created, master-target) ──
+      - name: Validate PR eligibility
+        if: env.SKIP != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_INFO=$(gh pr view "${{ steps.target.outputs.pr_number }}" \
+            --json headRepositoryOwner,headRefName,baseRefName)
+
+          OWNER=$(echo "$PR_INFO" | jq -r '.headRepositoryOwner.login')
+          BRANCH=$(echo "$PR_INFO" | jq -r '.headRefName')
+          BASE=$(echo "$PR_INFO" | jq -r '.baseRefName')
+
+          if [ "$OWNER" != "${{ github.repository_owner }}" ]; then
+            echo "PR owner mismatch: $OWNER (expected ${{ github.repository_owner }})"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          if ! echo "$BRANCH" | grep -q "^staging/flake-update-"; then
+            echo "PR branch not a staging update: $BRANCH"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          if [ "$BASE" != "master" ]; then
+            echo "PR base is not master: $BASE"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          echo "PR eligibility check passed"
+
       # ── Checkout base branch (trusted scripts) ────────────────────────
       - uses: actions/checkout@v6
         if: env.SKIP != 'true'

@@ -148,7 +148,10 @@ def check_ancestry(pinned_rev: str, channel_rev: str) -> str | None:
     """Phase 3: use GitHub compare API to check if pinned rev is an ancestor
     of the current channel revision.
 
-    Returns 'built' if behind/identical, None otherwise.
+    For compare/{base}...{head}, when {head} (channel) is ahead of {base}
+    (pinned), the pinned rev is an ancestor — confirmed built.
+
+    Returns 'built' if ahead/identical, None otherwise.
     """
     if not channel_rev:
         return None
@@ -162,7 +165,7 @@ def check_ancestry(pinned_rev: str, channel_rev: str) -> str | None:
         return None
 
     status = data.get("status", "")
-    if status in ("behind", "identical"):
+    if status in ("ahead", "identical"):
         return "built"
     return None
 
@@ -205,6 +208,16 @@ def main():
 
     nodes = lock.get("nodes", {})
     inputs_to_check = [name for name in INPUT_MAP if name in nodes]
+
+    # Fail cold if no expected inputs are found in the lockfile
+    if not inputs_to_check:
+        output = {
+            "warm": False,
+            "inputs": [],
+            "summary": "No recognized nixpkgs inputs found in flake.lock",
+        }
+        print(json.dumps(output, indent=2))
+        sys.exit(0)
 
     results = []
     all_built = True
