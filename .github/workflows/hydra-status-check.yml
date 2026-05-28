@@ -114,12 +114,15 @@ jobs:
           BASE=$(echo "$PR_INFO" | jq -r '.baseRefName')
           FILES=$(echo "$PR_INFO" | jq -r '.files[].path')
 
-          # Author must be github-actions[bot]
-          if [ "$AUTHOR" != "github-actions[bot]" ]; then
-            echo "PR author not bot: $AUTHOR"
-            echo "SKIP=true" >> "$GITHUB_ENV"
-            exit 0
-          fi
+          # Author must be github-actions (bot or app)
+          case "$AUTHOR" in
+            "github-actions[bot]"|"app/github-actions") ;;
+            *)
+              echo "PR author not github-actions: $AUTHOR"
+              echo "SKIP=true" >> "$GITHUB_ENV"
+              exit 0
+              ;;
+          esac
 
           # Head repo must be the same repository
           if [ "$HEAD_REPO" != "${{ github.event.repository.name }}" ]; then
