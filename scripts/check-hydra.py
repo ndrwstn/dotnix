@@ -207,16 +207,39 @@ def main():
         lock = json.load(f)
 
     nodes = lock.get("nodes", {})
-    inputs_present = [name for name in INPUT_MAP if name in nodes]
-    inputs_missing = [name for name in INPUT_MAP if name not in nodes]
+    root_node = nodes.get("root", {})
+    root_inputs = root_node.get("inputs", {}) if isinstance(root_node, dict) else {}
+
+    # Resolve the actual node key for each input by following root inputs.
+    # flake.lock may have multiple nixpkgs* entries (e.g. nixpkgs_2) due to
+    # transitive dependencies; we must use the root's input reference, not a
+    # direct key lookup.
+    def resolve_node_key(name: str) -> str | None:
+        """Return the node key the root input points to, or None if unresolvable."""
+        key = root_inputs.get(name)
+        if key and key in nodes:
+            return key
+        # Fallback: direct key lookup (older lock format without dedup)
+        if name in nodes:
+            return name
+        return None
+
+    input_nodes = {}
+    for name in INPUT_MAP:
+        node_key = resolve_node_key(name)
+        if node_key:
+            input_nodes[name] = node_key
+
+    inputs_missing = [name for name in INPUT_MAP if name not in input_nodes]
 
     # Treat any missing required input as unready
     if inputs_missing:
         results = []
         all_built = False
         for name in INPUT_MAP:
-            if name in nodes:
-                node = nodes.get(name, {})
+            node_key = input_nodes.get(name)
+            if node_key:
+                node = nodes.get(node_key, {})
                 locked = node.get("locked", {}) if isinstance(node, dict) else {}
                 pinned_rev = locked.get("rev", "")
                 results.append(
@@ -253,8 +276,9 @@ def main():
     results = []
     all_built = True
 
-    for name in inputs_present:
-        node = nodes.get(name, {})
+    for name in INPUT_MAP:
+        node_key = input_nodes[name]
+        node = nodes.get(node_key, {})
         locked = node.get("locked", {}) if isinstance(node, dict) else {}
         pinned_rev = locked.get("rev", "")
 
