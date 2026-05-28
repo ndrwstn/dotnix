@@ -28,33 +28,32 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "schedule" ] || \
              [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            PRS=$(gh pr list --label "staging-pending" --state open \
-              --json number,headRefName,headRefOid \
-              --jq -r '.[] | "\(.number):\(.headRefName):\(.headRefOid)"')
-            if [ -z "$PRS" ]; then
+            PR_JSON=$(gh pr list --label "staging-pending" --state open \
+              --json number,headRefName,headRefOid)
+            PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
+            if [ "$PR_COUNT" = "0" ]; then
               echo "No staging PRs found — nothing to check"
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
-            FIRST=$(echo "$PRS" | head -1)
-            echo "pr_number=$(echo "$FIRST" | cut -d: -f1)" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(echo "$FIRST" | cut -d: -f3)" >> "$GITHUB_OUTPUT"
+            echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "workflow_run" ]; then
             if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
               echo "Flake Update Staging did not succeed — skipping"
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
-            PR_DATA=$(gh pr list --label "staging-pending" --state open \
-              --json number,headRefOid \
-              --jq -r '.[] | "\(.number):\(.headRefOid)"' | head -1)
-            if [ -z "$PR_DATA" ]; then
+            PR_JSON=$(gh pr list --label "staging-pending" --state open \
+              --json number,headRefOid)
+            PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
+            if [ "$PR_COUNT" = "0" ]; then
               echo "No staging-pending PR found — skipping"
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
-            echo "pr_number=$(echo "$PR_DATA" | cut -d: -f1)" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(echo "$PR_DATA" | cut -d: -f3)" >> "$GITHUB_OUTPUT"
+            echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
           else
             echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "head_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
