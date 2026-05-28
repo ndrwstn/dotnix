@@ -34,8 +34,8 @@ jobs:
               exit 0
             fi
             FIRST=$(echo "$PRS" | head -1)
-            echo "pr_number=$(echo $FIRST | cut -d: -f1)" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(echo $FIRST | cut -d: -f3)" >> "$GITHUB_OUTPUT"
+            echo "pr_number=$(echo "$FIRST" | cut -d: -f1)" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(echo "$FIRST" | cut -d: -f3)" >> "$GITHUB_OUTPUT"
           else
             echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "head_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
@@ -64,26 +64,64 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_INFO=$(gh pr view "${{ steps.target.outputs.pr_number }}" \
-            --json headRepositoryOwner,headRefName,baseRefName)
+            --json author,headRepository,headRepositoryOwner,headRefName,baseRefName,files)
 
+          AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login')
+          HEAD_REPO=$(echo "$PR_INFO" | jq -r '.headRepository.name')
           OWNER=$(echo "$PR_INFO" | jq -r '.headRepositoryOwner.login')
           BRANCH=$(echo "$PR_INFO" | jq -r '.headRefName')
           BASE=$(echo "$PR_INFO" | jq -r '.baseRefName')
+          FILES=$(echo "$PR_INFO" | jq -r '.files[].path')
 
-          if [ "$OWNER" != "${{ github.repository_owner }}" ]; then
-            echo "PR owner mismatch: $OWNER (expected ${{ github.repository_owner }})"
+          # Author must be github-actions[bot]
+          if [ "$AUTHOR" != "github-actions[bot]" ]; then
+            echo "PR author not bot: $AUTHOR"
             echo "SKIP=true" >> "$GITHUB_ENV"
             exit 0
           fi
 
+          # Head repo must be the same repository
+          if [ "$HEAD_REPO" != "${{ github.event.repository.name }}" ]; then
+            echo "PR head repo mismatch: $HEAD_REPO"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Owner must match
+          if [ "$OWNER" != "${{ github.repository_owner }}" ]; then
+            echo "PR owner mismatch: $OWNER"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Branch must follow staging convention
           if ! echo "$BRANCH" | grep -q "^staging/flake-update-"; then
             echo "PR branch not a staging update: $BRANCH"
             echo "SKIP=true" >> "$GITHUB_ENV"
             exit 0
           fi
 
+          # Base must be master
           if [ "$BASE" != "master" ]; then
             echo "PR base is not master: $BASE"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Changed files must be within the expected allowlist
+          ALLOWED=0
+          for f in $FILES; do
+            case "$f" in
+              flake.lock|machines/silver/configuration.nix) ;;
+              *)
+                echo "Unexpected changed file: $f"
+                echo "SKIP=true" >> "$GITHUB_ENV"
+                exit 0
+                ;;
+            esac
+          done
+          if [ -z "$FILES" ]; then
+            echo "PR has no changed files"
             echo "SKIP=true" >> "$GITHUB_ENV"
             exit 0
           fi

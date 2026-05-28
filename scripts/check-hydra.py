@@ -207,14 +207,45 @@ def main():
         lock = json.load(f)
 
     nodes = lock.get("nodes", {})
-    inputs_to_check = [name for name in INPUT_MAP if name in nodes]
+    inputs_present = [name for name in INPUT_MAP if name in nodes]
+    inputs_missing = [name for name in INPUT_MAP if name not in nodes]
 
-    # Fail cold if no expected inputs are found in the lockfile
-    if not inputs_to_check:
+    # Treat any missing required input as cold
+    if inputs_missing:
+        results = []
+        all_built = False
+        for name in INPUT_MAP:
+            if name in nodes:
+                node = nodes.get(name, {})
+                locked = node.get("locked", {}) if isinstance(node, dict) else {}
+                pinned_rev = locked.get("rev", "")
+                results.append(
+                    {
+                        "name": name,
+                        "rev": pinned_rev,
+                        "channel": INPUT_MAP[name]["channel"],
+                        "jobset": INPUT_MAP[name]["jobset"],
+                        "status": "built" if pinned_rev else "error",
+                        "detail": "Missing required co-inputs — overall result is cold",
+                        "channel_healthy": False,
+                    }
+                )
+            else:
+                results.append(
+                    {
+                        "name": name,
+                        "rev": "",
+                        "channel": INPUT_MAP[name]["channel"],
+                        "jobset": INPUT_MAP[name]["jobset"],
+                        "status": "missing",
+                        "detail": "Required input not found in flake.lock",
+                        "channel_healthy": False,
+                    }
+                )
         output = {
             "warm": False,
-            "inputs": [],
-            "summary": "No recognized nixpkgs inputs found in flake.lock",
+            "inputs": results,
+            "summary": "One or more required nixpkgs inputs missing from flake.lock",
         }
         print(json.dumps(output, indent=2))
         sys.exit(0)
@@ -222,7 +253,7 @@ def main():
     results = []
     all_built = True
 
-    for name in inputs_to_check:
+    for name in inputs_present:
         node = nodes.get(name, {})
         locked = node.get("locked", {}) if isinstance(node, dict) else {}
         pinned_rev = locked.get("rev", "")
