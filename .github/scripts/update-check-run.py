@@ -6,7 +6,7 @@ Called from hydra-status-check.yml workflow.
 Builds a proper JSON body and pipes it via gh api --input.
 
 Usage:
-    python3 .github/scripts/update-check-run.py <head_sha> <warm>
+    python3 .github/scripts/update-check-run.py <head_sha> <ready>
 """
 
 import json
@@ -62,11 +62,11 @@ def gh_api(method: str, endpoint: str, body: dict | None = None) -> dict | None:
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: update-check-run.py <head_sha> <warm>", file=sys.stderr)
+        print("Usage: update-check-run.py <head_sha> <ready>", file=sys.stderr)
         sys.exit(1)
 
     head_sha = sys.argv[1]
-    warm = sys.argv[2].lower() == "true"
+    ready = sys.argv[2].lower() == "true"
 
     # Read hydra results
     try:
@@ -100,17 +100,17 @@ def main():
     lines.append("\n### Details\n")
     for inp in result.get("inputs", []):
         lines.append(f"**{inp['name']}**: {inp.get('detail', 'N/A')}\n")
-    if result.get("warm"):
+    if result.get("ready"):
         lines.append(
-            "✅ **Verdict: WARM — all primary nixpkgs inputs at Hydra-ready revision**\n"
+            "✅ **Verdict: READY — all primary nixpkgs inputs at Hydra-ready revision**\n"
         )
     else:
         lines.append(
-            "⏳ **Verdict: COLD — one or more nixpkgs inputs not yet at Hydra-ready revision**\n"
+            "⏳ **Verdict: BUILDING — one or more nixpkgs inputs still building on Hydra**\n"
         )
     text = "\n".join(lines)
 
-    conclusion = "success" if warm else "neutral"
+    conclusion = "success" if ready else "neutral"
 
     # Check if a check run already exists
     existing = gh_api("GET", f"/repos/{owner}/{repo}/commits/{head_sha}/check-runs")

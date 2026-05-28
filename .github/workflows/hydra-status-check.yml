@@ -186,7 +186,7 @@ jobs:
         run: |
           python3 scripts/check-hydra.py /tmp/pr-flake.lock > /tmp/hydra-result.json
           cat /tmp/hydra-result.json
-          python3 -c "import json; d=json.load(open('/tmp/hydra-result.json')); print('warm=' + ('true' if d.get('warm') else 'false'))" >> "$GITHUB_OUTPUT"
+          python3 -c "import json; d=json.load(open('/tmp/hydra-result.json')); print('ready=' + ('true' if d.get('ready') else 'false'))" >> "$GITHUB_OUTPUT"
 
       # ── Create/update check run ────────────────────────────────────────
       - name: Update check run status
@@ -196,16 +196,16 @@ jobs:
         run: |
           python3 .github/scripts/update-check-run.py \
             "${{ steps.target.outputs.head_sha }}" \
-            "${{ steps.hydra.outputs.warm }}"
+            "${{ steps.hydra.outputs.ready }}"
 
-      # ── Merge if warm ──────────────────────────────────────────────────
-      - name: Merge warm staging PR
-        if: env.SKIP != 'true' && steps.hydra.outputs.warm == 'true'
+      # ── Merge if ready ──────────────────────────────────────────────────
+      - name: Merge ready staging PR
+        if: env.SKIP != 'true' && steps.hydra.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUM="${{ steps.target.outputs.pr_number }}"
-          echo "Merging warm PR #$PR_NUM"
+          echo "Merging ready PR #$PR_NUM"
           gh pr merge --squash "$PR_NUM"
 
           # Close remaining staging PRs as superseded

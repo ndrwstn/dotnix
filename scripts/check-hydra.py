@@ -6,8 +6,8 @@ Queries hydra.nixos.org's public JSON API (NOT blocked by Anubis), plus
 channels.nixos.org and the GitHub compare API, to determine whether
 the nixpkgs revisions pinned in flake.lock are fully built and cached.
 
-Output: JSON to stdout with per-input status and an overall "warm" verdict.
-Exit code: 0 on success (warm or cold), 1 on error.
+Output: JSON to stdout with per-input status and an overall "ready" verdict.
+Exit code: 0 on success (ready or building), 1 on error.
 
 Usage:
     python3 scripts/check-hydra.py [/path/to/flake.lock]
@@ -210,7 +210,7 @@ def main():
     inputs_present = [name for name in INPUT_MAP if name in nodes]
     inputs_missing = [name for name in INPUT_MAP if name not in nodes]
 
-    # Treat any missing required input as cold
+    # Treat any missing required input as unready
     if inputs_missing:
         results = []
         all_built = False
@@ -226,7 +226,7 @@ def main():
                         "channel": INPUT_MAP[name]["channel"],
                         "jobset": INPUT_MAP[name]["jobset"],
                         "status": "built" if pinned_rev else "error",
-                        "detail": "Missing required co-inputs — overall result is cold",
+                        "detail": "Missing required co-inputs — overall result is unready",
                         "channel_healthy": False,
                     }
                 )
@@ -243,7 +243,7 @@ def main():
                     }
                 )
         output = {
-            "warm": False,
+            "ready": False,
             "inputs": results,
             "summary": "One or more required nixpkgs inputs missing from flake.lock",
         }
@@ -312,9 +312,9 @@ def main():
         info["channel_healthy"] = healthy if healthy is not None else False
 
         if info["status"] != "built":
-            info["status"] = "cold"
+            info["status"] = "building"
             info["detail"] = (
-                "Revision not at Hydra/channel-ready revision — "
+                "Revision still building on Hydra — "
                 "not found in channel, hydra latest eval, or ancestry chain"
             )
             all_built = False
@@ -324,15 +324,15 @@ def main():
         results.append(info)
 
     # Overall verdict
-    warm = all_built
+    ready = all_built
 
     output = {
-        "warm": warm,
+        "ready": ready,
         "inputs": results,
         "summary": (
-            "All primary nixpkgs inputs at Hydra/channel-ready revision"
-            if warm
-            else "One or more nixpkgs inputs not yet at Hydra/channel-ready revision"
+            "All primary nixpkgs inputs at Hydra-ready revision"
+            if ready
+            else "One or more nixpkgs inputs still building on Hydra"
         ),
     }
 
