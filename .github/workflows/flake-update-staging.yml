@@ -26,6 +26,8 @@ jobs:
             "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
       - name: Supersede previous staging PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           for PR in $(gh pr list \
             --label "staging-pending" \
@@ -46,6 +48,8 @@ jobs:
         run: nix flake check
 
       - name: Create staging PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           DATE=$(date +%Y-%m-%d)
           BRANCH="staging/flake-update-$DATE"
