@@ -65,9 +65,15 @@ jobs:
           git add flake.lock machines/silver/configuration.nix
           git commit -m "update(lock): refresh flake inputs"
           git push origin HEAD:"$BRANCH" --force
+          # Create PR or ensure existing one has the staging-pending label
           gh pr create \
             --base master \
             --head "$BRANCH" \
             --title "update(lock): refresh flake inputs" \
             --body "Auto-merge when Hydra Status Check confirms primary nixpkgs inputs are Hydra/channel-ready." \
-            --label "staging-pending"
+            --label "staging-pending" 2>/dev/null \
+          || { 
+            PR_NUM=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+            echo "PR #$PR_NUM already exists — refreshing staging-pending label"
+            gh pr edit "$PR_NUM" --add-label "staging-pending" 2>/dev/null || true
+          }

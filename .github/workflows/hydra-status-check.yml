@@ -45,12 +45,11 @@ jobs:
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
-            BRANCH="${{ github.event.workflow_run.head_branch }}"
-            PR_DATA=$(gh pr list --head "$BRANCH" --state open \
+            PR_DATA=$(gh pr list --label "staging-pending" --state open \
               --json number,headRefOid \
               --jq -r '.[] | "\(.number):\(.headRefOid)"' | head -1)
             if [ -z "$PR_DATA" ]; then
-              echo "No open PR found for branch $BRANCH — skipping"
+              echo "No staging-pending PR found — skipping"
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
@@ -64,7 +63,7 @@ jobs:
       # ── Label check (PR-triggered only) ────────────────────────────────
       - name: Check for staging-pending label
         id: label_check
-        if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+        if: env.SKIP != 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
