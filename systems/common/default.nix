@@ -64,6 +64,7 @@
     environment.systemPackages = with pkgs; [
       # Core utilities
       jdk17
+      nmap
       nh
       vim
       wget

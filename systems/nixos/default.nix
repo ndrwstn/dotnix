@@ -4,7 +4,13 @@
 , pkgs
 , lib
 , ...
-}: {
+}:
+let
+  brotherPrinterHost = "brother.impetuo.us";
+  brotherPrinterPort = "631";
+  brotherPrinterUnavailableMessage = "Info: Brother printer is unavailable; skipping printer setup.";
+in
+{
   imports = [
     ./agenix.nix
     ./wifi.nix
@@ -145,18 +151,19 @@
         exit 0
       fi
 
-      for attempt in 1 2 3 4 5 6; do
-        if ${pkgs.cups}/bin/lpadmin -p "Brother_MFC_L8900" -v "$printerUri" -m everywhere -E; then
-          ${pkgs.cups}/bin/lpadmin -d "Brother_MFC_L8900"
-          exit 0
-        fi
+      if ! ${pkgs.nmap}/bin/ncat -z -w 2 "${brotherPrinterHost}" "${brotherPrinterPort}"; then
+        echo "${brotherPrinterUnavailableMessage}"
+        exit 0
+      fi
 
-        echo "Printer setup attempt $attempt failed; retrying in 10 seconds."
-        ${pkgs.coreutils}/bin/sleep 10
-      done
+      if ${pkgs.cups}/bin/lpadmin -p "Brother_MFC_L8900" -v "$printerUri" -m everywhere -E; then
+        ${pkgs.cups}/bin/lpadmin -d "Brother_MFC_L8900" || \
+          echo "Info: Could not set Brother_MFC_L8900 as the default printer."
+        exit 0
+      fi
 
-      echo "Printer setup failed after 6 attempts."
-      exit 1
+      echo "Info: Could not configure Brother_MFC_L8900; skipping printer setup."
+      exit 0
     '';
   };
 
