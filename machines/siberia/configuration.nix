@@ -17,6 +17,10 @@
     radio.enable = false;
   };
 
+  # Enable Bluetooth support
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # Increase download-buffer to 1GB
   # Rebuilds on Siberia should be an exclusive activity
   nix.settings.download-buffer-size = 1000000000;
