@@ -113,6 +113,31 @@ let
       sessionName = "AVERY-LATEX";
       startDirectory = "${workspaceBase}/03__PROGRAMMING/AVERY-LATEX";
     };
+
+    "orcaslicer.yaml" = {
+      sessionName = "ORCASLICER";
+      startDirectory = "${workspaceBase}/90__CONFIG/ORCASLICER";
+      windows = ''
+        - window_name: opencode
+          focus: true
+          panes:
+            - shell_command:
+                - opencode
+
+        - window_name: lazygit
+          panes:
+            - shell_command:
+                - lazygit
+
+        - window_name: tools
+          layout: even-vertical
+          panes:
+            - shell_command:
+                - yazi
+            - shell_command:
+                - zsh
+      '';
+    };
   };
 in
 {
