@@ -1,6 +1,8 @@
 # machines/siberia/configuration.nix
 { config
+, lib
 , pkgs
+, unstable
 , ...
 }: {
   imports = [
@@ -20,6 +22,65 @@
   # Enable Bluetooth support
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+
+  # nqptp — precision timing daemon required by AirPlay 2 (shairport-sync).
+  # Runs as a system service (system user 'nqptp') since it only needs network
+  # access and has no dependency on the desktop session.
+  users.users.nqptp = {
+    isSystemUser = true;
+    group = "nqptp";
+    description = "NQPTP daemon user";
+  };
+  users.groups.nqptp = { };
+
+  systemd.services.nqptp = {
+    description = "NQPTP -- Not Quite PTP";
+    requires = [ "network-online.target" ];
+    after = [ "network.target" "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.nqptp}/bin/nqptp";
+      User = "nqptp";
+      Group = "nqptp";
+      AmbientCapabilities = "CAP_NET_BIND_SERVICE";
+      Restart = "on-failure";
+    };
+  };
+
+  # shairport-sync runs as an Austin user service via Home Manager so it can
+  # order against the actual user PipeWire/Pulse units. Keep system-level
+  # support here limited to nqptp, Avahi, and firewall openings.
+
+  # Enable Avahi mDNS/Bonjour for AirPlay service discovery.
+  services.avahi = {
+    enable = true;
+    publish.enable = true;
+    publish.userServices = true;
+    nssmdns4 = false;
+    nssmdns6 = false;
+  };
+
+  # Enable AirPlay video mirroring (UxPlay — manual launch via `uxplay`)
+  environment.systemPackages = with pkgs; [
+    uxplay
+  ];
+
+  # AirPlay 2 firewall ports:
+  # - TCP 5000 + UDP 6001-6011 for AirPlay 1 compatibility
+  # - TCP 7000 for AirPlay 2 RTSP/PTP
+  # - UDP 319-320 for nqptp PTP timing
+  # - UDP 6000-6009 + TCP/UDP 32768-60999 for AirPlay 2 audio data
+  #   (dynamically allocated, must allow the full ephemeral range)
+  # See: https://github.com/mikebrady/shairport-sync/blob/master/TROUBLESHOOTING.md
+  networking.firewall.allowedTCPPorts = [ 5000 7000 ];
+  networking.firewall.allowedUDPPortRanges = [
+    { from = 319; to = 320; } # nqptp PTP timing
+    { from = 6000; to = 6009; } # AirPlay 2 audio control
+    { from = 32768; to = 60999; } # AirPlay 2 audio data stream
+  ];
+  networking.firewall.allowedTCPPortRanges = [
+    { from = 32768; to = 60999; } # AirPlay 2 audio data (control channel)
+  ];
 
   # Increase download-buffer to 1GB
   # Rebuilds on Siberia should be an exclusive activity

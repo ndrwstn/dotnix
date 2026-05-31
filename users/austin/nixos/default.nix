@@ -54,4 +54,7 @@ lib.mkMerge [
 
   # Vicinae launcher configuration
   (import ./vicinae.nix { inherit config pkgs lib osConfig; })
+
+  # AirPlay receiver configuration for Siberia
+  (import ./shairport-sync.nix { inherit config pkgs unstable lib osConfig; })
 ]
