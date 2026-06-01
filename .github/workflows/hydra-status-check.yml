@@ -221,7 +221,7 @@ jobs:
           # Close remaining staging PRs as superseded
           for TAG in $(gh pr list \
             --label "staging-pending" --state open \
-            --json number --jq -r '.[] | .number'); do
+            --json number --jq '.[] | .number'); do
             if [ "$TAG" != "$PR_NUM" ]; then
               gh pr edit "$TAG" \
                 --remove-label "staging-pending" \
