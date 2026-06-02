@@ -123,6 +123,11 @@ in
     # Use mkForce to override the GNOME desktop manager's automatic enablement
     gnome.gnome-keyring.enable = lib.mkForce false;
 
+    # Disable GCR's SSH agent socket as well; it otherwise runs
+    # `systemctl --user set-environment SSH_AUTH_SOCK=%t/gcr/ssh` and
+    # overwrites the 1Password SSH agent socket in the user manager.
+    gnome.gcr-ssh-agent.enable = lib.mkForce false;
+
     # Syncthing is configured per-user via home-manager
 
     # Enable iSCSI support
