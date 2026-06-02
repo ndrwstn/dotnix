@@ -62,8 +62,8 @@ in
   systemd.user.services.awww-daemon = {
     Unit = {
       Description = "awww wallpaper daemon";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
+      After = [ "hyprland-session.target" ];
+      PartOf = [ "hyprland-session.target" ];
     };
 
     Service = {
@@ -74,7 +74,7 @@ in
     };
 
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = [ "hyprland-session.target" ];
     };
   };
 
@@ -82,9 +82,9 @@ in
   systemd.user.services.wallpaper-rotate = {
     Unit = {
       Description = "Rotate wallpapers with dynamic theming";
-      After = [ "graphical-session.target" "awww-daemon.service" ];
+      After = [ "hyprland-session.target" "awww-daemon.service" ];
       Requires = [ "awww-daemon.service" ];
-      PartOf = [ "graphical-session.target" ];
+      PartOf = [ "hyprland-session.target" ];
     };
 
     Service = {
@@ -93,7 +93,7 @@ in
     };
 
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = [ "hyprland-session.target" ];
     };
   };
 
