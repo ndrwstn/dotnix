@@ -7,11 +7,10 @@
     # Window rules for Ghostty floating behavior
     # Fixes issue where Ghostty expands to fullscreen when toggled to floating
     # See: Hyprland issues #6648, #7312
-    windowrulev2 = [
-      # Set default size for Ghostty when floating (80% of screen)
-      "size 80% 80%, class:^(ghostty)$, floating:1"
-      # Center the window on screen
-      "center, class:^(ghostty)$, floating:1"
+    # Uses hyprland 0.55+ inline syntax
+    windowrule = [
+      # Float at 80% size, centered
+      "match:class ^(ghostty)$, float on, size 80% 80%, center on"
     ];
   };
 }

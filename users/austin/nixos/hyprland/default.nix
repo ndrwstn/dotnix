@@ -69,10 +69,6 @@ lib.mkMerge [
         # Input configuration
         input = {
           kb_layout = "us";
-          kb_variant = "";
-          kb_model = "";
-          kb_options = "";
-          kb_rules = "";
 
           follow_mouse = 1;
           sensitivity = 0;
@@ -122,23 +118,21 @@ lib.mkMerge [
           ];
         };
 
-        # Window rules
-        windowrulev2 = [
-          "float,class:^(pavucontrol)$"
-          "float,class:^(blueman-manager)$"
-          "float,class:^(nm-connection-editor)$"
-          "float,class:^(gnome-disks)$"
-          "float,class:^(gparted)$"
+        # Window rules (hyprland 0.55+ inline syntax)
+        windowrule = [
+          "match:class ^(pavucontrol)$, float on"
+          "match:class ^(blueman-manager)$, float on"
+          "match:class ^(nm-connection-editor)$, float on"
+          "match:class ^(gnome-disks)$, float on"
+          "match:class ^(gparted)$, float on"
 
           # OpenCode - ignore app-requested maximize and float project picker
-          "suppressevent maximize,class:^\\.OpenCode-unwrapped$"
-          "float,title:^(Open project)$"
-          "size 90% 90%,title:^(Open project)$"
-          "center,title:^(Open project)$"
+          "match:class ^\\.OpenCode-unwrapped$, suppress_event maximize"
+          "match:title ^(Open project)$, float on, size 90% 90%, center on"
 
           # GCS - GURPS Character Sheet (XWayland/GLFW application)
-          "tile,class:^(GCS)$"
-          "nomaxsize,class:^(GCS)$"
+          "match:class ^(GCS)$, tile on"
+          "match:class ^(GCS)$, no_max_size on"
         ];
 
         # Workspace configuration
@@ -149,6 +143,11 @@ lib.mkMerge [
       };
 
       extraConfig = ''
+        # Color management: disable on Intel Haswell GPU (avoids FP16 rendering issues)
+        # Note: cm_enabled only works at startup, not runtime
+        render:use_fp16 = 0
+        render:cm_enabled = false
+
         # Source matugen-generated colors
         source = ${config.xdg.cacheHome}/matugen/hyprland-colors.conf
       '';

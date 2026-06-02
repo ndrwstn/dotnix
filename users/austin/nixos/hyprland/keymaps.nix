@@ -74,7 +74,7 @@ in
       "${mod}+SHIFT,L,movewindow,r"
 
       # Layout
-      "${mod},S,togglesplit,"
+      "${mod},S,layoutmsg,togglesplit"
 
       # Gaps
       "${mod},period,exec,hyprctl keyword general:gaps_in 10"
