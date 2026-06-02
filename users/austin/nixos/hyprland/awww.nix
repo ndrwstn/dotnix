@@ -101,16 +101,16 @@ in
   systemd.user.timers.wallpaper-rotate = {
     Unit = {
       Description = "Rotate wallpaper every 30 minutes";
+      PartOf = [ "hyprland-session.target" ];
     };
 
     Timer = {
-      OnBootSec = "1m";
       OnUnitActiveSec = "30m";
       Unit = "wallpaper-rotate.service";
     };
 
     Install = {
-      WantedBy = [ "timers.target" ];
+      WantedBy = [ "hyprland-session.target" ];
     };
   };
 
