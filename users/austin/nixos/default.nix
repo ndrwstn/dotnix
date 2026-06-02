@@ -44,6 +44,9 @@ lib.mkMerge [
   # NixOS-only shell theming
   (import ./ohmyposh.nix { inherit config; })
 
+  # 1Password GUI/agent autostart for Austin's graphical sessions
+  (import ./1password.nix { inherit pkgs lib; })
+
   # Hyprland configuration
   (lib.mkIf (hasWindowManager "hyprland")
     (import ./hyprland { inherit config pkgs unstable lib; }))
