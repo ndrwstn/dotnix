@@ -177,7 +177,9 @@
     # TOGGLES (UI & Tools)
     # ========================================================================
     { key = "<leader>Th"; mode = "n"; action = "<cmd>Hardtime toggle<CR>"; options.desc = "Hardtime"; }
-    { key = "<leader>Tm"; mode = "n"; action = "<cmd>lua require('codewindow').toggle_minimap()<CR>"; options.desc = "Minimap"; }
+    # codewindow.nvim is disabled for NixOS 26.05 compatibility; keep this
+    # keymap nearby so it can be restored if codewindow is re-enabled.
+    # { key = "<leader>Tm"; mode = "n"; action = "<cmd>lua require('codewindow').toggle_minimap()<CR>"; options.desc = "Minimap"; }
     { key = "<leader>Tn"; mode = "n"; action = "<cmd>lua Snacks.notifier.hide()<CR>"; options.desc = "Dismiss Notifications"; }
     { key = "<leader>Tu"; mode = "n"; action = "<cmd>UndotreeToggle<CR>"; options.desc = "Undotree"; }
     { key = "<leader>Tz"; mode = "n"; action = "<cmd>lua Snacks.zen()<CR>"; options.desc = "Zen Mode"; }
