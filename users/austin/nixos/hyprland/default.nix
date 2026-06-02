@@ -57,7 +57,22 @@ lib.mkMerge [
       configType = "hyprlang"; # Use hyprlang format (default changed to lua in 26.05)
       portalPackage = null; # Use system-installed portal to avoid conflicts
       systemd.enable = true; # Enable systemd integration for proper graphical-session.target activation
-      systemd.variables = [ "--all" ]; # Export all env vars to systemd user session
+      # Keep graphical-session.target aware of the compositor environment without
+      # importing SSH_AUTH_SOCK from GDM/GCR over the 1Password agent socket.
+      systemd.variables = [
+        "DISPLAY"
+        "WAYLAND_DISPLAY"
+        "HYPRLAND_INSTANCE_SIGNATURE"
+        "XDG_CURRENT_DESKTOP"
+        "XDG_SESSION_TYPE"
+        "XDG_SESSION_DESKTOP"
+        "DESKTOP_SESSION"
+        "PATH"
+        "XDG_DATA_DIRS"
+        "XDG_CONFIG_DIRS"
+        "XCURSOR_PATH"
+        "MOZ_ENABLE_WAYLAND"
+      ];
 
       settings = {
         # Monitor configuration

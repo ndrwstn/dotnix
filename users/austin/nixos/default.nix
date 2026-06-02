@@ -7,6 +7,7 @@
 , ...
 }:
 let
+  onePasswordSshAuthSock = "${config.home.homeDirectory}/.1password/agent.sock";
   windowManagers = osConfig._astn.machine.windowManagers or [
     "gnome"
     "hyprland"
@@ -23,7 +24,11 @@ lib.mkMerge [
       # 1Password CLI integration
       OP_PLUGIN_ALIASES_SOURCED = "1";
       # Force SSH to use 1Password agent socket
-      SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
+      SSH_AUTH_SOCK = onePasswordSshAuthSock;
+    };
+
+    systemd.user.sessionVariables = {
+      SSH_AUTH_SOCK = onePasswordSshAuthSock;
     };
 
     # Cursor theme configuration (unified across Wayland/X11/GTK)
