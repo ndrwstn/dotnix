@@ -1,5 +1,6 @@
 # users/austin/nixos/hyprland/swww.nix
 # swww wallpaper daemon configuration with transitions
+# TODO 2026-06-02: rename swww → awww once available in nixpkgs 26.05
 { pkgs, lib, config, ... }:
 
 let

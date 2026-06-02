@@ -10,7 +10,7 @@
 let
   mod = "Mod4";
   screenshotDir = "${config.home.homeDirectory}/Pictures";
-  i3SessionEnvironmentScript = pkgs.writeShellScript "i3-session-environment" ''
+  i3SessionEnvironmentScript = pkgs.writeShellScriptBin "i3-session-environment" ''
     ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd \
       DISPLAY \
       XAUTHORITY \

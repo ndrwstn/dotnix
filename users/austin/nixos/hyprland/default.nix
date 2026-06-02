@@ -44,7 +44,7 @@ lib.mkMerge [
       audioControlPackage
       polkit_gnome
       slurp
-      swww
+      swww # TODO 2026-06-02: rename to awww once available upstream
       waybar
       wl-clipboard
       wlogout
