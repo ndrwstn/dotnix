@@ -26,7 +26,7 @@ lib.mkMerge [
   })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
   (import ./wlogout.nix { inherit pkgs unstable lib config; })
-  (import ./swww.nix { inherit pkgs unstable lib config; })
+  (import ./awww.nix { inherit pkgs unstable lib config; })
   (import ./matugen.nix { inherit pkgs unstable lib config; })
   (import ./windows.nix { inherit pkgs unstable lib config; })
   {
@@ -44,7 +44,7 @@ lib.mkMerge [
       audioControlPackage
       polkit_gnome
       slurp
-      swww # TODO 2026-06-02: rename to awww once available upstream
+      awww
       waybar
       wl-clipboard
       wlogout

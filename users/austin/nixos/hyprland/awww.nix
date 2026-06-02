@@ -1,6 +1,5 @@
-# users/austin/nixos/hyprland/swww.nix
-# swww wallpaper daemon configuration with transitions
-# TODO 2026-06-02: rename swww → awww once available in nixpkgs 26.05
+# users/austin/nixos/hyprland/awww.nix
+# awww wallpaper daemon configuration with transitions
 { pkgs, lib, config, ... }:
 
 let
@@ -26,21 +25,21 @@ let
       exit 0
     fi
 
-    # Wait briefly for the swww daemon/socket to be ready
+    # Wait briefly for the awww daemon/socket to be ready
     for _ in $(seq 1 10); do
-      if ${pkgs.swww}/bin/swww query >/dev/null 2>&1; then
+      if ${pkgs.awww}/bin/awww query >/dev/null 2>&1; then
         break
       fi
       sleep 1
     done
 
-    if ! ${pkgs.swww}/bin/swww query >/dev/null 2>&1; then
-      echo "swww daemon is not ready"
+    if ! ${pkgs.awww}/bin/awww query >/dev/null 2>&1; then
+      echo "awww daemon is not ready"
       exit 1
     fi
 
-    # Set wallpaper with swww (fade + slight zoom transition)
-    ${pkgs.swww}/bin/swww img "$WALLPAPER" \
+    # Set wallpaper with awww (fade + slight zoom transition)
+    ${pkgs.awww}/bin/awww img "$WALLPAPER" \
       --transition-type grow \
       --transition-pos 0.5,0.5 \
       --transition-duration 1.5 \
@@ -60,16 +59,16 @@ let
   '';
 in
 {
-  systemd.user.services.swww-daemon = {
+  systemd.user.services.awww-daemon = {
     Unit = {
-      Description = "swww wallpaper daemon";
+      Description = "awww wallpaper daemon";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
     };
 
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.swww}/bin/swww-daemon";
+      ExecStart = "${pkgs.awww}/bin/awww-daemon";
       Restart = "on-failure";
       RestartSec = 2;
     };
@@ -83,8 +82,8 @@ in
   systemd.user.services.wallpaper-rotate = {
     Unit = {
       Description = "Rotate wallpapers with dynamic theming";
-      After = [ "graphical-session.target" "swww-daemon.service" ];
-      Requires = [ "swww-daemon.service" ];
+      After = [ "graphical-session.target" "awww-daemon.service" ];
+      Requires = [ "awww-daemon.service" ];
       PartOf = [ "graphical-session.target" ];
     };
 
@@ -115,13 +114,13 @@ in
     };
   };
 
-  # swww initialization script for exec-once
+  # awww transition defaults
   home.sessionVariables = {
-    # swww configuration
-    SWWW_TRANSITION = "grow";
-    SWWW_TRANSITION_DURATION = "1.5";
-    SWWW_TRANSITION_FPS = "60";
-    SWWW_TRANSITION_BEZIER = "0.4,0.0,0.2,1";
-    SWWW_TRANSITION_POS = "0.5,0.5";
+    # awww configuration
+    AWWW_TRANSITION = "grow";
+    AWWW_TRANSITION_DURATION = "1.5";
+    AWWW_TRANSITION_FPS = "60";
+    AWWW_TRANSITION_BEZIER = "0.4,0.0,0.2,1";
+    AWWW_TRANSITION_POS = "0.5,0.5";
   };
 }
