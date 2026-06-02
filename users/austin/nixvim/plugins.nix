@@ -364,33 +364,27 @@
     # ============================================================================
     # TREESITTER
     # ============================================================================
-    # NOTE: 26.05 transition — treesitter module disabled to avoid version conflict
-    # between the new nvim-treesitter main branch (from nixvim's default) and
-    # nvim-treesitter-legacy (pulled in by other plugin dependencies). Both have the
-    # same pname but different derivations, causing a hard error in vim-utils.nix.
-    # Re-enable once all nixvim plugins migrate to the new nvim-treesitter.
-    # Grammars can still be installed at runtime via :TSInstall.
-    # treesitter = {
-    #   enable = true;
-    #
-    #   settings = {
-    #     ensure_installed = [
-    #       "nix"
-    #       "markdown"
-    #       "markdown_inline"
-    #       "python"
-    #       "sql"
-    #       "lua"
-    #       "latex"
-    #       "bash"
-    #       "json"
-    #       "yaml"
-    #       "diff"
-    #       "toml"
-    #       "norg" # For snacks.image documentation
-    #     ];
-    #   };
-    # };
+    treesitter = {
+      enable = true;
+
+      settings = {
+        ensure_installed = [
+          "nix"
+          "markdown"
+          "markdown_inline"
+          "python"
+          "sql"
+          "lua"
+          "latex"
+          "bash"
+          "json"
+          "yaml"
+          "diff"
+          "toml"
+          "norg" # For snacks.image documentation
+        ];
+      };
+    };
 
     # ============================================================================
     # DIAGNOSTICS & TROUBLE
@@ -594,9 +588,10 @@
     # ============================================================================
     # CODE OVERVIEW
     # ============================================================================
-    # Design Decision: codewindow.nvim provides minimap for code overview
-    # Note: Configured as extraPlugin in extra.nix (not a native nixvim module)
-    # Keybinding: <leader>tm to toggle minimap
+    # Note: codewindow.nvim (minimap) is DISABLED for NixOS 26.05 compat.
+    # It depended on nvim-treesitter-legacy which conflicts with the new
+    # nvim-treesitter (main branch). Treesitter grammars provide adequate
+    # code understanding. Remove this entire comment block when resolved.
 
     # ============================================================================
     # TEXT MANIPULATION
