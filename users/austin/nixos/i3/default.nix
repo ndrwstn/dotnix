@@ -218,8 +218,8 @@ in
     polkit_gnome
     slop
     xclip
-    xorg.xev
-    xorg.xprop
+    xev
+    xprop
   ];
 
   home.activation.createI3WallpaperDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
