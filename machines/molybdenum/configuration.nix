@@ -51,7 +51,7 @@
   boot.resumeDevice = "/dev/disk/by-uuid/8726af91-4af4-43fe-8a70-9af3dce337a4";
 
   # Suspend then hibernate after 30 minutes
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1800
-  '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "1800";
+  };
 }

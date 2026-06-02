@@ -59,6 +59,8 @@ lib.mkMerge [
         enable = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
+        # Lock in legacy dotDir behavior (home directory) to match stateVersion < 26.05
+        dotDir = config.home.homeDirectory;
         sessionVariables = {
           TEXMFHOME = "${config.xdg.configHome}/texlive/texmf";
         };
@@ -281,8 +283,12 @@ lib.mkMerge [
       nix-update
       nixpkgs-fmt
       nmap
-      nodejs_22
-      nodePackages.prettier
+      # NOTE: 2026-06-02 — removed explicit nodejs_22 pin during 26.05 upgrade;
+      # the 26.05 default is Node 24 (nodejs). Re-add nodejs_22 if needed for
+      # local projects that require Node 22 specifically. This line can be
+      # removed entirely once all projects are verified on Node 24.
+      # nodejs_22
+      prettier
       nvd
       ocrmypdf
       pandoc
@@ -309,7 +315,7 @@ lib.mkMerge [
       tesseract5
       imagemagick
       ghostscript
-      (nodePackages.mermaid-cli.override { chromium = pkgs.ungoogled-chromium; }) # Provides mmdc command for diagram rendering
+      (mermaid-cli.override { chromium = pkgs.ungoogled-chromium; }) # Provides mmdc command for diagram rendering
       # stern
       talosctl
       taplo

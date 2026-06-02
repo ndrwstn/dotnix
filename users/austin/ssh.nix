@@ -356,12 +356,15 @@ in
       # Prevent SSH from trying all available keys - only use explicitly specified ones
       IdentitiesOnly = "yes";
       # Terminal and security settings
-      SetEnv = "TERM=xterm-256color";
+      SetEnv = {
+        TERM = "xterm-256color";
+      };
       StrictHostKeyChecking = "accept-new";
     };
 
     # Host-specific settings (generates separate Host blocks)
-    matchBlocks = generateMatchBlocks sshMatches // {
+    # NOTE: matchBlocks was renamed to settings in HM 26.05
+    settings = generateMatchBlocks sshMatches // {
       # Manual "*" block with only desired defaults (no multiplexing options)
       "*" = {
         forwardAgent = false;

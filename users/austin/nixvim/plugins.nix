@@ -364,27 +364,33 @@
     # ============================================================================
     # TREESITTER
     # ============================================================================
-    treesitter = {
-      enable = true;
-
-      settings = {
-        ensure_installed = [
-          "nix"
-          "markdown"
-          "markdown_inline"
-          "python"
-          "sql"
-          "lua"
-          "latex"
-          "bash"
-          "json"
-          "yaml"
-          "diff"
-          "toml"
-          "norg" # For snacks.image documentation
-        ];
-      };
-    };
+    # NOTE: 26.05 transition — treesitter module disabled to avoid version conflict
+    # between the new nvim-treesitter main branch (from nixvim's default) and
+    # nvim-treesitter-legacy (pulled in by other plugin dependencies). Both have the
+    # same pname but different derivations, causing a hard error in vim-utils.nix.
+    # Re-enable once all nixvim plugins migrate to the new nvim-treesitter.
+    # Grammars can still be installed at runtime via :TSInstall.
+    # treesitter = {
+    #   enable = true;
+    #
+    #   settings = {
+    #     ensure_installed = [
+    #       "nix"
+    #       "markdown"
+    #       "markdown_inline"
+    #       "python"
+    #       "sql"
+    #       "lua"
+    #       "latex"
+    #       "bash"
+    #       "json"
+    #       "yaml"
+    #       "diff"
+    #       "toml"
+    #       "norg" # For snacks.image documentation
+    #     ];
+    #   };
+    # };
 
     # ============================================================================
     # DIAGNOSTICS & TROUBLE

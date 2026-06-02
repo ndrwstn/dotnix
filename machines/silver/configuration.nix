@@ -112,9 +112,9 @@
   boot.resumeDevice = "/dev/disk/by-uuid/32d31193-f0e9-4a15-8ae4-fa7b35f543d5";
 
   # Suspend then hibernate after 30 minutes
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1800
-  '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "1800";
+  };
 
   # Post-resume WiFi module reload
   # If WiFi drops after suspend/resume (known issue with broadcom_sta/wl),

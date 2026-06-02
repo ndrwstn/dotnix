@@ -54,6 +54,7 @@ lib.mkMerge [
     wayland.windowManager.hyprland = {
       enable = true;
       package = null; # Use system-installed Hyprland to avoid conflicts
+      configType = "hyprlang"; # Use hyprlang format (default changed to lua in 26.05)
       portalPackage = null; # Use system-installed portal to avoid conflicts
       systemd.enable = true; # Enable systemd integration for proper graphical-session.target activation
       systemd.variables = [ "--all" ]; # Export all env vars to systemd user session
