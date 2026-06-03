@@ -5,6 +5,9 @@
 , autopkgs
 , ...
 }:
+let
+  onePasswordSshAuthSock = "${config.home.homeDirectory}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+in
 lib.mkMerge [
   # TODO: Flake architecture issue - darwin/default.nix is evaluated even on NixOS
   # systems, so we need this extra isDarwin check. This should be fixed at the flake
@@ -33,10 +36,16 @@ lib.mkMerge [
       HOMEBREW_NO_ANALYTICS = 1;
       # Set default editor to nvim
       EDITOR = "nvim";
-      # 1Password SSH agent socket for macOS
-      SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
       # Set locale to UTF-8
       LANG = "en_US.UTF-8";
     };
+
+    programs.zsh.initContent = lib.mkAfter ''
+      # Use the local 1Password SSH agent in local shells, but do not override
+      # sshd's forwarded SSH_AUTH_SOCK when this shell is running over SSH.
+      if [ -z "$SSH_CONNECTION" ]; then
+        export SSH_AUTH_SOCK="${onePasswordSshAuthSock}"
+      fi
+    '';
   }
 ]

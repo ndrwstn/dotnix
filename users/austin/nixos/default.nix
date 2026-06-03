@@ -23,13 +23,22 @@ lib.mkMerge [
       EDITOR = "nvim";
       # 1Password CLI integration
       OP_PLUGIN_ALIASES_SOURCED = "1";
-      # Force SSH to use 1Password agent socket
-      SSH_AUTH_SOCK = onePasswordSshAuthSock;
     };
 
+    # Keep graphical user services pointed at the local 1Password agent.
+    # Interactive shells set SSH_AUTH_SOCK conditionally below so remote SSH
+    # logins preserve sshd's forwarded /tmp/ssh-*/agent.* socket.
     systemd.user.sessionVariables = {
       SSH_AUTH_SOCK = onePasswordSshAuthSock;
     };
+
+    programs.zsh.initContent = lib.mkAfter ''
+      # Use the local 1Password SSH agent in local shells, but do not override
+      # sshd's forwarded SSH_AUTH_SOCK when this shell is running over SSH.
+      if [ -z "$SSH_CONNECTION" ]; then
+        export SSH_AUTH_SOCK="${onePasswordSshAuthSock}"
+      fi
+    '';
 
     # Cursor theme configuration (unified across Wayland/X11/GTK)
     home.pointerCursor = {

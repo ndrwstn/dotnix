@@ -3,6 +3,11 @@
 { lib, pkgs, hostName ? "", ... }:
 
 let
+  onePasswordSshAgent =
+    if pkgs.stdenv.isDarwin
+    then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
+    else "~/.1password/agent.sock";
+
   # ============================================================================
   # SSH Configuration Data
   # ============================================================================
@@ -150,11 +155,6 @@ let
             Port = machineData.port;
             IdentityFile = "~/.ssh/${formatFingerprintFilename (getCurrentMachineFingerprint hostName)}";
             ForwardAgent = "yes"; # Enable agent forwarding for all internal machines
-            # Set appropriate IdentityAgent based on platform
-            identityAgent =
-              if pkgs.stdenv.isDarwin
-              then "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-              else "~/.1password/agent.sock";
           };
         }
       )
@@ -287,7 +287,7 @@ let
   #     '')
   #     matches);
 
-  # Convert sshMatches list to Home Manager matchBlocks attribute set
+  # Convert sshMatches list to Home Manager 26.05 OpenSSH settings.
   generateMatchBlocks = matches:
     lib.listToAttrs (map
       (match:
@@ -295,15 +295,19 @@ let
           # Extract hostname from "Host hostname" condition
           hostPattern = lib.removePrefix "Host " match.condition;
 
-          # Map config fields to Home Manager format
+          # Map config fields to native OpenSSH directive names.
           # Only include non-null values
           config = lib.filterAttrs (n: v: v != null) {
-            hostname = match.config.HostName or null;
-            user = match.config.User or null;
-            port = match.config.Port or null;
-            identityFile =
-              if match.config.IdentityFile or null != null
+            HostName = match.config.HostName or null;
+            User = match.config.User or null;
+            Port = match.config.Port or null;
+            IdentityFile =
+              if (match.config.IdentityFile or null) != null
               then [ match.config.IdentityFile ]
+              else null;
+            ForwardAgent =
+              if (match.config.ForwardAgent or null) == "yes"
+              then true
               else null;
           };
         in
@@ -348,11 +352,6 @@ in
 
     # Global options (unindented, at top of config)
     extraOptionOverrides = {
-      # Use 1Password SSH agent for key management
-      IdentityAgent =
-        if pkgs.stdenv.isDarwin
-        then ''"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"''
-        else "~/.1password/agent.sock";
       # Prevent SSH from trying all available keys - only use explicitly specified ones
       IdentitiesOnly = "yes";
       # Terminal and security settings
@@ -364,19 +363,26 @@ in
 
     # Host-specific settings (generates separate Host blocks)
     # NOTE: matchBlocks was renamed to settings in HM 26.05
-    settings = generateMatchBlocks sshMatches // {
+    settings = {
+      # Use the local 1Password SSH agent only for local sessions.  In an SSH
+      # login, leave IdentityAgent unset so OpenSSH can use sshd's forwarded
+      # SSH_AUTH_SOCK instead of the remote machine's 1Password socket.
+      "Match host * exec \"test -z $SSH_CONNECTION\"" = {
+        IdentityAgent = onePasswordSshAgent;
+      };
+    } // generateMatchBlocks sshMatches // {
       # Manual "*" block with only desired defaults (no multiplexing options)
       "*" = {
-        forwardAgent = false;
-        addKeysToAgent = "no";
-        compression = false;
-        serverAliveInterval = 0;
-        serverAliveCountMax = 3;
-        hashKnownHosts = false;
-        userKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
-        controlMaster = "no";
-        controlPath = "~/.ssh/master-%r@%n:%p";
-        controlPersist = "no";
+        ForwardAgent = false;
+        AddKeysToAgent = "no";
+        Compression = false;
+        ServerAliveInterval = 0;
+        ServerAliveCountMax = 3;
+        HashKnownHosts = false;
+        UserKnownHostsFile = "~/.ssh/known_hosts ~/.ssh/known_hosts_nix";
+        ControlMaster = "no";
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPersist = "no";
       };
 
 
