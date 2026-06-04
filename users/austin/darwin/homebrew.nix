@@ -23,7 +23,7 @@
       "1password"
       "1password-cli"
       # "araxis-merge" # $$$
-      # "autodesk-fusion" # $$$
+      "autodesk-fusion" # $$$
       "balenaetcher"
       "bettermouse"
       "blender"
@@ -42,23 +42,22 @@
       # "find-any-file"
       # "firefox"
       # "forklift" # $$$
-      # "freecad"
+      "freecad"
       "ghostty"
-      # "gimp"
+      "gimp"
       "google-drive"
       # "gqrx"
       # "halloy" # 2025-05-18 doesn't connect to irchighway.net
       "home-assistant"
-      # "iina"
-      # "inkscape"
+      "iina"
+      "inkscape"
       "jdownloader"
       # "jordanbaird-ice" # 05/01/2026 deactivated 
       "keka"
-      # "kicad"
-      # "krita"
+      "kicad"
+      "krita"
       "little-snitch" # $$$
       # "localsend"
-      # "logi-options+" # 2026-05-02 deprecated
       # "maccy"
       "megasync"
       "monitorcontrol"
@@ -68,7 +67,6 @@
       # "numi"
       "obs"
       "obsidian"
-      # "ollamac" # not being actively used; consider using llama.cpp
       "orcaslicer"
       # "pdf-expert" # $$$
       "pearcleaner"
