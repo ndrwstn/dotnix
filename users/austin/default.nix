@@ -45,15 +45,6 @@ lib.mkMerge [
     programs = {
       home-manager.enable = true;
 
-      # Git configuration
-      git = {
-        enable = true;
-        settings.user = {
-          name = "Andrew Austin";
-          email = "austin@impetuo.us";
-        };
-      };
-
       # Shell configuration
       zsh = {
         enable = true;
@@ -242,7 +233,6 @@ lib.mkMerge [
       csvlens
       curlie
       deadnix
-      delta
       eslint
       eza
       # ffmpeg_7
@@ -380,6 +370,9 @@ lib.mkMerge [
 
   # Import sesh session manager
   (import ./sesh.nix { inherit config pkgs lib; })
+
+  # Import git configuration
+  (import ./git.nix { inherit config pkgs lib; })
 
   # Import Darwin-specific flakes
   # NOTE: whisper-cpp is installed Darwin-only because Metal acceleration
