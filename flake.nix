@@ -24,11 +24,7 @@
     };
 
     # Neovim configuration
-    nixvim = {
-      # Use the nixos-26.05 branch of Nixvim to match the stable nixpkgs channel
-      url = "github:nix-community/nixvim/nixos-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
 
 
     # Secrets management
