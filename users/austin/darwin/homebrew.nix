@@ -8,9 +8,7 @@
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
-      extraEnv = {
-        HOMEBREW_ASK = "1";
-      };
+      extraFlags = [ "--force-cleanup" ];
     };
     global = {
       brewfile = true;
