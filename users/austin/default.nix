@@ -311,6 +311,7 @@ lib.mkMerge [
       taplo
       # termpdfpy # terminal pdf viewer
       tdf
+      television
       pay-respects
       tlrc
       tree-sitter
