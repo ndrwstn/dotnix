@@ -44,7 +44,7 @@
       "ghostty"
       "gimp"
       "google-drive"
-      # "gqrx"
+      "gqrx"
       # "halloy" # 2025-05-18 doesn't connect to irchighway.net
       "home-assistant"
       "iina"
@@ -65,6 +65,7 @@
       # "numi"
       "obs"
       "obsidian"
+      "openscad"
       "orcaslicer"
       # "pdf-expert" # $$$
       "pearcleaner"
