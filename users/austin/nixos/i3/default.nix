@@ -33,8 +33,8 @@ let
   browserCommand = lib.getExe browserPackage;
   passwordManagerPackage = pkgs._1password-gui;
   passwordManagerCommand = lib.getExe passwordManagerPackage;
-  fileManagerPackage = pkgs.xdg-utils;
-  fileManagerCommand = "${fileManagerPackage}/bin/xdg-open $HOME";
+  fileManagerPackage = pkgs.pcmanfm;
+  fileManagerCommand = lib.getExe fileManagerPackage;
   networkEditorPackage = pkgs.networkmanagerapplet;
   networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
   audioControlPackage = pkgs.pavucontrol;

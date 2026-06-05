@@ -10,7 +10,7 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
-  _astn.machine.windowManagers = [ "hyprland" ];
+  _astn.machine.windowManagers = [ "hyprland" "i3" ];
   _astn.presets = {
     graphics.enable = false;
     maker.enable = false;
@@ -91,7 +91,7 @@
     "broadcom-sta-6.30.223.271-59-6.12.91"
   ];
 
-  # Use new OpenGL renderer on old MacBook Pro
+  # Use new OpenGL renderer (iMac — TODO: identify exact model/year)
   environment.variables = {
     GSK_RENDERER = "ngl";
   };
