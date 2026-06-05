@@ -37,6 +37,7 @@ in
 
       hardware.graphics.enable = true;
       security.polkit.enable = true;
+      services.gvfs.enable = true;
     })
 
     (lib.mkIf useGdm {
