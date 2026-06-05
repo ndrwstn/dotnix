@@ -138,6 +138,31 @@ let
                 - zsh
       '';
     };
+
+    "sovol-sv06.yaml" = {
+      sessionName = "SOVOL-SV06";
+      startDirectory = "${workspaceBase}/90__CONFIG/SOVOL_SV06";
+      windows = ''
+        - window_name: opencode
+          focus: true
+          panes:
+            - shell_command:
+                - opencode
+
+        - window_name: lazygit
+          panes:
+            - shell_command:
+                - lazygit
+
+        - window_name: tools
+          layout: even-vertical
+          panes:
+            - shell_command:
+                - yazi
+            - shell_command:
+                - zsh
+      '';
+    };
   };
 in
 {
