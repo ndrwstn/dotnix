@@ -22,16 +22,16 @@ import sys
 # ── Mapping: flake input → hydra jobset + channel ──────────────────────────
 INPUT_MAP = {
     "nixpkgs": {
-        "channel": "nixos-25.11",
-        "jobset": "release-25.11",
+        "channel": "nixos-26.05",
+        "jobset": "release-26.05",
     },
     "nixpkgs-unstable": {
         "channel": "nixos-unstable",
         "jobset": "unstable",
     },
     "nixpkgs-darwin": {
-        "channel": "nixpkgs-25.11-darwin",
-        "jobset": "nixpkgs-25.11-darwin",
+        "channel": "nixpkgs-26.05-darwin",
+        "jobset": "nixpkgs-26.05-darwin",
     },
 }
 
