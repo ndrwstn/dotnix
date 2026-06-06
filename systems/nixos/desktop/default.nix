@@ -38,6 +38,7 @@ in
       hardware.graphics.enable = true;
       security.polkit.enable = true;
       services.gvfs.enable = true;
+      services.xserver.libinput.naturalScrolling = true;
     })
 
     (lib.mkIf useGdm {
