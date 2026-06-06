@@ -121,6 +121,14 @@ lib.mkMerge [
         enable = true;
       };
 
+      # GitHub CLI configuration
+      gh = {
+        enable = true;
+        settings = {
+          telemetry = "disabled";
+        };
+      };
+
       # pay-respects (replacement for thefuck)
       pay-respects = {
         enable = true;
@@ -243,7 +251,6 @@ lib.mkMerge [
       unstable.librewolf
       fluxcd
       # gcc
-      gh
       gitleaks
       gitlint
       glow
