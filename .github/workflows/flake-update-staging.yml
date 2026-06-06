@@ -51,7 +51,7 @@ jobs:
         run: nix flake update
 
       - name: Update broadcom-sta pin
-        run: python3 scripts/update-silver-broadcom-pin.py
+        run: python3 scripts/update-broadcom-pin.py
 
       - name: Validate flake
         run: nix flake check

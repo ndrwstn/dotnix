@@ -23,11 +23,6 @@
   # Rebuilds on Silver should be an exclusive activity
   nix.settings.download-buffer-size = 1000000000;
 
-  # Allow the insecure broadcom-sta package for WiFi
-  nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-59-6.18.33"
-  ];
-
   # Use new OpenGL renderer on old MacBook Pro
   environment.variables = {
     GSK_RENDERER = "ngl";

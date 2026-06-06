@@ -1,0 +1,91 @@
+name: Update Broadcom Pin
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - dev
+    paths:
+      - flake.lock
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-broadcom-pin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Authenticate with Cachix
+        uses: cachix/cachix-action@v15
+        with:
+          name: ndrwstn-dotnix
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+
+      - name: Update nixpkgs lock input
+        run: nix flake lock --update-input nixpkgs
+
+      - name: Detect flake.lock changes
+        id: lock
+        run: |
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update Broadcom pin
+        run: python3 scripts/update-broadcom-pin.py
+
+      - name: Detect Broadcom pin changes
+        id: broadcom
+        run: |
+          if git diff --quiet -- systems/nixos/broadcom.nix; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Re-evaluate permitted insecure packages
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        run: |
+          nix eval --json .#nixosConfigurations.silver.config.nixpkgs.config.permittedInsecurePackages
+
+      - name: Build Silver system
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        run: |
+          cachix watch-exec ndrwstn-dotnix -- \
+            nix build .#nixosConfigurations.silver.config.system.build.toplevel
+
+      - name: Create pull request
+        id: cpr
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: ci/update-broadcom-pin
+          delete-branch: true
+          commit-message: "update(insecure/broadcom): update Broadcom package pin"
+          title: "update(insecure/broadcom): update Broadcom package pin"
+          body: |
+            ## Summary
+            - update `nixpkgs` in `flake.lock`
+            - update Broadcom `broadcom-sta` insecure package pin from evaluated Nix state
+            - validate by building `.#nixosConfigurations.silver.config.system.build.toplevel`
+
+      - name: Merge pull request
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --squash "${{ steps.cpr.outputs.pull-request-number }}"

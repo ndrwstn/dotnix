@@ -13,6 +13,7 @@ in
 {
   imports = [
     ./agenix.nix
+    ./broadcom.nix
     ./wifi.nix
     ./1password.nix
     ./desktop

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CONFIG_PATH = REPO_ROOT / "machines" / "silver" / "configuration.nix"
+CONFIG_PATH = REPO_ROOT / "systems" / "nixos" / "broadcom.nix"
 EVAL_TARGET = (
     ".#nixosConfigurations.silver.config.boot.kernelPackages.broadcom_sta.name"
 )
@@ -52,7 +52,7 @@ def replace_pin(new_package_name: str) -> tuple[str, bool]:
     current_package_name = matches[0]
 
     if current_package_name == new_package_name:
-        print(f"Silver Broadcom pin already up to date: {current_package_name}")
+        print(f"Broadcom pin already up to date: {current_package_name}")
         return current_package_name, False
 
     updated_content, replacements = PACKAGE_PATTERN.subn(
@@ -67,7 +67,7 @@ def replace_pin(new_package_name: str) -> tuple[str, bool]:
         )
 
     CONFIG_PATH.write_text(updated_content)
-    print(f"Updated Silver Broadcom pin: {current_package_name} -> {new_package_name}")
+    print(f"Updated Broadcom pin: {current_package_name} -> {new_package_name}")
     return current_package_name, True
 
 
@@ -75,7 +75,7 @@ def main() -> int:
     evaluated_package_name = evaluate_broadcom_package_name()
     _, changed = replace_pin(evaluated_package_name)
 
-    print(f"::notice::silver_broadcom_changed={str(changed).lower()}")
+    print(f"::notice::broadcom_pin_changed={str(changed).lower()}")
     return 0
 
 
