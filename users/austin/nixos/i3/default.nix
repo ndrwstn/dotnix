@@ -37,6 +37,15 @@ let
   fileManagerCommand = lib.getExe fileManagerPackage;
   networkEditorPackage = pkgs.networkmanagerapplet;
   audioControlPackage = pkgs.pavucontrol;
+  i3SystemMenuScript = pkgs.writeShellScriptBin "i3-system-menu" ''
+    ${pkgs.i3}/bin/i3-nagbar -t warning -m 'System' \
+      -B 'Lock' '${pkgs.i3lock}/bin/i3lock' \
+      -B 'Logout' '${pkgs.i3}/bin/i3-msg exit' \
+      -B 'Sleep' '${pkgs.systemd}/bin/systemctl suspend' \
+      -B 'Hibernate' '${pkgs.systemd}/bin/systemctl hibernate' \
+      -B 'Reboot' '${pkgs.systemd}/bin/systemctl reboot' \
+      -B 'Shutdown' '${pkgs.systemd}/bin/systemctl poweroff'
+  '';
 in
 {
   home.sessionVariables = {
@@ -111,13 +120,7 @@ in
           "${mod}+f" = "fullscreen toggle";
           "${mod}+v" = "floating toggle";
           "${mod}+Shift+r" = "reload";
-          "${mod}+Shift+e" = "exec i3-nagbar -t warning -m 'System' \
-            -B 'Lock' 'i3lock' \
-            -B 'Logout' 'i3-msg exit' \
-            -B 'Sleep' 'systemctl suspend' \
-            -B 'Hibernate' 'systemctl hibernate' \
-            -B 'Reboot' 'systemctl reboot' \
-            -B 'Shutdown' 'systemctl poweroff'";
+          "${mod}+Shift+e" = "exec ${lib.getExe i3SystemMenuScript}";
 
           "${mod}+1" = "workspace number 1";
           "${mod}+2" = "workspace number 2";
