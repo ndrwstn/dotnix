@@ -9,7 +9,7 @@ let
   browserCommand = lib.getExe browserPackage;
   passwordManagerPackage = pkgs._1password-gui;
   passwordManagerCommand = lib.getExe passwordManagerPackage;
-  fileManagerPackage = pkgs.pcmanfm;
+  fileManagerPackage = pkgs.nemo-with-extensions;
   fileManagerCommand = lib.getExe fileManagerPackage;
   networkEditorPackage = pkgs.networkmanagerapplet;
   networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
@@ -35,6 +35,7 @@ lib.mkMerge [
       browserPackage
       passwordManagerPackage
       fileManagerPackage
+      pcmanfm
       brightnessctl
       cliphist
       grim
@@ -50,6 +51,12 @@ lib.mkMerge [
       wlogout
       wofi
     ];
+
+    # Set Nemo as the default handler for directories (e.g., opening folders from
+    # browser downloads). The activation command runs every rebuild — idempotent.
+    home.activation.setNemoAsDefaultFileManager = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      ${pkgs.xdg-utils}/bin/xdg-mime default nemo.desktop inode/directory
+    '';
 
     wayland.windowManager.hyprland = {
       enable = true;
