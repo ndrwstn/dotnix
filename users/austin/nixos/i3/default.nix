@@ -114,7 +114,13 @@ in
           "${mod}+f" = "fullscreen toggle";
           "${mod}+v" = "floating toggle";
           "${mod}+Shift+r" = "reload";
-          "${mod}+Shift+e" = "exec i3-msg exit";
+          "${mod}+Shift+e" = "exec i3-nagbar -t warning -m 'System' \
+            -B 'Lock' 'i3lock' \
+            -B 'Logout' 'i3-msg exit' \
+            -B 'Sleep' 'systemctl suspend' \
+            -B 'Hibernate' 'systemctl hibernate' \
+            -B 'Reboot' 'systemctl reboot' \
+            -B 'Shutdown' 'systemctl poweroff'";
 
           "${mod}+1" = "workspace number 1";
           "${mod}+2" = "workspace number 2";
@@ -211,6 +217,7 @@ in
     dmenu
     dunst
     feh
+    i3lock
     i3status
     maim
     networkEditorPackage
