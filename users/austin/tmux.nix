@@ -89,6 +89,11 @@ let
       startDirectory = "${workspaceBase}/90__CONFIG/OPENCODE";
     };
 
+    "television.yaml" = {
+      sessionName = "TELEVISION";
+      startDirectory = "${workspaceBase}/90__CONFIG/TELEVISION";
+    };
+
     "zmk.yaml" = {
       sessionName = "ZMK";
       startDirectory = "${workspaceBase}/90__CONFIG/ZMK";
