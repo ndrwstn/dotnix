@@ -5,8 +5,6 @@
 , browserCommand
 , passwordManagerCommand
 , fileManagerCommand
-, networkEditorCommand
-, audioControlCommand
 , ...
 }:
 
@@ -25,8 +23,7 @@ in
       "${mod},C,exec,vicinae clipboard"
       "${mod},P,exec,${passwordManagerCommand}"
       "${mod},E,exec,${fileManagerCommand}"
-      "${mod},N,exec,${networkEditorCommand}"
-      "${mod},M,exec,${audioControlCommand}"
+
 
       # Window management
       "${mod},Q,killactive,"
@@ -98,7 +95,7 @@ in
       # Common laptop helper keys
       ",XF86Explorer,exec,${fileManagerCommand}"
       ",XF86Launch1,exec,vicinae toggle"
-      ",XF86Launch2,exec,${networkEditorCommand}"
+
     ];
 
     binde = [

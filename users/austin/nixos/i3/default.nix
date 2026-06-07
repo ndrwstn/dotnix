@@ -36,9 +36,7 @@ let
   fileManagerPackage = pkgs.pcmanfm;
   fileManagerCommand = lib.getExe fileManagerPackage;
   networkEditorPackage = pkgs.networkmanagerapplet;
-  networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
   audioControlPackage = pkgs.pavucontrol;
-  audioControlCommand = "${audioControlPackage}/bin/pavucontrol";
 in
 {
   home.sessionVariables = {
@@ -107,8 +105,7 @@ in
           "${mod}+c" = "exec vicinae clipboard";
           "${mod}+p" = "exec ${passwordManagerCommand}";
           "${mod}+e" = "exec ${fileManagerCommand}";
-          "${mod}+n" = "exec ${networkEditorCommand}";
-          "${mod}+m" = "exec ${audioControlCommand}";
+
 
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
@@ -176,7 +173,7 @@ in
           "XF86KbdBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl -d smc::kbd_backlight set 10%-";
           "XF86Explorer" = "exec ${fileManagerCommand}";
           "XF86Launch1" = "exec vicinae toggle";
-          "XF86Launch2" = "exec ${networkEditorCommand}";
+
         };
 
         modes.resize = {

@@ -12,9 +12,7 @@ let
   fileManagerPackage = pkgs.nemo-with-extensions;
   fileManagerCommand = lib.getExe fileManagerPackage;
   networkEditorPackage = pkgs.networkmanagerapplet;
-  networkEditorCommand = "${networkEditorPackage}/bin/nm-connection-editor";
   audioControlPackage = pkgs.pavucontrol;
-  audioControlCommand = "${audioControlPackage}/bin/pavucontrol";
 in
 
 lib.mkMerge [
@@ -22,7 +20,7 @@ lib.mkMerge [
   (import ./gestures.nix { inherit pkgs unstable lib config; })
   (import ./keymaps.nix {
     inherit pkgs terminalCommand browserCommand passwordManagerCommand
-      fileManagerCommand networkEditorCommand audioControlCommand;
+      fileManagerCommand;
   })
   (import ./waybar.nix { inherit pkgs unstable lib config; })
   (import ./wlogout.nix { inherit pkgs unstable lib config; })
