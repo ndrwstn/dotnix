@@ -34,10 +34,7 @@
     };
 
     # nixautopkgs flake
-    nixautopkgs = {
-      url = "github:ndrwstn/nixautopkgs/master";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    nixautopkgs.url = "github:ndrwstn/nixautopkgs/master";
 
     # NUR repository for Firefox extensions
     nur = {
