@@ -248,7 +248,6 @@ lib.mkMerge [
       ffmpegthumbnailer
       figlet
       firefox
-      unstable.librewolf
       fluxcd
       # gcc
       gitleaks
@@ -318,7 +317,6 @@ lib.mkMerge [
       taplo
       # termpdfpy # terminal pdf viewer
       tdf
-      television
       pay-respects
       tlrc
       tree-sitter
@@ -335,6 +333,7 @@ lib.mkMerge [
 
 
       ## unstable
+      unstable.librewolf
       unstable.tea
       unstable.zmk-studio
 
@@ -346,6 +345,7 @@ lib.mkMerge [
       autopkgs.opencode
       autopkgs.opencode-desktop
       # autopkgs.surya
+      autopkgs.television
 
       ## mcppkgs
       mcppkgs.playwright-mcp
