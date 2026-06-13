@@ -8,6 +8,9 @@
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
+      extraEnv = {
+        XDG_CONFIG_HOME = "/Users/austin/.config";
+      };
       extraFlags = [ "--force-cleanup" ];
     };
     global = {
