@@ -290,6 +290,7 @@ lib.mkMerge [
       pandoc
       pluto
       poppler-utils
+      postgresql
       # printrun
       python3
       python313Packages.markitdown
