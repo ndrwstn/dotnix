@@ -385,56 +385,81 @@ in
   '';
 
   programs.nixvim.extraConfigLua = lib.mkAfter ''
-    do
+    -- Matugen wallpaper theme.
+    --
+    -- The wallpaper rotation script re-`dofile`s the generated matugen.lua
+    -- when the wallpaper changes and then sends SIGUSR1 to every running nvim
+    -- so the highlights and lualine theme pick up the new palette without
+    -- needing to restart the editor. See users/austin/nixos/hyprland/awww.nix
+    -- for the signal send.
+    local function apply_matugen_theme()
       local ok, result = pcall(dofile, vim.fn.expand("${config.xdg.configHome}/nvim/lua/generated/matugen.lua"))
-      if ok and type(result) == "table" then
-        local colors = result
+      if not ok or type(result) ~= "table" then
+        return
+      end
+      local colors = result
 
-        local transparent_bg = ${if pkgs.stdenv.isLinux then "true" else "false"}
+      local transparent_bg = ${if pkgs.stdenv.isLinux then "true" else "false"}
 
-        if transparent_bg then
-          local set = vim.api.nvim_set_hl
-          set(0, "Normal", { fg = colors.fg, bg = "NONE" })
-          set(0, "NormalNC", { fg = colors.fg, bg = "NONE" })
-          set(0, "EndOfBuffer", { fg = colors.bg, bg = "NONE" })
-          set(0, "SignColumn", { bg = "NONE" })
-          set(0, "FoldColumn", { bg = "NONE" })
-          set(0, "LineNr", { fg = colors.muted, bg = "NONE" })
-        end
+      if transparent_bg then
+        local set = vim.api.nvim_set_hl
+        set(0, "Normal", { fg = colors.fg, bg = "NONE" })
+        set(0, "NormalNC", { fg = colors.fg, bg = "NONE" })
+        set(0, "EndOfBuffer", { fg = colors.bg, bg = "NONE" })
+        set(0, "SignColumn", { bg = "NONE" })
+        set(0, "FoldColumn", { bg = "NONE" })
+        set(0, "LineNr", { fg = colors.muted, bg = "NONE" })
+      end
 
-        local ok_lualine, lualine = pcall(require, "lualine")
-        if ok_lualine then
-          lualine.setup({
-            options = {
-              theme = {
-                normal = {
-                  a = { bg = colors.accent, fg = colors.on_accent, gui = "bold" },
-                  b = { bg = colors.surface_alt, fg = colors.fg },
-                  c = { bg = colors.surface, fg = colors.fg },
-                },
-                insert = {
-                  a = { bg = colors.accent_alt, fg = colors.bg, gui = "bold" },
-                  b = { bg = colors.surface_alt, fg = colors.fg },
-                },
-                visual = {
-                  a = { bg = colors.warn, fg = colors.bg, gui = "bold" },
-                  b = { bg = colors.surface_alt, fg = colors.fg },
-                },
-                replace = {
-                  a = { bg = colors.err, fg = colors.bg, gui = "bold" },
-                  b = { bg = colors.surface_alt, fg = colors.fg },
-                },
-                inactive = {
-                  a = { bg = colors.surface, fg = colors.muted },
-                  b = { bg = colors.surface, fg = colors.muted },
-                  c = { bg = colors.surface, fg = colors.muted },
-                },
+      local ok_lualine, lualine = pcall(require, "lualine")
+      if ok_lualine then
+        lualine.setup({
+          options = {
+            theme = {
+              normal = {
+                a = { bg = colors.accent, fg = colors.on_accent, gui = "bold" },
+                b = { bg = colors.surface_alt, fg = colors.fg },
+                c = { bg = colors.surface, fg = colors.fg },
+              },
+              insert = {
+                a = { bg = colors.accent_alt, fg = colors.bg, gui = "bold" },
+                b = { bg = colors.surface_alt, fg = colors.fg },
+              },
+              visual = {
+                a = { bg = colors.warn, fg = colors.bg, gui = "bold" },
+                b = { bg = colors.surface_alt, fg = colors.fg },
+              },
+              replace = {
+                a = { bg = colors.err, fg = colors.bg, gui = "bold" },
+                b = { bg = colors.surface_alt, fg = colors.fg },
+              },
+              inactive = {
+                a = { bg = colors.surface, fg = colors.muted },
+                b = { bg = colors.surface, fg = colors.muted },
+                c = { bg = colors.surface, fg = colors.muted },
               },
             },
-          })
-        end
+          },
+        })
       end
     end
+
+    -- Initial application at startup.
+    apply_matugen_theme()
+
+    -- Live-reload handler. The wallpaper rotation script sends SIGUSR1 after
+    -- regenerating matugen.lua, so this re-`dofile`s the file and re-applies
+    -- the highlights/lualine theme against the new palette.
+    vim.api.nvim_create_autocmd("Signal", {
+      pattern = "SIGUSR1",
+      group = vim.api.nvim_create_augroup("MatugenLiveReload", { clear = true }),
+      callback = function()
+        apply_matugen_theme()
+        vim.schedule(function()
+          vim.cmd("redraw!")
+        end)
+      end,
+    })
   '';
 
   # Ensure directories exist

@@ -54,6 +54,17 @@ let
       if [ -s "${config.xdg.cacheHome}/matugen/hyprland-colors.conf" ]; then
         ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
         systemctl --user restart waybar.service 2>/dev/null || true
+        # Mako reads its config from disk; send D-Bus reload to the daemon.
+        ${pkgs.mako}/bin/makoctl reload 2>/dev/null || true
+        # Ghostty re-reads its config (including config-file includes) on SIGUSR2.
+        # Only runs against live instances; new terminals will pick up the new
+        # colors.conf at launch.
+        ${pkgs.procps}/bin/pkill -SIGUSR2 -x ghostty 2>/dev/null || true
+        # Re-source the wallpaper colors in any running tmux server so the
+        # status/pane styles update across all attached clients.
+        ${pkgs.tmux}/bin/tmux source-file "${config.xdg.configHome}/tmux/tmux-colors.conf" 2>/dev/null || true
+        # Tell every running nvim to re-apply the matugen theme via SIGUSR1.
+        ${pkgs.procps}/bin/pkill -SIGUSR1 -x nvim 2>/dev/null || true
       fi
     fi
   '';
