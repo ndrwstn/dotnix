@@ -81,9 +81,39 @@ in
   # Make pyspacemouse + transitive deps available to FreeCAD.app's Python 3.11
   # via PYTHONPATH. FreeCAD.app has disable-library-validation, allowing unsigned
   # Nix-built C extensions to load. SIP does NOT strip PYTHONPATH (only DYLD_*).
+  #
+  # NOTE: launchd.user.envVariables sets variables in user launchd context (user/<uid>/),
+  # but GUI apps started from Dock use the GUI launchd context (gui/<uid>/).
+  # We use environment.userLaunchAgents to create a plist in ~/Library/LaunchAgents/
+  # which gets loaded into the GUI session, making PYTHONPATH available to all GUI apps.
   # Takes effect after `darwin-rebuild switch` + logout/login.
   launchd.user.envVariables = {
     PYTHONPATH = map (pkg: "${pkg}/${pkgs.python311.sitePackages}") pyspacePkgs;
+  };
+
+  # Create a launchd plist in ~/Library/LaunchAgents/ to set PYTHONPATH in the GUI session.
+  # This is separate from launchd.user.envVariables because GUI apps (like FreeCAD.app
+  # launched from Dock) use the GUI launchd context, not the user launchd context.
+  environment.userLaunchAgents = {
+    "org-python-via-nix" = {
+      text = ''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>Label</key>
+            <string>org.python.via-nix</string>
+            <key>EnvironmentVariables</key>
+            <dict>
+                <key>PYTHONPATH</key>
+                <string>${lib.concatStringsSep ":" (map (pkg: "${pkg}/${pkgs.python311.sitePackages}") pyspacePkgs)}</string>
+            </dict>
+            <key>RunAtLoad</key>
+            <true/>
+        </dict>
+        </plist>
+      '';
+    };
   };
 
   # Apply the merged Homebrew config directly
