@@ -78,43 +78,9 @@ in
   # NOT in overlays/default.nix which is used for Linux overlays only)
   nixpkgs.overlays = [ (import ../../overlays/pyspacemouse.nix) ];
 
-  # Make pyspacemouse + transitive deps available to FreeCAD.app's Python 3.11
-  # via PYTHONPATH. FreeCAD.app has disable-library-validation, allowing unsigned
-  # Nix-built C extensions to load. SIP does NOT strip PYTHONPATH (only DYLD_*).
-  #
-  # NOTE: launchd.user.envVariables sets variables in user launchd context (user/<uid>/),
-  # but GUI apps started from Dock use the GUI launchd context (gui/<uid>/).
-  # We use environment.userLaunchAgents to create a plist in ~/Library/LaunchAgents/
-  # which gets loaded into the GUI session, making PYTHONPATH available to all GUI apps.
-  # Takes effect after `darwin-rebuild switch` + logout/login.
-  launchd.user.envVariables = {
-    PYTHONPATH = map (pkg: "${pkg}/${pkgs.python311.sitePackages}") pyspacePkgs;
-  };
-
-  # Create a launchd plist in ~/Library/LaunchAgents/ to set PYTHONPATH in the GUI session.
-  # This is separate from launchd.user.envVariables because GUI apps (like FreeCAD.app
-  # launched from Dock) use the GUI launchd context, not the user launchd context.
-  environment.userLaunchAgents = {
-    "org-python-via-nix" = {
-      text = ''
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>Label</key>
-            <string>org.python.via-nix</string>
-            <key>EnvironmentVariables</key>
-            <dict>
-                <key>PYTHONPATH</key>
-                <string>${lib.concatStringsSep ":" (map (pkg: "${pkg}/${pkgs.python311.sitePackages}") pyspacePkgs)}</string>
-            </dict>
-            <key>RunAtLoad</key>
-            <true/>
-        </dict>
-        </plist>
-      '';
-    };
-  };
+  # GUI-domain environment (PYTHONPATH + SSH_AUTH_SOCK) is provided via
+  # nixdarwin.gui-environment LaunchAgent, bootstrapped into gui/<uid>/.
+  # See the system.activationScripts entry in the system mkMerge below.
 
   # Apply the merged Homebrew config directly
   homebrew = mergedHomebrewConfig;
@@ -123,5 +89,41 @@ in
   system = lib.mkMerge [
     mergedSystemDefaults
     { primaryUser = "austin"; }
+    {
+      activationScripts.postActivation.text = lib.mkAfter ''
+                # Write nixdarwin.gui-environment plist for GUI-domain environment variables
+                GUI_USER="austin"
+                GUI_DOMAIN="gui/$(id -u "$GUI_USER")"
+                PLIST_DIR="/Users/$GUI_USER/Library/LaunchAgents"
+                PLIST_PATH="$PLIST_DIR/nixdarwin.gui-environment"
+
+                sudo --user="$GUI_USER" -- mkdir -p "$PLIST_DIR"
+
+                sudo --user="$GUI_USER" -- tee "$PLIST_PATH" >/dev/null <<'PLIST_EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>Label</key>
+            <string>nixdarwin.gui-environment</string>
+            <key>LimitLoadToSessionType</key>
+            <string>Aqua</string>
+            <key>EnvironmentVariables</key>
+            <dict>
+                <key>PYTHONPATH</key>
+                <string>${lib.concatStringsSep ":" (map (pkg: "${pkg}/${pkgs.python311.sitePackages}") pyspacePkgs)}</string>
+                <key>SSH_AUTH_SOCK</key>
+                <string>/Users/austin/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock</string>
+            </dict>
+            <key>RunAtLoad</key>
+            <true/>
+        </dict>
+        </plist>
+        PLIST_EOF
+
+                echo "Bootstrapping nixdarwin.gui-environment into $GUI_DOMAIN..." >&2
+                launchctl bootstrap "$GUI_DOMAIN" "$PLIST_PATH" 2>/dev/null || true
+      '';
+    }
   ];
 }
