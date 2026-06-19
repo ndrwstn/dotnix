@@ -10,13 +10,11 @@
         persistent-apps = [
           "/System/Applications/Mail.app"
           "/Applications/Across.app"
-          # "/System/Applications/Calendar.app"
           "/Applications/Things3.app"
           "/System/Applications/Reminders.app"
           "/System/Applications/Messages.app"
           "/Applications/Safari.app"
           "/Applications/Ghostty.app"
-          "/Applications/ChatGPT.app"
           "/Applications/Nix Apps/Neovide.app"
           # "/System/Applications/iPhone Mirroring.app"
         ];
