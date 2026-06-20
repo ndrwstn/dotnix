@@ -5,7 +5,7 @@
 let
   terminalPackage = unstable.ghostty;
   terminalCommand = "${terminalPackage}/bin/ghostty --working-directory=\"$HOME\"";
-  browserPackage = unstable.librewolf;
+  browserPackage = pkgs.librewolf; # was unstable.librewolf — moved to stable nixpkgs
   browserCommand = lib.getExe browserPackage;
   passwordManagerPackage = pkgs._1password-gui;
   passwordManagerCommand = lib.getExe passwordManagerPackage;

@@ -334,7 +334,8 @@ lib.mkMerge [
 
 
       ## unstable
-      unstable.librewolf
+      # unstable.librewolf # moved to stable nixpkgs
+      pkgs.librewolf
       unstable.tea
       unstable.zmk-studio
 
