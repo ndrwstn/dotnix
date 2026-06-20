@@ -346,8 +346,6 @@ lib.mkMerge [
       autopkgs.opencode
       autopkgs.opencode-desktop
       # autopkgs.surya
-      autopkgs.television
-
       ## mcppkgs
       mcppkgs.playwright-mcp
 
@@ -379,6 +377,9 @@ lib.mkMerge [
 
   # Import sesh session manager
   (import ./sesh.nix { inherit config pkgs lib; })
+
+  # Import television (tv) fuzzy finder configuration
+  (import ./television.nix { inherit config pkgs lib autopkgs; })
 
   # Import git configuration
   (import ./git.nix { inherit config pkgs lib; })
