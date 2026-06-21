@@ -232,9 +232,15 @@
       '';
 
       # Clear omnifunc to prevent native LSP completion from competing with blink
+      # Workaround: Disable incremental LSP sync to avoid neovim 0.12.3 assertion
+      # bug in sync.lua:136 (compute_start_range). See neovim issue #33224.
+      # Full sync is safe per LSP spec and avoids the bug entirely.
+      # TODO (2026-07-05): Re-evaluate - remove allow_incremental_sync = false if
+      # neovim has fixed issue #33224 upstream. Check if 0.12.4+ is available.
       onAttach = ''
         return function(client, bufnr)
           vim.bo[bufnr].omnifunc = nil
+          client.flags.allow_incremental_sync = false
         end
       '';
 
