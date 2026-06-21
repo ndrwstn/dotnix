@@ -29,9 +29,10 @@ in
       if [[ ! -f "$_TV_COMPLETION" ]] && command -v tv &>/dev/null; then
         mkdir -p "${configDir}" 2>/dev/null
         tv completions zsh 2>/dev/null > "$_TV_COMPLETION.tmp" && {
-          # Replace _default completer with _tv_channels for the
-          # channel positional argument, enabling channel-name completion
-          sed '/::channel/s/_default/_tv_channels/' "$_TV_COMPLETION.tmp" > "$_TV_COMPLETION" 2>/dev/null
+          # Replace _default with _tv_channels for channel completion,
+          # and remove the working_directory positional (which shows
+          # file completions mixed with channels and subcommands)
+          sed -e '/::working_directory/d' -e '/::channel/s/_default/_tv_channels/' "$_TV_COMPLETION.tmp" > "$_TV_COMPLETION" 2>/dev/null
           rm -f "$_TV_COMPLETION.tmp"
         }
       fi
