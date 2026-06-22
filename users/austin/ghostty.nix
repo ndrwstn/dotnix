@@ -31,11 +31,11 @@ in
 
       # Keybinding configurations
       keybind = [
-        # Unbind Ghostty's Ctrl+Enter fullscreen binding to allow it to pass through to nvim
-        "ctrl+enter=unbind"
-
         # Map Shift+Enter to send CSI u sequence that tmux can recognize
         "shift+enter=csi:13;2u"
+
+        # Map Ctrl+Enter to send LF byte for Charmbracelet/Bubble Tea TUI apps
+        "ctrl+enter=text:\\x0a"
       ];
 
       # Additional tmux-friendly settings
