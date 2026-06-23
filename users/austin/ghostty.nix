@@ -34,8 +34,8 @@ in
         # Map Shift+Enter to send CSI u sequence that tmux can recognize
         "shift+enter=csi:13;2u"
 
-        # Map Ctrl+Enter to send LF byte for Charmbracelet/Bubble Tea TUI apps
-        "ctrl+enter=text:\\x0a"
+        # Map Ctrl+Enter to send CSI u sequence that works with both Neovim and Charmbracelet/Bubble Tea TUI apps
+        "ctrl+enter=csi:13;5u"
       ];
 
       # Additional tmux-friendly settings
