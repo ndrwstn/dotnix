@@ -11,7 +11,7 @@ let
   hasI3 = builtins.elem "i3" windowManagers;
 in
 {
-  services.vicinae = {
+  programs.vicinae = {
     enable = true;
     # Vicinae shows "uwsm app --" as a default/placeholder launch prefix, but
     # empty/unset still allows auto-detection of uwsm. Set a non-empty no-op
