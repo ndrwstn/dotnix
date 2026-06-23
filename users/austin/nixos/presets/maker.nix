@@ -8,6 +8,7 @@
   home.packages = with pkgs; [
     freecad
     kicad
+    ltspice
     openscad
     orca-slicer
   ];

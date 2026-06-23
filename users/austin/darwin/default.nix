@@ -24,6 +24,7 @@ lib.mkMerge [
       # Future: remote inference via k8s OpenVINO cluster for Intel machines.
       {
         home.packages = with pkgs; [
+          ltspice
           whisper-cpp
         ];
       }
