@@ -55,6 +55,7 @@
       "jdownloader"
       # "jordanbaird-ice" # 05/01/2026 deactivated 
       "keka"
+      "ltspice"
       "kicad"
       "krita"
       "little-snitch" # $$$
