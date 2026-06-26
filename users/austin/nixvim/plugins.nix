@@ -20,7 +20,7 @@
     # ============================================================================
     # Design Decision: Migrated from nvim-cmp to blink.cmp for:
     # - Better performance (Rust-based fuzzy matching)
-    # - Native vim.snippet support (no luasnip dependency)
+    # - Native vim.snippet support (reduced luasnip dependency)
     # - Simpler configuration
     # ============================================================================
     blink-cmp = {
@@ -73,6 +73,17 @@
         # The Rust fuzzy matcher works great with defaults (typo resistance, etc.)
         # Advanced options like frecency/proximity may not be available in nixvim's version
       };
+    };
+
+    # ============================================================================
+    # SNIPPET ENGINE — custom luasnip snippets
+    # ============================================================================
+    # Using nixvim's built-in module (not extraPlugins) to keep luasnip's
+    # dependencies (jsregexp → luajit) on the same nixpkgs as neovim
+    luasnip = {
+      enable = true;
+      # For custom snippets, use fromLua, fromVscode, or fromSnipmate:
+      # fromLua = [{ paths = ./luasnippets; }];
     };
 
     # ============================================================================
