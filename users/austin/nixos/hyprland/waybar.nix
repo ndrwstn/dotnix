@@ -32,6 +32,7 @@ in
           "tray"
           "network"
           "battery"
+          "wireplumber"
           "clock"
         ];
 
@@ -84,6 +85,16 @@ in
           format-icons = [ "🪫" "🪫" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" "🔋" ];
           tooltip-format = "{timeTo}, {power:0.1f}W";
           on-click = "${pkgs.wlogout}/bin/wlogout";
+        };
+
+        wireplumber = {
+          format = "{volume}%";
+          format-muted = "🔇";
+          format-icons = [ "🔈" "🔉" "🔊" ];
+          on-click = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-click-middle = "${pkgs.pavucontrol}/bin/pavucontrol";
+          on-click-right = "${pkgs.pavucontrol}/bin/pavucontrol";
+          tooltip-format = "{node_name}: {volume}%";
         };
 
         tray = {
@@ -148,6 +159,7 @@ in
       #clock,
       #battery,
       #network,
+      #wireplumber,
       #tray,
       #mode,
       #idle_inhibitor,
@@ -165,6 +177,7 @@ in
 
       #network,
       #battery,
+      #wireplumber,
       #tray {
         background: alpha(@surface-alt, 0.90);
         border: 1px solid alpha(@border, 0.75);
@@ -220,7 +233,8 @@ in
       }
 
       #wireplumber.muted {
-        color: @accent;
+        background-color: @warning;
+        color: @bg;
       }
 
       #temperature.critical {

@@ -195,7 +195,7 @@ in
         bars = [
           {
             position = "top";
-            statusCommand = "${pkgs.i3status}/bin/i3status";
+            statusCommand = "${lib.getExe pkgs.i3status-rust} ${config.xdg.configHome}/i3status-rust/config-default.toml";
           }
         ];
       };
@@ -208,6 +208,33 @@ in
 
   services.dunst.enable = true;
 
+  programs.i3status-rust = {
+    enable = true;
+    bars."default" = {
+      blocks = [
+        {
+          block = "sound";
+          driver = "pipewire";
+          click = [
+            {
+              button = "left";
+              cmd = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+            }
+            {
+              button = "right";
+              cmd = "${pkgs.pavucontrol}/bin/pavucontrol";
+            }
+          ];
+        }
+        {
+          block = "time";
+          interval = 60;
+          format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+        }
+      ];
+    };
+  };
+
   home.packages = with pkgs; [
     terminalPackage
     browserPackage
@@ -218,7 +245,6 @@ in
     dunst
     feh
     i3lock
-    i3status
     maim
     networkEditorPackage
     audioControlPackage
