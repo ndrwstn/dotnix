@@ -13,8 +13,11 @@ lib.mkMerge [
       mapleader = " ";
       maplocalleader = " ";
     };
-    # allow unfree - needed for copilot-language-server
-    nixpkgs.config.allowUnfree = true;
+    # Use host system's nixpkgs (nixpkgs-darwin on macOS, nixpkgs on NixOS)
+    # instead of nixvim's own pinned nixpkgs. This avoids cross-nixpkgs
+    # conflicts (e.g., two different luajit builds in the same buildEnv).
+    # allowUnfree is set at the system level, so it doesn't need to be here.
+    nixpkgs.useGlobalPackages = true;
     extraPackages = [
       texlivePackage
       pkgs.texlab
