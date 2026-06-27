@@ -29,10 +29,6 @@ INPUT_MAP = {
         "channel": "nixos-unstable",
         "jobset": "unstable",
     },
-    "nixpkgs-darwin": {
-        "channel": "nixpkgs-26.05-darwin",
-        "jobset": "nixpkgs-26.05-darwin",
-    },
 }
 
 
