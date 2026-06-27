@@ -58,7 +58,10 @@
 
   config = {
 
-
+    # Ghostty-1.1.3 was broken in nixpkgs and evaluated by home-manager even
+    # when not being installed (e.g. on Darwin where package = null).
+    # TODO: Remove when ghostty > 1.1.3 is confirmed stable on all platforms.
+    nixpkgs.config.allowBroken = true;
 
     # Common system packages
     environment.systemPackages = with pkgs; [
