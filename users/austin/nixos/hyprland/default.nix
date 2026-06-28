@@ -89,6 +89,7 @@ lib.mkMerge [
         # Input configuration
         input = {
           kb_layout = "us";
+          natural_scroll = true;
 
           follow_mouse = 1;
           sensitivity = 0;
