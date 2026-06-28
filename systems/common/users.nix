@@ -25,7 +25,7 @@
       austin = {
         isNormalUser = true;
         # extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" "dialout" ];
-        extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" ];
+        extraGroups = [ "networkmanager" "wheel" "disk" "plugdev" "dialout" ];
         home = "/home/austin";
         hashedPassword = "$6$5PZLg16IXRSJaLiI$bU8OB6wng7ZvQcrkpX/x5pjX2GegtYN.YUIAibPvAtVq/nyGwfjLyGwV5GR2LCnEqytFzxxer6.fhAhO7G8lD1";
       };
