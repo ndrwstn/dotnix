@@ -62,7 +62,7 @@ jobs:
         run: |
           DATE=$(date +%Y-%m-%d)
           BRANCH="staging/flake-update-$DATE"
-          git add flake.lock machines/silver/configuration.nix
+          git add flake.lock systems/nixos/broadcom.nix
           git commit -m "update(lock): refresh flake inputs"
           git push origin HEAD:"$BRANCH" --force
           # Create PR or ensure existing one has the staging-pending label

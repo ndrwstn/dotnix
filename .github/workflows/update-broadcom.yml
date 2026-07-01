@@ -88,4 +88,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge --squash "${{ steps.cpr.outputs.pull-request-number }}"
+          PR_NUM="${{ steps.cpr.outputs.pull-request-number }}"
+          if ! gh pr merge --squash "$PR_NUM"; then
+            echo "::error::Auto-merge failed for PR #$PR_NUM — investigating..."
+            gh pr view "$PR_NUM" --json number,title,state,mergeable,mergeStateStatus,statusCheckRollup \
+              --jq '"PR #\(.number): state=\(.state) mergeable=\(.mergeable) mergeStateStatus=\(.mergeStateStatus)"'
+            gh pr view "$PR_NUM" --json statusCheckRollup \
+              --jq '"Required checks: \([.statusCheckRollup[] | select(.isRequired) | .conclusion // "pending"] | join(", "))"'
+            exit 1
+          fi
