@@ -195,7 +195,7 @@ in
         bars = [
           {
             position = "top";
-            statusCommand = "${pkgs.i3status}/bin/i3status";
+            statusCommand = "${lib.getExe pkgs.i3status-rust} ${config.xdg.configHome}/i3status-rust/config-default.toml";
           }
         ];
       };
@@ -208,6 +208,75 @@ in
 
   services.dunst.enable = true;
 
+  programs.i3status-rust = {
+    enable = true;
+    bars."default" = {
+      blocks = [
+        # Wireless — matches i3status "wireless _first_" (format: "W: (%quality at %essid) %ip")
+        {
+          block = "net";
+          device = "^wl";
+          format = "W: {$signal_strength $ssid |} $ip ";
+          inactive_format = "W: down";
+          missing_format = "";
+        }
+        # Ethernet — matches i3status "ethernet _first_" (format: "E: %ip (%speed)")
+        {
+          block = "net";
+          device = "^en|^eth";
+          format = "E: $ip ";
+          inactive_format = "E: down";
+          missing_format = "";
+        }
+        # Battery — matches i3status "battery all" (format: "%status %percentage %remaining")
+        {
+          block = "battery";
+          format = " $icon $percentage ";
+        }
+        # Disk — matches i3status "disk /" (format: "%avail")
+        {
+          block = "disk_space";
+          path = "/";
+          info_type = "available";
+          interval = 60;
+          warning = 20.0;
+          alert = 10.0;
+        }
+        # Load — matches i3status "load" (format: "%1min")
+        {
+          block = "load";
+          format = " $icon $1m ";
+        }
+        # Memory — matches i3status "memory" (format: "%used | %available")
+        {
+          block = "memory";
+          format = " $icon $mem_used.eng(prefix:Mi)/$mem_total.eng(prefix:Mi) ";
+        }
+        # Sound — volume/mute with click-to-toggle (new addition)
+        {
+          block = "sound";
+          driver = "pipewire";
+          click = [
+            {
+              button = "left";
+              cmd = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+            }
+            {
+              button = "right";
+              cmd = "${pkgs.pavucontrol}/bin/pavucontrol";
+            }
+          ];
+        }
+        # Time — matches i3status "tztime local" (format: "%Y-%m-%d %H:%M:%S")
+        {
+          block = "time";
+          interval = 60;
+          format = " $timestamp.datetime(f:'%Y-%m-%d %H:%M:%S') ";
+        }
+      ];
+    };
+  };
+
   home.packages = with pkgs; [
     terminalPackage
     browserPackage
@@ -218,7 +287,6 @@ in
     dunst
     feh
     i3lock
-    i3status
     maim
     networkEditorPackage
     audioControlPackage

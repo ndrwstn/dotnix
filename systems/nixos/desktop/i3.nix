@@ -11,7 +11,6 @@ lib.mkIf (builtins.elem "i3" config._astn.machine.windowManagers) {
     enable = true;
     extraPackages = with pkgs; [
       dmenu
-      i3status
     ];
   };
 }
