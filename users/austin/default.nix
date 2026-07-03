@@ -382,6 +382,9 @@ lib.mkMerge [
   # Import television (tv) fuzzy finder configuration
   (import ./television.nix { inherit config pkgs lib autopkgs; })
 
+  # Import 1Password secret injection configuration
+  (import ./1password.nix { inherit config pkgs lib; })
+
   # Import git configuration
   (import ./git.nix { inherit config pkgs lib; })
 
