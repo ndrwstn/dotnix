@@ -7,7 +7,7 @@
 let
   # The broadcom-sta package name includes the version from nixpkgs.
   # CI (update-broadcom-pin.py) updates this pin when nixpkgs bumps the kernel.
-  broadcomStaPin = "broadcom-sta-6.30.223.271-59-6.18.35";
+  broadcomStaPin = "broadcom-sta-6.30.223.271-59-6.18.38";
 in
 {
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
