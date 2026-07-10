@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - dev
     paths:
       - flake.lock
 
@@ -74,6 +73,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           branch: ci/update-broadcom-pin
+          base: master
           delete-branch: true
           commit-message: "update(insecure/broadcom): update Broadcom package pin"
           title: "update(insecure/broadcom): update Broadcom package pin"
