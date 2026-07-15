@@ -47,7 +47,17 @@ lib.mkMerge [
       package = pkgs.kdePackages.breeze;
       gtk.enable = true;
     };
+
+    # Enable dconf for GSettings-backed preferences (Nemo, Nautilus, etc.)
+    dconf.enable = true;
   }
+
+  # Nautilus (GNOME Files): set default view to list view
+  (lib.mkIf (hasWindowManager "gnome") {
+    dconf.settings."org/gnome/nautilus/preferences" = {
+      default-folder-viewer = "list-view";
+    };
+  })
 
   # nixos packages
   (import ./packages.nix { inherit config pkgs unstable; })

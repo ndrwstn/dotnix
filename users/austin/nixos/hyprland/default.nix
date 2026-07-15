@@ -56,6 +56,18 @@ lib.mkMerge [
       ${pkgs.xdg-utils}/bin/xdg-mime default nemo.desktop inode/directory
     '';
 
+    # Nemo: set default folder view to list view
+    dconf.settings."org/nemo/preferences" = {
+      default-folder-viewer = "list-view";
+    };
+
+    # PCManFM: set default view to detailed list view
+    # view_mode values: 0=icon, 1=compact, 2=thumbnail, 3=detailed list
+    xdg.configFile."pcmanfm/lxde/pcmanfm.conf".text = ''
+      [ui]
+      view_mode=3
+    '';
+
     wayland.windowManager.hyprland = {
       enable = true;
       package = null; # Use system-installed Hyprland to avoid conflicts
