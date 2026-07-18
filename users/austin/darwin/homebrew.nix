@@ -63,7 +63,7 @@
       # "maccy"
       "megasync"
       "monitorcontrol"
-      "moom" # $$$
+      # "moom" # $$$
       "mqttx"
       "name-mangler" # $$$
       # "numi"
