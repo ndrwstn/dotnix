@@ -70,7 +70,6 @@ tmp/
 
 # Unencrypted jsons used to make .age keys
 secrets/**/*.json
-secrets/**/*.jsonc
 _notes/
 
 # Template age identity keys — generated locally, never committed
