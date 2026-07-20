@@ -49,4 +49,12 @@ in
   };
 
   systemd.user.services.vicinae.Unit.Requires = lib.mkAfter [ "dbus.socket" ];
+
+  # Restart vicinae after home-manager activation to pick up updated
+  # package paths (XDG .desktop files and PATH binaries). Without this,
+  # vicinae's in-memory app database may reference stale Nix store paths
+  # when packages (e.g., from nixautopkgs) are updated.
+  home.activation.restartVicinae = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    systemctl --user try-restart vicinae
+  '';
 }
