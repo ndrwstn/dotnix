@@ -138,6 +138,13 @@ in
     };
   };
 
+  # Socket-only activation for iscsid: the upstream nixpkgs module enables
+  # both the service (wantedBy multi-user.target) and the socket
+  # (wantedBy sockets.target), causing a conflict during switch activations
+  # ("Socket service iscsid.service already active, refusing.").
+  # Socket-only avoids this and is the recommended systemd pattern.
+  systemd.services.iscsid.wantedBy = lib.mkForce [ ];
+
   systemd.services.brother-mfc-l8900 = {
     description = "Configure Brother MFC-L8900 printer";
     after = [ "cups.service" "agenix.service" "network-online.target" ];
