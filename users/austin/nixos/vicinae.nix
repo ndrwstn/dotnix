@@ -55,6 +55,6 @@ in
   # vicinae's in-memory app database may reference stale Nix store paths
   # when packages (e.g., from nixautopkgs) are updated.
   home.activation.restartVicinae = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    systemctl --user try-restart vicinae
+    ${pkgs.systemd}/bin/systemctl --user try-restart vicinae
   '';
 }
