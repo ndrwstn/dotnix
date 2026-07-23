@@ -19,7 +19,7 @@ let
       hostname = "monaco.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" "ios-devices" "home-assistant" ];
+      capabilities = [ "ios-devices" "home-assistant" ];
     };
 
     silver = {
@@ -27,7 +27,6 @@ let
       hostname = "silver.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" ];
     };
 
     plutonium = {
@@ -35,7 +34,6 @@ let
       hostname = "plutonium.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" ];
     };
 
     molybdenum = {
@@ -43,7 +41,6 @@ let
       hostname = "molybdenum.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" ];
     };
 
     siberia = {
@@ -51,7 +48,6 @@ let
       hostname = "siberia.impetuo.us";
       user = "austin";
       port = 22;
-      capabilities = [ "setup-key" ];
     };
   };
 
@@ -81,12 +77,6 @@ let
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJ/X4/0/gzWK0bIAUGZ7J+XE9VBRY1xcjBtT2uTrbzT";
       description = "Home Assistant server - mckean";
     };
-  };
-
-  # Universal setup key (deployed via agenix to machines with setup-key capability)
-  setupKey = {
-    description = "Universal setup private key for remote access";
-    secretPath = "ssh-setup.age";
   };
 
   # Known hosts data (host keys for SSH client)
@@ -141,8 +131,7 @@ let
   # 2. Explicitly specifying IdentityFile for each host to use the current machine's key
   # 3. Using deployed public key files that 1Password can match to private keys
   # 4. Using deployed public keys for external services (gitea, github)
-  # 5. Using physical setup key for goetz (bootstrap/setup scenarios)
-  # 6. Enabling agent forwarding for all internal machine connections (for 1Password remote auth)
+  # 5. Enabling agent forwarding for all internal machine connections (for 1Password remote auth)
   sshMatches =
     # Generate machine-specific matches, filtering out current machine
     (lib.mapAttrsToList
@@ -194,11 +183,6 @@ let
 
   # Capability definitions
   capabilities = {
-    setup-key = {
-      description = "Machines that receive the universal setup private key";
-      deploySecrets = [ "ssh-setup.age" ];
-    };
-
     ios-devices = {
       description = "Machines that accept iOS device connections";
       authorizedKeys = [ "bradley" "halsey" "nimitz" "mckinley" ];
@@ -338,7 +322,6 @@ let
     then generateAuthorizedKeys currentMachine
     else lib.mapAttrsToList (name: machineData: machineData.key) machines; # fallback to machine keys only
 
-  # Note: Setup key deployment is handled at machine level via secrets.nix files
 in
 {
   # Note: agenix secrets are configured via age.secrets below, not via imports
@@ -434,17 +417,6 @@ in
     force = true;
   };
 
-  # Create symlink to setup key for machines that have it deployed via agenix
-  # This allows SSH config to reference ~/.ssh/setup while agenix deploys to /run/agenix/ssh-setup
-  # Note: Using home.activation because /run/agenix/ssh-setup only exists at runtime, not build time
-  home.activation.linkSetupKey = lib.mkIf (currentMachine != null && hasCapability "setup-key" currentMachine) (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      if [ -f "/run/agenix/ssh-setup" ]; then
-        $DRY_RUN_CMD ln -sf "/run/agenix/ssh-setup" "$HOME/.ssh/setup"
-      fi
-    ''
-  );
-
   # Ensure writable known_hosts file exists for dynamic host entries
   home.activation.ensureWritableKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -f "$HOME/.ssh/known_hosts" ]; then
@@ -517,6 +489,4 @@ in
       fi
     '';
 
-  # Note: SSH setup key is deployed via machine-specific secrets.nix files
-  # for machines with setup-key capability (monaco, silver, etc.)
 }

@@ -15,13 +15,8 @@ let
   allUsers = [ austin ];
   activeMachines = [ monaco silver plutonium siberia molybdenum svalbard ];
 
-  # Machines with setup-key capability (can receive the universal setup private key)
-  setupKeyMachines = [ monaco silver plutonium siberia molybdenum svalbard ];
 in
 {
-  # Individual SSH key files
-  "ssh-setup.age".publicKeys = allUsers ++ setupKeyMachines;
-
   # Syncthing secrets (consolidated)
   "syncthing/config-shared.age".publicKeys = allUsers ++ activeMachines;
   "syncthing/config-monaco.age".publicKeys = allUsers ++ [ monaco ];
