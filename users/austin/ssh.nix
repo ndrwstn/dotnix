@@ -157,7 +157,7 @@ let
           HostName = "gitea.impetuo.us";
           User = "git";
           Port = 22;
-          IdentityFile = "~/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub";
+          IdentityFile = "~/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub";
         };
       }
       {
@@ -166,7 +166,7 @@ let
           HostName = "github.com";
           User = "git";
           Port = 22;
-          IdentityFile = "~/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub";
+          IdentityFile = "~/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub";
         };
       }
       # nietzsche.impetuo.us using fingerprint filename
@@ -395,13 +395,13 @@ in
   # Deploy public keys for external services with fingerprint filenames for 1Password compatibility
   # These are used with IdentitiesOnly to ensure only the correct key is tried
   # force = true prevents backup conflicts when activation scripts convert symlinks to regular files
-  home.file.".ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" = {
-    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC80rsUP8S2W51b7xEjxIzZ6Wcdpwo0WTEKpu56EZpFM";
+  home.file.".ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" = {
+    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIEJ1IM3NR7kgKuZ/zkD89KpYsQvnxTdFOKAm974PfOv";
     force = true;
   };
 
-  home.file.".ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" = {
-    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6/c2t60dTIt2Z9Nkfh1SU4oWqgCe3YLTYRslGbs91U";
+  home.file.".ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" = {
+    text = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOvrhmMT3zfmFyOZx3buzoZBrL5RuAFnrf4PohrYjrM2";
     force = true;
   };
 
@@ -463,16 +463,16 @@ in
       fi
       
       # 1Password IdentityFile placeholders (600 permissions)
-      if [ -f "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub.tmp" "$HOME/.ssh/SHA256_09zQjG5Kp8gbDqr9C8fFzSI8JEyfxzz_KdkqB3qswqk.pub"
+      if [ -f "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub"
       fi
       
-      if [ -f "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub.tmp" "$HOME/.ssh/SHA256_5irmbU+F4t3sCBm61Hyqa2BtwR1J_TlN4q0V+11U33I.pub"
+      if [ -f "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" ]; then
+        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
+        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
+        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub"
       fi
       
       if [ -f "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" ]; then
