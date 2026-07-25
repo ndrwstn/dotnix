@@ -165,6 +165,27 @@
             then "nixos"
             else "darwin";
 
+          # Extract machine role from configuration.nix for system module routing.
+          # Roles: "virtual" (LXC/VMs), "template" (clonable images), "server" (future),
+          # "appliance" (future). "desktop" and "laptop" are documentation-only here
+          # and map to the default systems/nixos (no role-based routing needed).
+          # For Darwin machines, the darwin system module is always used regardless.
+          machineRoleMatch = builtins.match
+            ".*_astn[[:space:]]*[.][[:space:]]*machineRole[[:space:]]*=[[:space:]]*\"([^\"]+)\".*"
+            (builtins.readFile (./machines + "/${name}/configuration.nix"));
+          machineRole =
+            if machineRoleMatch != null
+            then builtins.elemAt machineRoleMatch 0
+            else null;
+
+          # Select system module based on role (only for NixOS Linux machines).
+          # Virtual/template machines use a minimal headless profile;
+          # all other roles (including unset) use the full desktop profile.
+          effectiveSystemModule =
+            if osType == "nixos" && (machineRole == "virtual" || machineRole == "template")
+            then ./systems/virtual
+            else sysConfig.systemModule;
+
           # Get appropriate system configuration
           sysConfig = systemConfig osType;
 
@@ -227,7 +248,7 @@
               machineModules
               ++ [
                 ./systems/common
-                sysConfig.systemModule
+                effectiveSystemModule
                 sysConfig.hmModule
               ]
               # Add darwin-login-items module for Darwin systems only

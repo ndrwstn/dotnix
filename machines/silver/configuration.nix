@@ -8,6 +8,7 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
+  _astn.machineRole = "laptop";
   _astn.machine.windowManagers = [ "gnome" "hyprland" ];
 
   _astn.presets = {

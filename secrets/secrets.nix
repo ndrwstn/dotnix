@@ -13,6 +13,8 @@ let
   _opencode = "age1kcnwc9e79ut35j0lj4g065cvam5q4u6ar02kg7zvxsh8f5806g8sp49xkt";
 
   # Key groups for active machines
+  # NOTE: activeMachines is manually maintained and would benefit from
+  # buildMachine automation in the future (auto-collect from machine roles).
   allUsers = [ austin ];
   activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode ];
 
@@ -51,4 +53,9 @@ in
 
   # _opencode template age identity key (backup — used for VMA builds)
   "templates/opencode.age".publicKeys = allUsers;
+
+  # _opencode template-specific Gitea/GitHub keys (separate from main flake keys)
+  # Clones use these so a compromise of a template clone doesn't expose the main keys.
+  "ssh/key-gitea-opencode.age".publicKeys = allUsers ++ activeMachines;
+  "ssh/key-github-opencode.age".publicKeys = allUsers ++ activeMachines;
 }

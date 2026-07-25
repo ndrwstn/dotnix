@@ -10,6 +10,7 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-linux";
+  _astn.machineRole = "desktop";
   _astn.machine.windowManagers = [ "hyprland" "i3" ];
   _astn.presets = {
     graphics.enable = false;

@@ -32,11 +32,23 @@ in
   # VM-specific agenix secrets
   # Note: general and atuin are defined in systems/common/secrets.nix
   # (shared across all machines) — only machine-specific secrets here.
+  # Note: Gitea/GitHub keys are template-specific, separate from the main
+  # flake keys, so a template clone compromise doesn't expose shared keys.
   age.secrets = {
-    # Gitea SSH key — for cloning repos from the user's Gitea instance
+    # Gitea SSH key — separate from main flake, for template clones only
     key-gitea = {
-      file = ../../secrets/ssh/key-gitea.age;
-      mode = "0400";
+      file = ../../secrets/ssh/key-gitea-opencode.age;
+      path = "/home/austin/.ssh/id_gitea";
+      mode = "0600";
+      owner = "austin";
+      group = "projects";
+    };
+
+    # GitHub SSH key — separate from main flake, for template clones only
+    key-github = {
+      file = ../../secrets/ssh/key-github-opencode.age;
+      path = "/home/austin/.ssh/id_github";
+      mode = "0600";
       owner = "austin";
       group = "projects";
     };

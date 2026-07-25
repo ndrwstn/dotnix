@@ -8,6 +8,7 @@
   ];
   # Machine metadata (used by flake.nix, does not affect system configuration)
   _astn.machineSystem = "x86_64-darwin";
+  _astn.machineRole = "laptop";
 
   # Increase download-buffer to 1GB
   nix.settings.download-buffer-size = 1000000000;

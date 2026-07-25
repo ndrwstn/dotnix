@@ -19,6 +19,7 @@ in
   # Machine metadata
   # ============================================================================
   _astn.machineSystem = "x86_64-linux";
+  _astn.machineRole = "template";
 
   # ============================================================================
   # Proxmox VM Image Configuration
