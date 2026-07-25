@@ -32,6 +32,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Impermanence — manage persistent state on ephemeral filesystems
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # nixautopkgs flake
     nixautopkgs.url = "github:ndrwstn/nixautopkgs/master";
 
@@ -62,6 +68,7 @@
     , home-manager
     , nixvim
     , agenix
+    , impermanence
     , nixautopkgs
     , mcp-servers-nix
     , nur

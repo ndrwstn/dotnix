@@ -10,10 +10,11 @@ let
   molybdenum = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF5YYde/IMNhabc3FDTMyxoVbGu8Kc/MdBz4DMWunEBx molybdenum";
   siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI siberia";
   svalbard = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsbGccaMJhs8CjjRaLR+fdDowttD22ecETFsgjhT+if svalbard";
+  _opencode = "age1kcnwc9e79ut35j0lj4g065cvam5q4u6ar02kg7zvxsh8f5806g8sp49xkt";
 
   # Key groups for active machines
   allUsers = [ austin ];
-  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard ];
+  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode ];
 
 in
 {
@@ -44,4 +45,10 @@ in
   # Service SSH keys (new pattern)
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
   "ssh/key-github.age".publicKeys = allUsers ++ activeMachines;
+
+  # opencode serve password (shared across all clones)
+  "opencode-serve-password.age".publicKeys = allUsers ++ activeMachines;
+
+  # _opencode template age identity key (backup — used for VMA builds)
+  "templates/opencode.age".publicKeys = allUsers;
 }

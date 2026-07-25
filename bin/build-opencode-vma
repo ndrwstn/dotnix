@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Build the _opencode Proxmox VM disk image (raw format).
+#
+# Produces a raw disk image suitable for import into Proxmox via qm importdisk.
+# Uses cloudImage (not VMA) to avoid the patched QEMU build that VMA requires.
+# The cloudImage builder is lightweight and works on any platform including macOS.
+#
+# The age identity key is injected at build time via environment variable —
+# it's piped directly from `age -d` into OPCODE_TEMPLATE_KEY, never touching
+# a file on disk. See: machines/_opencode/secrets.nix
+#
+# Usage:
+#   ./bin/build-opencode-vma
+#
+# Prerequisites:
+#   - 1Password must be signed in (run 'op signin')
+#   - The encrypted key must exist at: secrets/templates/opencode.age
+#
+# Post-build on Proxmox host (one-time template creation):
+#   qm create 9000 --name _opencode-template --memory 2048 --cores 2 \\
+#     --net0 virtio,bridge=vmbr0,tag=50
+#   qm importdisk 9000 result/disk.raw local-zfs
+#   qm set 9000 --scsihw virtio-scsi-single \\
+#     --scsi0 local-zfs:vm-9000-disk-0 \\
+#     --boot order=scsi0 \\
+#     --agent 1 --serial0 socket --vga serial0
+#   qm template 9000
+#
+# Clone with:
+#   qm clone 9000 <new-vmid> --name <clone-name>
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Decrypt the template identity key directly into the build env
+OPCODE_TEMPLATE_KEY=$(age -d -i <(op read "op://Private/2hfrenltzl2pureu4h6d2w5xuu/private_key?ssh-format=openssh") secrets/templates/opencode.age)
+export OPCODE_TEMPLATE_KEY
+
+if [ -z "$OPCODE_TEMPLATE_KEY" ]; then
+  echo "Error: Failed to decrypt template identity key"
+  echo "Ensure 1Password is authenticated (run 'op signin')"
+  exit 1
+fi
+
+nix build --impure '.#nixosConfigurations._opencode.config.system.build.cloudImage'

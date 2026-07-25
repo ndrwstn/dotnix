@@ -1,0 +1,345 @@
+{ config, pkgs, lib, modulesPath, inputs, unstable, autopkgs, ... }:
+
+let
+  inherit (lib) mkDefault mkForce;
+in
+{
+  imports = [
+    # QEMU guest profile for Proxmox VMs
+    (modulesPath + "/profiles/qemu-guest.nix")
+    # Proxmox image module (for VMA build + cloud-init)
+    (modulesPath + "/virtualisation/proxmox-image.nix")
+    # Impermanence module
+    inputs.impermanence.nixosModules.impermanence
+    # Machine-specific secrets
+    ./secrets.nix
+  ];
+
+  # ============================================================================
+  # Machine metadata
+  # ============================================================================
+  _astn.machineSystem = "x86_64-linux";
+
+  # ============================================================================
+  # Proxmox VM Image Configuration
+  # ============================================================================
+  # These settings configure the VMA image for Proxmox.
+  # Build with: nixos-rebuild build-image --image-variant proxmox --flake .#_opencode
+
+  proxmox.qemuConf = {
+    cores = 2;
+    memory = 2048; # 2 GB minimum (ballooned to 4 GB via qemuExtraConf)
+    net0 = "virtio,bridge=vmbr0,tag=50";
+  };
+
+  # Ballooning configuration — 2 GB min / 4 GB max
+  proxmox.qemuExtraConf = {
+    balloon = 1;
+    args = "-device virtio-balloon-pci,id=balloon0";
+  };
+
+  virtualisation.diskSize = 51200; # 50 GB (thin-provisioned, expandable)
+
+  # ============================================================================
+  # Cloud-init (for per-clone hostname)
+  # ============================================================================
+  # The proxmox-image module enables cloud-init by default.
+  # Proxmox sets hostname per clone via cloud-init; this is a fallback.
+  networking.hostName = mkDefault "opencode";
+
+  # ============================================================================
+  # Networking
+  # ============================================================================
+  # VLAN 50 is configured in proxmox.qemuConf.net0 above.
+  # Cloud-init handles network config via systemd-networkd.
+  networking.useDHCP = mkDefault true;
+
+  # ============================================================================
+  # Nix settings
+  # ============================================================================
+  nixpkgs.config.allowUnfree = true;
+
+  # nix-ld for dynamically linked binaries (opencode is Bun-compiled)
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # Core runtime libraries
+    zlib
+    zstd
+    stdenv.cc.cc
+    curl
+    openssl
+    attr
+    libssh
+    bzip2
+    libxml2
+    acl
+    libsodium
+    util-linux
+    xz
+    systemd
+    # Bun-specific libraries
+    brotli
+    libffi
+    gmp
+  ];
+
+  # ============================================================================
+  # Users
+  # ============================================================================
+  users.users = {
+    # System user for running opencode serve
+    opencode = {
+      isSystemUser = true;
+      description = "Opencode service user";
+      home = "/var/lib/opencode";
+      createHome = true;
+      group = "projects";
+      shell = "${pkgs.shadow}/bin/nologin"; # No interactive login
+    };
+
+    # Personal user for SSH access (lazygit, tmux, shell)
+    # Note: description (Andrew Austin) and basic config come from
+    # systems/common/users.nix — only VM-specific overrides here
+    austin = {
+      extraGroups = [ "projects" "wheel" ];
+      openssh.authorizedKeys.keys = [
+        # Primary key deployed via agenix; this is a bootstrap/fallback
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIq17FR5ZqbN7a1uVVwojvvES/f7mgagiixc6OcZicnG austin@impetuo.us"
+      ];
+    };
+  };
+
+  # Shared group for project file access
+  users.groups.projects = { };
+
+  # ============================================================================
+  # SSH Server
+  # ============================================================================
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
+    # Don't generate SSH host keys in the template —
+    # each clone generates unique keys on first boot, persisted via impermanence
+    startWhenNeeded = false;
+  };
+
+  # ============================================================================
+  # opencode Serve — Systemd Service
+  # ============================================================================
+  systemd.services.opencode-serve = {
+    description = "Opencode AI Coding Agent Server";
+    after = [ "network.target" "agenix.service" ];
+    wants = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "simple";
+      User = "opencode";
+      WorkingDirectory = "/var/lib/opencode";
+      ExecStart = "${autopkgs.opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096";
+      Restart = "on-failure";
+      RestartSec = 5;
+      # Daily restart to clear server-side memory leaks (known issue in v1.x)
+      RuntimeMaxSec = 86400;
+      # Environment
+      EnvironmentFile = "/run/agenix/opencode-serve-env";
+    };
+  };
+
+  # ============================================================================
+  # Persistent State Management
+  # ============================================================================
+  # Safety model: NixOS is inherently immutable — the system configuration
+  # lives in /nix/store and is regenerated on every activation. If the agent
+  # modifies system files (/etc, /var, etc.), a reboot + nixos-rebuild restores
+  # them from the config. The only things that persist across reboots are:
+  #
+  #   - /nix/store (immutable package store)
+  #   - /home/austin (SSH keys, opencode config, atuin history)
+  #   - /var/lib/opencode (opencode session data)
+  #
+  # The impermanence module explicitly defines what's PERSISTENT.
+  # Everything else resets because NixOS config always wins on boot.
+  # For a fully clean slate, re-clone from the Proxmox template.
+
+  # Set up persistent data directories
+  systemd.tmpfiles.rules = [
+    "d /persist/etc/age 0750 root root -"
+    "d /persist/etc/ssh 0755 root root -"
+    "d /persist/var/log 0755 root root -"
+    "d /persist/home/austin/.ssh 0700 austin projects -"
+    "d /persist/home/austin/.local/share/opencode 0755 austin projects -"
+    "d /persist/var/lib/opencode/.local/share/opencode 0755 opencode projects -"
+    "d /persist/var/lib/nixos 0755 root root -"
+    "d /projects 2770 austin projects -"
+  ];
+
+  # Use the impermanence module to bind-mount persistent paths
+  environment.persistence."/persist" = {
+    hideMounts = true;
+    directories = [
+      "/etc/ssh"
+      # NixOS UID/GID database (prevents UID reassignment on reboot)
+      "/var/lib/nixos"
+      "/var/log"
+      "/home/austin/.ssh"
+      "/home/austin/.local/share/opencode"
+      "/var/lib/opencode/.local/share/opencode"
+    ];
+    files = [
+      "/etc/age/identity.key"
+    ];
+  };
+
+  # /projects is a directory on root (persists naturally on ext4)
+
+  # First-boot setup: persist the age identity key and create SSH host keys
+  systemd.services.first-boot-setup = {
+    description = "First-boot setup for persisting identity keys";
+    before = [ "agenix.service" "sshd.service" ];
+    wantedBy = [ "agenix.service" ];
+    after = [ "local-fs.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      # Persist age identity key (for agenix decryption across reboots)
+      if [ ! -f /persist/etc/age/identity.key ] && [ -f /etc/age/identity.key ]; then
+        mkdir -p /persist/etc/age
+        cp /etc/age/identity.key /persist/etc/age/identity.key
+      fi
+
+      # Generate SSH host keys if they don't exist (unique per clone)
+      if [ ! -f /persist/etc/ssh/ssh_host_ed25519_key ]; then
+        ssh-keygen -t ed25519 -f /persist/etc/ssh/ssh_host_ed25519_key -N "" -C "root@$(hostname)"
+        ssh-keygen -t rsa -b 4096 -f /persist/etc/ssh/ssh_host_rsa_key -N "" -C "root@$(hostname)"
+        ssh-keygen -t ecdsa -f /persist/etc/ssh/ssh_host_ecdsa_key -N "" -C "root@$(hostname)"
+      fi
+    '';
+  };
+
+  # ============================================================================
+  # Firewall
+  # ============================================================================
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      22 # SSH
+      4096 # opencode serve
+    ];
+  };
+
+  # ============================================================================
+  # System settings
+  # ============================================================================
+  system.stateVersion = "26.05";
+  time.timeZone = "America/New_York";
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  # ============================================================================
+  # Environment packages
+  # ============================================================================
+  environment.systemPackages = with pkgs; [
+    # Core CLI tools
+    git
+    vim
+    lazygit
+    ripgrep
+    fd
+    htop
+    jq
+    tree
+    unzip
+  ];
+
+  # ============================================================================
+  # Home-manager — CLI-only user configuration
+  # ============================================================================
+  # Override the auto-discovered home-manager config with a CLI-only subset
+  # that excludes desktop-oriented programs (ghostty, syncthing, etc.)
+  home-manager.users.austin = lib.mkForce {
+    imports = [
+      ../../users/austin/tmux.nix
+      ../../users/austin/git.nix
+      ../../users/austin/atuin.nix
+      # Note: ssh.nix is not imported — it contains machine-specific orchestration
+      # that assumes known machine names. The VM uses a minimal SSH config instead.
+      # Note: nixvim is not imported here — it's set via programs.nixvim below
+    ];
+
+    # Essential home-manager identity options
+    home = {
+      username = "austin";
+      homeDirectory = "/home/austin";
+      stateVersion = "24.05";
+    };
+
+    # Enable XDG base directory support
+    xdg.enable = true;
+
+    programs = {
+      # Enable shell
+      zsh.enable = true;
+
+      # SSH — minimal config for Gitea/GitHub access via agenix-deployed keys
+      ssh = {
+        enable = true;
+        enableDefaultConfig = false;
+        extraOptionOverrides = {
+          IdentitiesOnly = "yes";
+          StrictHostKeyChecking = "accept-new";
+        };
+        settings = {
+          "gitea.impetuo.us" = {
+            HostName = "gitea.impetuo.us";
+            User = "git";
+            IdentityFile = "~/.ssh/id_gitea";
+            ForwardAgent = true;
+          };
+          "github.com" = {
+            HostName = "github.com";
+            User = "git";
+            IdentityFile = "~/.ssh/id_github";
+            ForwardAgent = true;
+          };
+        };
+      };
+
+      # Neovim configuration — imported as a value, not a module import
+      nixvim = import ../../users/austin/nixvim {
+        inherit config pkgs lib;
+        texlivePackage = import ../../users/austin/texlive.nix { inherit pkgs; };
+        inherit unstable;
+      };
+    };
+
+    # Disable programs that depend on a desktop environment
+    programs.ghostty.enable = lib.mkForce false;
+  };
+
+  # ============================================================================
+  # Aynchronous cleanup
+  # ============================================================================
+  # Weekly SQLite VACUUM to keep the opencode session database lean
+  systemd.timers.opencode-db-vacuum = {
+    description = "Weekly opencode SQLite VACUUM";
+    timerConfig = {
+      OnCalendar = "weekly";
+      Persistent = true;
+    };
+    wantedBy = [ "timers.target" ];
+  };
+
+  systemd.services.opencode-db-vacuum = {
+    description = "Vacuum opencode SQLite database";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "opencode";
+      ExecStart = "${pkgs.sqlite}/bin/sqlite3 /var/lib/opencode/.local/share/opencode/opencode.db \"VACUUM;\"";
+    };
+  };
+}
