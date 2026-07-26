@@ -132,7 +132,7 @@ in
   # ============================================================================
   systemd.services.opencode-serve = {
     description = "Opencode AI Coding Agent Server";
-    after = [ "network.target" "agenix.service" ];
+    after = [ "cloud-init.service" "network.target" "agenix.service" ];
     wants = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
 
@@ -202,7 +202,7 @@ in
     description = "First-boot setup for persisting identity keys";
     before = [ "agenix.service" "sshd.service" ];
     wantedBy = [ "agenix.service" ];
-    after = [ "local-fs.target" ];
+    after = [ "cloud-init.service" "local-fs.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
@@ -220,6 +220,114 @@ in
         ssh-keygen -t rsa -b 4096 -f /persist/etc/ssh/ssh_host_rsa_key -N "" -C "root@$(hostname)"
         ssh-keygen -t ecdsa -f /persist/etc/ssh/ssh_host_ecdsa_key -N "" -C "root@$(hostname)"
       fi
+    '';
+  };
+
+  # ============================================================================
+  # First-boot identity contract
+  # ============================================================================
+  # Writes /etc/clone-identity.jsonc on first boot. This file captures the
+  # clone's unique identity (hostname, SSH host key, age key) so the operator
+  # can extract it, fill in setup.projects, and optionally register the clone
+  # in the flake via bin/new-opencode-clone.
+  #
+  # The file regenerates every boot (/etc is ephemeral), but the identity is
+  # stable (SSH keys persisted, hostname from cloud-init always the same).
+  systemd.services.clone-identity = {
+    description = "Generate clone identity contract";
+    after = [ "cloud-init.service" "first-boot-setup.service" ];
+    wants = [ "cloud-init.service" "first-boot-setup.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+            HOSTNAME=$(hostname -s)
+            FQDN="$${HOSTNAME}.impetuo.us"
+            SSH_KEY=$(cat /etc/ssh/ssh_host_ed25519_key.pub 2>/dev/null || echo "unavailable")
+            AGE_PUB=$(age-keygen -y /etc/age/identity.key 2>/dev/null || echo "unavailable")
+            NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+            cat > /etc/clone-identity.jsonc << 'IDENTITY'
+      {
+        "$schema": "opencode-clone-identity",
+        "schema_version": 1,
+        "template": "_opencode",
+        "hostname": "'"$HOSTNAME"'",
+        "fqdn": "'"$FQDN"'",
+        "role": "virtual",
+        "created": "'"$NOW"'",
+        "identities": {
+          "ssh_host_ed25519_pub": "'"$SSH_KEY"'",
+          "age_pub": "'"$AGE_PUB"'",
+          "secrets_recipient_entry": "'"$HOSTNAME"' = \"'"$(echo "$SSH_KEY" | cut -d' ' -f1-2)"'\";"
+        },
+        "setup": {
+          "projects": []
+        }
+      }
+      IDENTITY
+    '';
+  };
+
+  # ============================================================================
+  # Repo provisioning
+  # ============================================================================
+  # Reads setup.projects from /etc/clone-identity.jsonc and clones each repo
+  # into /projects/<name>/. Runs on every boot — skips repos that already exist.
+  # Designed for the first nixos-rebuild --target-host deploy.
+  systemd.services.clone-provision = {
+    description = "Clone configured projects from identity contract";
+    after = [ "cloud-init.service" "network-online.target" ];
+    wants = [ "cloud-init.service" "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.jq ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      IDENTITY_FILE="/etc/clone-identity.jsonc"
+
+      if [ ! -f "$IDENTITY_FILE" ]; then
+        exit 0
+      fi
+
+      # Parse projects from the JSONC (strip comments first)
+      PROJECTS=$(sed 's|//.*||g' "$IDENTITY_FILE" | ${pkgs.jq}/bin/jq -c '.setup.projects[]? // empty' 2>/dev/null || true)
+
+      if [ -z "$PROJECTS" ]; then
+        echo "No projects configured in $IDENTITY_FILE — skipping clone-provision."
+        exit 0
+      fi
+
+      echo "$PROJECTS" | while IFS= read -r project; do
+        NAME=$(echo "$project" | ${pkgs.jq}/bin/jq -r '.name // (.repository | split("/") | last)')
+        HOST=$(echo "$project" | ${pkgs.jq}/bin/jq -r '.host // "github.com"')
+        REPO=$(echo "$project" | ${pkgs.jq}/bin/jq -r '.repository')
+        KEY=$(echo "$project" | ${pkgs.jq}/bin/jq -r '.key // ""')
+        BRANCH=$(echo "$project" | ${pkgs.jq}/bin/jq -r '.branch // ""')
+
+        TARGET="/projects/$NAME"
+
+        if [ -d "$TARGET/.git" ]; then
+          echo "Already cloned: $REPO → $TARGET"
+          continue
+        fi
+
+        mkdir -p "$TARGET"
+
+        KEY_FLAG=""
+        [ -n "$KEY" ] && KEY_FLAG="-i $${HOME}/.ssh/$${KEY}"
+
+        BRANCH_FLAG=""
+        [ -n "$BRANCH" ] && BRANCH_FLAG="-b $${BRANCH}"
+
+        GIT_SSH_COMMAND="ssh $KEY_FLAG" \
+          git clone $BRANCH_FLAG "git@$${HOST}:$${REPO}.git" "$TARGET" || \
+          echo "Warning: failed to clone $REPO — check SSH key access"
+      done
     '';
   };
 

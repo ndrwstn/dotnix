@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Generate a minimal _opencode child machine configuration from an identity JSONC.
+#
+# Usage:
+#   bin/new-opencode-clone path/to/agent-foo.jsonc
+#
+# The identity file is produced by the clone's first-boot identity service at
+# /etc/clone-identity.jsonc. Fill in the setup.projects array, then run this
+# script to create the machine skeleton.
+#
+# Output:
+#   machines/<hostname>/configuration.nix   — minimal child config
+#   Plus instructions for wiring secrets and deploying.
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <path-to-identity.jsonc>"
+  exit 1
+fi
+
+IDENTITY_FILE="$1"
+
+if [ ! -f "$IDENTITY_FILE" ]; then
+  echo "Error: $IDENTITY_FILE not found"
+  exit 1
+fi
+
+# Strip JSONC comments for jq parsing
+IDENTITY=$(sed 's|//.*||g' "$IDENTITY_FILE")
+
+HOSTNAME=$(echo "$IDENTITY" | jq -r '.hostname // empty')
+FQDN=$(echo "$IDENTITY" | jq -r '.fqdn // empty')
+ROLE=$(echo "$IDENTITY" | jq -r '.role // "virtual"')
+SSH_KEY=$(echo "$IDENTITY" | jq -r '.identities.ssh_host_ed25519_pub // empty')
+RECIPIENT_ENTRY=$(echo "$IDENTITY" | jq -r '.identities.secrets_recipient_entry // empty')
+
+if [ -z "$HOSTNAME" ]; then
+  echo "Error: 'hostname' is required in identity file"
+  exit 1
+fi
+
+MACHINE_DIR="machines/$HOSTNAME"
+
+if [ -d "$MACHINE_DIR" ]; then
+  echo "Error: $MACHINE_DIR already exists"
+  exit 1
+fi
+
+mkdir -p "$MACHINE_DIR"
+
+# Build the projects list for the provisioning service
+PROJECTS_JSON=$(echo "$IDENTITY" | jq -c '.setup.projects // []')
+
+cat > "$MACHINE_DIR/configuration.nix" << EOF
+# machines/${HOSTNAME}/configuration.nix
+# Generated from _opencode identity contract by bin/new-opencode-clone
+{ ... }: {
+  imports = [
+    ../../systems/virtual
+  ];
+
+  _astn.machineSystem = "x86_64-linux";
+  _astn.machineRole = "${ROLE}";
+  networking.hostName = "${HOSTNAME}";
+}
+EOF
+
+echo ""
+echo "=== Created: $MACHINE_DIR/configuration.nix ==="
+echo ""
+echo "Next steps:"
+echo ""
+echo "1. Add the recipient entry to secrets/secrets.nix:"
+echo "     $RECIPIENT_ENTRY"
+echo ""
+echo "2. Re-encrypt secrets for the new recipient:"
+echo "     agenix -e secrets/general.age"
+echo "     agenix -e secrets/atuin.age"
+echo "     agenix -e secrets/ssh/key-gitea-opencode.age"
+echo "     agenix -e secrets/ssh/key-github-opencode.age"
+echo ""
+echo "3. Stage and commit:"
+echo "     git add machines/${HOSTNAME}/ secrets/"
+echo "     git commit -m \"add(${HOSTNAME}): register _opencode child\""
+echo ""
+echo "4. Deploy via SSH (no push needed — builds from local flake):"
+echo "     nixos-rebuild switch --flake .#${HOSTNAME} \\"
+echo "       --target-host austin@${FQDN}"
+echo ""
+echo "The clone will clone its configured projects and start opencode serve."
