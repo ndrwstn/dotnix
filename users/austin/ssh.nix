@@ -239,6 +239,7 @@ let
         molybdenum = "SHA256:kmWudCpmzZJ8T3ppGx+B0W+jRVf25JLUQGmt1isac/Q";
         siberia = "SHA256:FG87j2k1+hthlK0/t/GO5msVx2QxspoMqWkWgToSnhE";
         "nietzsche-monaco" = "SHA256:NfbmzZUKXR4TU0krknzd227+DNd/1M+87SEcF7t/BaE";
+        naphthalene = "SHA256:6+fmauBUy+CBrLzG5Xf70OPf1x/wCHnnTgDQ7SC1u8Q";
       };
     in
       fingerprintMap.${lib.toLower hostName} or null;
