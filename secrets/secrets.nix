@@ -11,12 +11,13 @@ let
   siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI siberia";
   svalbard = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsbGccaMJhs8CjjRaLR+fdDowttD22ecETFsgjhT+if svalbard";
   _opencode = "age1kcnwc9e79ut35j0lj4g065cvam5q4u6ar02kg7zvxsh8f5806g8sp49xkt";
+  naphthalene = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMMk77LSv0SIxasrNcUv+YqDsKX45aE09hThLkoJmz6M";
 
   # Key groups for active machines
   # NOTE: activeMachines is manually maintained and would benefit from
   # buildMachine automation in the future (auto-collect from machine roles).
   allUsers = [ austin ];
-  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode ];
+  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode naphthalene ];
 
 in
 {
@@ -43,6 +44,7 @@ in
   "ssh/machine-siberia.age".publicKeys = allUsers ++ [ siberia ];
   "ssh/machine-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
   "ssh/machine-svalbard.age".publicKeys = allUsers ++ [ svalbard ];
+  "ssh/machine-naphthalene.age".publicKeys = allUsers ++ [ naphthalene ];
 
   # Service SSH keys (new pattern)
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;

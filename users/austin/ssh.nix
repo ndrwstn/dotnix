@@ -49,6 +49,13 @@ let
       user = "austin";
       port = 22;
     };
+
+    naphthalene = {
+      key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMMk77LSv0SIxasrNcUv+YqDsKX45aE09hThLkoJmz6M";
+      hostname = "naphthalene.impetuo.us";
+      user = "austin";
+      port = 22;
+    };
   };
 
   # Device keys (iOS devices, Windows machines, etc.)
