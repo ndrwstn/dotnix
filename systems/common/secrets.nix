@@ -1,13 +1,17 @@
 # systems/common/secrets.nix
 # Shared secrets configuration for all machines
 #
-# NOTE: Secrets are deployed to ALL machines unconditionally. This could be
-# optimized: builder/virtual machines don't need syncthing, atuin, or general
-# secrets. Future: scope secrets by _astn.machineRole or use a more selective
-# distribution mechanism. Needs more thoughtful consideration.
+# NOTE: Builder/virtual machines skip shared secrets (syncthing, atuin,
+# general) since they have no use for them. Secrets are only deployed
+# to desktop and laptop machines.
 
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  inherit (lib) mkIf;
+  # Skip shared secrets on builder/virtual machines
+  deploySharedSecrets = !(builtins.elem (config._astn.machineRole or "") [ "virtual" "template" ]);
+in
 {
   # Common identity paths for all systems
   age.identityPaths = [
@@ -16,24 +20,24 @@
 
   # Shared agenix secrets configuration
   age.secrets = {
-    # Shared syncthing configuration (all machines can decrypt)
-    syncthing = {
+    # Shared syncthing configuration
+    syncthing = mkIf deploySharedSecrets {
       file = ../../secrets/syncthing/config-shared.age;
       mode = "0400";
       owner = "austin";
       group = if pkgs.stdenv.isDarwin then "staff" else "users";
     };
 
-    # Atuin shell history sync (shared across all machines)
-    atuin = {
+    # Atuin shell history sync
+    atuin = mkIf deploySharedSecrets {
       file = ../../secrets/atuin.age;
       mode = "0400";
       owner = "austin";
       group = if pkgs.stdenv.isDarwin then "staff" else "users";
     };
 
-    # Shared general secrets (shared across all machines)
-    general = {
+    # Shared general secrets
+    general = mkIf deploySharedSecrets {
       file = ../../secrets/general.age;
       mode = "0400";
       owner = "austin";
