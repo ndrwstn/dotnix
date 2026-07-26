@@ -18,7 +18,7 @@ in
   # flake checks or evaluation, the key is not available and the
   # identity path is empty (no agenix decryption possible).
   environment.etc."age/identity.key" = mkIf (templateKeyContent != "") {
-    source = builtins.toFile "opencode-age-identity" templateKeyContent;
+    source = pkgs.writeText "opencode-age-identity" templateKeyContent;
     mode = "0400";
     group = "root";
   };
