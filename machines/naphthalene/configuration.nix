@@ -31,6 +31,17 @@ in
   networking.hostName = "naphthalene";
 
   # ============================================================================
+  # Agenix — clearance for builder roles
+  # ============================================================================
+  # Naphthalene's SSH host key already exists on disk (generated on first boot).
+  # It does not need agenix to decrypt any secrets — the shared secrets
+  # (atuin/general/syncthing) are not encrypted for this machine, and the
+  # machine-naphthalene backup key is for human recovery only.
+  # Without this clearance, agenix tries to decrypt secrets not meant for
+  # this machine, which fails and blocks the entire activation.
+  age.secrets = lib.mkForce { };
+
+  # ============================================================================
   # Authorized builder keys
   # ============================================================================
   # nix-remote-builder key — used by flake machines for remote builds.
