@@ -60,4 +60,8 @@ in
   # Clones use these so a compromise of a template clone doesn't expose the main keys.
   "ssh/key-gitea-opencode.age".publicKeys = allUsers ++ activeMachines;
   "ssh/key-github-opencode.age".publicKeys = allUsers ++ activeMachines;
+
+  # naphthalene remote builder key — used by activeMachines to SSH into naphthalene
+  # for remote builds. The public key is deployed in naphthalene's config.
+  "ssh/key-nixbuilder.age".publicKeys = allUsers ++ activeMachines;
 }

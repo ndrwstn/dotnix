@@ -12,6 +12,13 @@
       group = "staff";
     };
 
+    # naphthalene remote builder SSH key — for nix-daemon remote builds
+    key-nixbuilder = {
+      file = ../../secrets/ssh/key-nixbuilder.age;
+      mode = "0400";
+      owner = "root";
+      group = "wheel";
+    };
 
   };
 }

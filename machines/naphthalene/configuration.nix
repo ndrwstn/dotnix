@@ -31,6 +31,15 @@ in
   networking.hostName = "naphthalene";
 
   # ============================================================================
+  # Authorized builder keys
+  # ============================================================================
+  # nix-remote-builder key — used by flake machines for remote builds.
+  # Added here (merged with systems/virtual/default.nix list).
+  users.users.austin.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEdPws6T44YpJ3kMI2n8CsBlTrTZX0rZ03O0RJJ7uK0l austin@Monaco"
+  ];
+
+  # ============================================================================
   # System packages
   # ============================================================================
   environment.systemPackages = with pkgs; [

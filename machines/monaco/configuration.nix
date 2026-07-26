@@ -14,6 +14,19 @@
   # Monaco has 64GB shared RAM.
   nix.settings.download-buffer-size = 2000000000;
 
+  # Remote builder — naphthalene (x86_64-linux LXC on Proxmox)
+  nix.distributedBuilds = true;
+  nix.buildMachines = [{
+    hostName = "naphthalene.impetuo.us";
+    sshUser = "austin";
+    sshKey = "/run/agenix/key-nixbuilder";
+    system = "x86_64-linux";
+    maxJobs = 4;
+    speedFactor = 2;
+    supportedFeatures = [ "kvm" "big-parallel" ];
+    protocol = "ssh-ng";
+  }];
+
   # Define hostname
   networking.hostName = "Monaco";
 
