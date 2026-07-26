@@ -39,6 +39,26 @@ in
   ];
 
   # ============================================================================
+  # Home-manager — CLI-only user config for builder duties
+  # ============================================================================
+  # Override auto-discovered home-manager to skip desktop/GUI user configs.
+  home-manager.users.austin = lib.mkForce {
+    imports = [
+      ../../users/austin/git.nix
+      ../../users/austin/ssh.nix
+    ];
+
+    home = {
+      username = "austin";
+      homeDirectory = "/home/austin";
+      stateVersion = "24.05";
+    };
+
+    xdg.enable = true;
+    programs.zsh.enable = true;
+  };
+
+  # ============================================================================
   # System state
   # ============================================================================
   system.stateVersion = "26.05";
