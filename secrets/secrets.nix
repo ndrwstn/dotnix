@@ -17,7 +17,7 @@ let
   # NOTE: activeMachines is manually maintained and would benefit from
   # buildMachine automation in the future (auto-collect from machine roles).
   allUsers = [ austin ];
-  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode naphthalene ];
+  activeMachines = [ monaco silver plutonium siberia molybdenum svalbard _opencode ];
 
 in
 {
@@ -44,7 +44,7 @@ in
   "ssh/machine-siberia.age".publicKeys = allUsers ++ [ siberia ];
   "ssh/machine-molybdenum.age".publicKeys = allUsers ++ [ molybdenum ];
   "ssh/machine-svalbard.age".publicKeys = allUsers ++ [ svalbard ];
-  "ssh/machine-naphthalene.age".publicKeys = allUsers ++ [ naphthalene ];
+  "ssh/machine-naphthalene.age".publicKeys = allUsers;
 
   # Service SSH keys (new pattern)
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
