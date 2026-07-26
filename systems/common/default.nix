@@ -8,7 +8,11 @@
   imports = [
     ./users.nix
     ./secrets.nix
-    ./clamav.nix
+    # ./clamav.nix — disabled; needs careful reconsideration for
+    # virtual/headless machines (adds ~200MB closure, OOM'd naphthalene
+    # builder). TODO: Revisit with conditional imports by machine role.
+    # llm.nix imported unconditionally — options self-limit by platform
+    # (mlxLm/lmStudio are No on non-Darwin, llamaCpp is disable-only).
     ./llm.nix
   ];
 

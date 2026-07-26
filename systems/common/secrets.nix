@@ -1,5 +1,10 @@
 # systems/common/secrets.nix
 # Shared secrets configuration for all machines
+#
+# NOTE: Secrets are deployed to ALL machines unconditionally. This could be
+# optimized: builder/virtual machines don't need syncthing, atuin, or general
+# secrets. Future: scope secrets by _astn.machineRole or use a more selective
+# distribution mechanism. Needs more thoughtful consideration.
 
 { pkgs, ... }:
 
