@@ -447,46 +447,50 @@ in
     let
       currentFingerprintFile = formatFingerprintFilename (getCurrentMachineFingerprint hostName);
     in
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      # Private files (600 permissions)
-      if [ -f "$HOME/.ssh/authorized_keys" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/authorized_keys" "$HOME/.ssh/authorized_keys.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/authorized_keys.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/authorized_keys.tmp" "$HOME/.ssh/authorized_keys"
-      fi
+    {
+      after = [ "writeBoundary" ];
+      before = [ "restartVicinae" ];
+      data = ''
+        # Private files (600 permissions)
+        if [ -f "$HOME/.ssh/authorized_keys" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/authorized_keys" "$HOME/.ssh/authorized_keys.tmp"
+          $DRY_RUN_CMD chmod 600 "$HOME/.ssh/authorized_keys.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/authorized_keys.tmp" "$HOME/.ssh/authorized_keys"
+        fi
       
-      # Public host data (644 permissions)
-      if [ -f "$HOME/.ssh/known_hosts_nix" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/known_hosts_nix" "$HOME/.ssh/known_hosts_nix.tmp"
-        $DRY_RUN_CMD chmod 644 "$HOME/.ssh/known_hosts_nix.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/known_hosts_nix.tmp" "$HOME/.ssh/known_hosts_nix"
-      fi
+        # Public host data (644 permissions)
+        if [ -f "$HOME/.ssh/known_hosts_nix" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/known_hosts_nix" "$HOME/.ssh/known_hosts_nix.tmp"
+          $DRY_RUN_CMD chmod 644 "$HOME/.ssh/known_hosts_nix.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/known_hosts_nix.tmp" "$HOME/.ssh/known_hosts_nix"
+        fi
       
-      # 1Password IdentityFile placeholders (600 permissions)
-      if [ -f "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub"
-      fi
+        # 1Password IdentityFile placeholders (600 permissions)
+        if [ -f "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
+          $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub.tmp" "$HOME/.ssh/SHA256_TouY1NMMLjxo7N2S2GhjOnjETkcCJy6Q1Cl8rpQOL00.pub"
+        fi
       
-      if [ -f "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub"
-      fi
+        if [ -f "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
+          $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub.tmp" "$HOME/.ssh/SHA256_MPuSjKyQj19d0dDRrhcqrC2d2TVC3npT6utXBPZfzWs.pub"
+        fi
       
-      if [ -f "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub"
-      fi
+        if [ -f "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
+          $DRY_RUN_CMD chmod 600 "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub.tmp" "$HOME/.ssh/SHA256_NfbmzZUKXR4TU0krknzd227+DNd_1M+87SEcF7t_BaE.pub"
+        fi
       
-      # Conditional fingerprint file (current machine's public key)
-      if [ -f "$HOME/.ssh/${currentFingerprintFile}" ]; then
-        $DRY_RUN_CMD cp -L "$HOME/.ssh/${currentFingerprintFile}" "$HOME/.ssh/${currentFingerprintFile}.tmp"
-        $DRY_RUN_CMD chmod 600 "$HOME/.ssh/${currentFingerprintFile}.tmp"
-        $DRY_RUN_CMD mv "$HOME/.ssh/${currentFingerprintFile}.tmp" "$HOME/.ssh/${currentFingerprintFile}"
-      fi
-    '';
+        # Conditional fingerprint file (current machine's public key)
+        if [ -f "$HOME/.ssh/${currentFingerprintFile}" ]; then
+          $DRY_RUN_CMD cp -L "$HOME/.ssh/${currentFingerprintFile}" "$HOME/.ssh/${currentFingerprintFile}.tmp"
+          $DRY_RUN_CMD chmod 600 "$HOME/.ssh/${currentFingerprintFile}.tmp"
+          $DRY_RUN_CMD mv "$HOME/.ssh/${currentFingerprintFile}.tmp" "$HOME/.ssh/${currentFingerprintFile}"
+        fi
+      '';
+    };
 
 }
