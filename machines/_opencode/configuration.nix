@@ -52,7 +52,7 @@ in
   system.build.cloudImage = lib.mkForce (
     import "${toString pkgs.path}/nixos/lib/make-disk-image.nix" {
       lib = pkgs.lib;
-      inherit (config) pkgs config;
+      inherit pkgs config;
       name = config.system.build.image.name;
       baseName = config.system.build.image.baseName;
       partitionTableType = config.proxmox.partitionTableType;
