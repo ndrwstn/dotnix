@@ -53,8 +53,8 @@ in
     import "${toString pkgs.path}/nixos/lib/make-disk-image.nix" {
       lib = pkgs.lib;
       inherit pkgs config;
-      name = config.system.build.image.name;
-      baseName = config.system.build.image.baseName;
+      name = config.image.baseName;
+      baseName = config.image.baseName;
       partitionTableType = config.proxmox.partitionTableType;
       additionalSpace = config.proxmox.qemuConf.additionalSpace;
       bootSize = config.proxmox.qemuConf.bootSize;
