@@ -42,6 +42,26 @@ in
   virtualisation.diskSize = 51200; # 50 GB (thin-provisioned, expandable)
 
   # ============================================================================
+  # Disk image builder memory
+  # ============================================================================
+  # The cloudImage builder spawns a QEMU VM to assemble the raw disk.
+  # Default VM RAM is 1024 MB, which OOMs with larger system closures.
+  # Override with 2048 MB to provide breathing room during image assembly.
+  system.build.cloudImage = lib.mkForce (
+    import "${toString pkgs.path}/nixos/lib/make-disk-image.nix" {
+      inherit (config) lib pkgs config;
+      name = config.system.build.image.name;
+      baseName = config.system.build.image.baseName;
+      partitionTableType = config.proxmox.partitionTableType;
+      additionalSpace = config.proxmox.qemuConf.additionalSpace;
+      bootSize = config.proxmox.qemuConf.bootSize;
+      diskSize = config.virtualisation.diskSize;
+      format = "raw";
+      memSize = 2048;
+    }
+  );
+
+  # ============================================================================
   # Cloud-init (for per-clone hostname)
   # ============================================================================
   # The proxmox-image module enables cloud-init by default.
