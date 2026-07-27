@@ -47,9 +47,12 @@ in
   # The cloudImage builder spawns a QEMU VM to assemble the raw disk.
   # Default VM RAM is 1024 MB, which OOMs with larger system closures.
   # Override with 2048 MB to provide breathing room during image assembly.
+  # Uses pkgs.lib (nixpkgs lib matching the make-disk-image.nix source)
+  # rather than config.lib to avoid lib version mismatches.
   system.build.cloudImage = lib.mkForce (
     import "${toString pkgs.path}/nixos/lib/make-disk-image.nix" {
-      inherit (config) lib pkgs config;
+      lib = pkgs.lib;
+      inherit (config) pkgs config;
       name = config.system.build.image.name;
       baseName = config.system.build.image.baseName;
       partitionTableType = config.proxmox.partitionTableType;
