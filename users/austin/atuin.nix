@@ -233,7 +233,7 @@ in
 
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.atuin}/bin/atuin daemon";
+      ExecStart = "${pkgs.atuin}/bin/atuin daemon start";
       Restart = "on-failure";
       RestartSec = "10s";
       Environment = [
@@ -254,6 +254,7 @@ in
       ProgramArguments = [
         "${pkgs.atuin}/bin/atuin"
         "daemon"
+        "start"
       ];
       EnvironmentVariables = {
         HOME = config.home.homeDirectory;
