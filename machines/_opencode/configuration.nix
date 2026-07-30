@@ -271,6 +271,7 @@ in
     after = [ "cloud-init.service" "first-boot-setup.service" ];
     wants = [ "cloud-init.service" "first-boot-setup.service" ];
     wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.age ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
