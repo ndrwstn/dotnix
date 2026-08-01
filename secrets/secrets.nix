@@ -44,4 +44,5 @@ in
   # Service SSH keys (new pattern)
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
   "ssh/key-github.age".publicKeys = allUsers ++ activeMachines;
+
 }

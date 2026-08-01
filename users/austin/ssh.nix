@@ -49,6 +49,13 @@ let
       user = "austin";
       port = 22;
     };
+
+    naphthalene = {
+      key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw9FcJ7NSULj4LBgNAOKY1mJz/EontZB3oFPWDBI4ea8ZPR+9t6bC8+z1w+cximOKONDmWtP2ou0BDS6n8FO0YkZbp90n9VpWavvzlgCdY72Hxv/JyJaVDokeDxFXnqSwro8SH8LfovSEI+hVLq+83WaTV609H5HgJqaqoC3Q3Di242bTRwGOZqT2VvcGIwiTVsOl88y89RnGccS5jQc7Ai2/8RenY5MXW0RL6jQCsCOZTFUdlVCYPmUeD7y1feasKOr9D1AwVuqu9Pd9Vzt397uMuOiwH5oSVsuXsvhTJgtiC7TX8tsmJvMOCaioT6aKyBjTjhSYmCQpOlxUd6gbl3MENGAknb12rcG3O20KRVFu44O+vYr2UU/A1S+9r38pmHVbPgevmCw7PPgoXSErAWXgUEr3ySxlAYzb6SvshCYjMh1N6DPCsJgKgsBqTGVs+mRk1iwp7NgW6/9seC3/lU8rbtUMul/1wJscvj43CRb7/erMe/PtPXTtVlj3ctxmDNIhGCUyRLxCMA4z2znVd/7Nnmx5dNGcc3IhDQnGb4edoik7IF9rfLI36uD76HTNDWJZkE7dvK4vZeRbtwDeo8fIQUmn9D3IwAlcAFZWi/uFTfBIXV9LSwFSM/7HWnoItudvxHogD7uOKwtRdAKEjFnHu6kW6hFtOlA9lNF4pdQ==";
+      hostname = "naphthalene.impetuo.us";
+      user = "austin";
+      port = 22;
+    };
   };
 
   # Device keys (iOS devices, Windows machines, etc.)
@@ -94,6 +101,11 @@ let
     "siberia.impetuo.us" = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI";
       keyType = "ssh-ed25519";
+    };
+
+    "naphthalene.impetuo.us" = {
+      key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw9FcJ7NSULj4LBgNAOKY1mJz/EontZB3oFPWDBI4ea8ZPR+9t6bC8+z1w+cximOKONDmWtP2ou0BDS6n8FO0YkZbp90n9VpWavvzlgCdY72Hxv/JyJaVDokeDxFXnqSwro8SH8LfovSEI+hVLq+83WaTV609H5HgJqaqoC3Q3Di242bTRwGOZqT2VvcGIwiTVsOl88y89RnGccS5jQc7Ai2/8RenY5MXW0RL6jQCsCOZTFUdlVCYPmUeD7y1feasKOr9D1AwVuqu9Pd9Vzt397uMuOiwH5oSVsuXsvhTJgtiC7TX8tsmJvMOCaioT6aKyBjTjhSYmCQpOlxUd6gbl3MENGAknb12rcG3O20KRVFu44O+vYr2UU/A1S+9r38pmHVbPgevmCw7PPgoXSErAWXgUEr3ySxlAYzb6SvshCYjMh1N6DPCsJgKgsBqTGVs+mRk1iwp7NgW6/9seC3/lU8rbtUMul/1wJscvj43CRb7/erMe/PtPXTtVlj3ctxmDNIhGCUyRLxCMA4z2znVd/7Nnmx5dNGcc3IhDQnGb4edoik7IF9rfLI36uD76HTNDWJZkE7dvK4vZeRbtwDeo8fIQUmn9D3IwAlcAFZWi/uFTfBIXV9LSwFSM/7HWnoItudvxHogD7uOKwtRdAKEjFnHu6kW6hFtOlA9lNF4pdQ==";
+      keyType = "ssh-rsa";
     };
 
     "github.com" = {
@@ -231,6 +243,7 @@ let
         plutonium = "SHA256:hXkM+c7yfxEXbYrxhW4zOyzd7xV+04WlRJEezy8F2DU";
         molybdenum = "SHA256:kmWudCpmzZJ8T3ppGx+B0W+jRVf25JLUQGmt1isac/Q";
         siberia = "SHA256:FG87j2k1+hthlK0/t/GO5msVx2QxspoMqWkWgToSnhE";
+        naphthalene = "SHA256:HdmYZaQ5+JLrFxE1WgPFa/rUjuJGQk5n+Z5kq/Xua00";
         "nietzsche-monaco" = "SHA256:NfbmzZUKXR4TU0krknzd227+DNd/1M+87SEcF7t/BaE";
       };
     in
