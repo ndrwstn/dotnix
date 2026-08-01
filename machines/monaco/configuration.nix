@@ -7,8 +7,6 @@
   imports = [
     ./secrets.nix
   ];
-  # Machine metadata (used by flake.nix, does not affect system configuration)
-  _astn.machineSystem = "aarch64-darwin";
   # Increase download-buffer to 2GB
   # Monaco has 64GB shared RAM.
   nix.settings.download-buffer-size = 2000000000;

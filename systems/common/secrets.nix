@@ -1,7 +1,8 @@
 # systems/common/secrets.nix
-# Shared secrets configuration for all machines
+# Universal agenix identity setup for all machines.
+# Secret payload declarations live with the selected user/platform/machine module.
 
-{ pkgs, ... }:
+{ ... }:
 
 {
   # Common identity paths for all systems
@@ -9,30 +10,4 @@
     "/etc/ssh/ssh_host_ed25519_key"
   ];
 
-  # Shared agenix secrets configuration
-  age.secrets = {
-    # Shared syncthing configuration (all machines can decrypt)
-    syncthing = {
-      file = ../../secrets/syncthing/config-shared.age;
-      mode = "0400";
-      owner = "austin";
-      group = if pkgs.stdenv.isDarwin then "staff" else "users";
-    };
-
-    # Atuin shell history sync (shared across all machines)
-    atuin = {
-      file = ../../secrets/atuin.age;
-      mode = "0400";
-      owner = "austin";
-      group = if pkgs.stdenv.isDarwin then "staff" else "users";
-    };
-
-    # Shared general secrets (shared across all machines)
-    general = {
-      file = ../../secrets/general.age;
-      mode = "0400";
-      owner = "austin";
-      group = if pkgs.stdenv.isDarwin then "staff" else "users";
-    };
-  };
 }

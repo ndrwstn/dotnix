@@ -32,6 +32,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Impermanence for explicitly provisioned disposable VMs.
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # nixautopkgs flake
     nixautopkgs.url = "github:ndrwstn/nixautopkgs/master";
 
@@ -62,6 +68,7 @@
     , home-manager
     , nixvim
     , agenix
+    , impermanence
     , nixautopkgs
     , mcp-servers-nix
     , nur
@@ -78,29 +85,6 @@
 
       # Common configuration for all systems
       sharedModules = [
-        # Add your shared configuration here
-        ({ config
-         , pkgs
-         , ...
-         }: {
-          nix.settings = {
-            experimental-features = [ "nix-command" "flakes" ];
-            substituters = [
-              "https://cache.nixos.org"
-              "https://nix-community.cachix.org"
-              "https://nixvim.cachix.org"
-              "https://vicinae.cachix.org"
-              "https://ndrwstn-dotnix.cachix.org"
-            ];
-            trusted-public-keys = [
-              "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-              "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-              "nixvim.cachix.org-1:5itLbq7pKz5BB8h3QvE93s1zZOSX3XjKBpJZM+Upn7Q="
-              "vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc="
-              "ndrwstn-dotnix.cachix.org-1:FDHQDhPr2ArkrwdCHouf72rOL4ywQsVa0T4i2eG9tGg="
-            ];
-          };
-        })
         ({ config
          , pkgs
          , lib
@@ -128,6 +112,10 @@
         filterPredicate = dir: builtins.pathExists (dir + "/configuration.nix");
       };
 
+      # Machine composition is declared next to each machine, rather than
+      # inferred from configuration comments or system-name regexes.
+      machineMetadata = name: import (./machines + "/${name}/metadata.nix");
+
       # Common system configuration based on OS type
       systemConfig = type:
         {
@@ -146,17 +134,11 @@
       # Function to create machine configuration
       buildMachine = name:
         let
-          # Use the new function to determine system type
-          systemType = autoDiscovery.extractSystemType {
-            inherit name;
-            machinesPath = ./machines;
-          };
+          metadata = machineMetadata name;
+          systemType = metadata.system;
 
           # Detect OS type from system string
-          osType =
-            if builtins.match ".*-linux" systemType != null
-            then "nixos"
-            else "darwin";
+          osType = if nixpkgs.lib.hasSuffix "-linux" systemType then "nixos" else "darwin";
 
           # Get appropriate system configuration
           sysConfig = systemConfig osType;
@@ -171,7 +153,9 @@
             then path
             else null;
 
-          # User configuration using auto-discovery
+          # User configuration is selected from machine metadata.  A user may
+          # provide a role-specific profile (for example, Austin's minimal
+          # virtual profile); otherwise their default profile is used.
           usersDir = ./users;
 
           unstable = import nixpkgs-unstable {
@@ -183,21 +167,27 @@
           autopkgs = nixautopkgs.packages.${systemType};
           mcppkgs = mcp-servers-nix.packages.${systemType};
 
-          # Discover valid user directories
-          validUsers = autoDiscovery.discoverDirectories {
-            basePath = usersDir;
-            filterPredicate = dir: builtins.pathExists (dir + "/default.nix");
-          };
-
           # Function to build user imports
           buildUserConfig = user: {
             name = user;
             value = { config, pkgs, lib, osConfig, hostName, ... }:
-              import (usersDir + "/${user}") { inherit config pkgs lib osConfig unstable autopkgs mcppkgs hostName; };
+              let
+                roleProfile = usersDir + "/${user}/${metadata.role}.nix";
+                userProfile =
+                  if builtins.pathExists roleProfile
+                  then roleProfile
+                  else usersDir + "/${user}";
+              in
+              import userProfile { inherit config pkgs lib osConfig unstable autopkgs mcppkgs hostName; };
           };
 
           # Create attrset of user configs
-          userConfigSet = builtins.listToAttrs (map buildUserConfig validUsers);
+          userConfigSet = builtins.listToAttrs (map buildUserConfig metadata.users);
+
+          # System account declarations are selected by machine metadata too.
+          userSystemModules = map
+            (user: usersDir + "/${user}/system.nix")
+            metadata.users;
 
           # Machine modules - with hardware if it exists
           machineModules =
@@ -209,6 +199,24 @@
               then [ hardwareConfig ]
               else [ ]
             );
+
+          roleDir = ./roles + "/${metadata.role}";
+          roleModule = roleDir + "/default.nix";
+          platformRoleModule = roleDir + "/${osType}.nix";
+          roleModules =
+            [ roleModule ]
+            ++ nixpkgs.lib.optional (builtins.pathExists platformRoleModule) platformRoleModule;
+          featureModules = builtins.filter (module: module != null) (map
+            (feature:
+              let
+                featurePath = ./features + "/${feature}";
+                filePath = ./features + "/${feature}.nix";
+                directoryPath = featurePath + "/default.nix";
+              in
+              if builtins.pathExists filePath then filePath
+              else if builtins.pathExists directoryPath then directoryPath
+              else throw "Unknown feature '${feature}': expected ${toString filePath} or ${toString directoryPath}")
+            metadata.features);
         in
         {
           inherit name;
@@ -218,8 +226,14 @@
             modules =
               let lib = nixpkgs.lib; in
               machineModules
+              ++ userSystemModules
               ++ [
-                ./systems/common
+                ./common
+                ({ ... }: { _astn.machine = metadata; })
+              ]
+              ++ roleModules
+              ++ featureModules
+              ++ [
                 sysConfig.systemModule
                 sysConfig.hmModule
               ]
@@ -253,24 +267,17 @@
       # Convert to attribute set and split by OS type
       machineAttrs = builtins.listToAttrs machines;
 
-      # Function to filter by system type pattern
-      filterSystems = pattern:
+      # Split configurations using the same metadata used to build them.
+      filterSystems = systemSuffix:
         nixpkgs.lib.filterAttrs
           (name: _:
-            let
-              systemType = autoDiscovery.extractSystemType {
-                inherit name;
-                machinesPath = ./machines;
-                caseInsensitive = true;
-              };
-            in
-            builtins.match pattern systemType != null
+            nixpkgs.lib.hasSuffix systemSuffix (machineMetadata name).system
           )
           machineAttrs;
 
       # Split by OS type
-      nixosConfigs = filterSystems ".*-linux";
-      darwinConfigs = filterSystems ".*-darwin";
+      nixosConfigs = filterSystems "-linux";
+      darwinConfigs = filterSystems "-darwin";
     in
     let
       # Function to create case-insensitive aliases for configurations
