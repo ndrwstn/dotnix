@@ -45,4 +45,8 @@ in
   "ssh/key-gitea.age".publicKeys = allUsers ++ activeMachines;
   "ssh/key-github.age".publicKeys = allUsers ++ activeMachines;
 
+  # Shared Naphthalene client key. Only the approved clients and Austin may
+  # decrypt this credential; Naphthalene itself does not need it.
+  "ssh/key-nixbuilder.age".publicKeys = allUsers ++ [ monaco silver siberia ];
+
 }

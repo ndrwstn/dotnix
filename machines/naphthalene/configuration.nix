@@ -15,7 +15,11 @@
     PasswordAuthentication = false;
   };
 
-  # Client authorized keys are provisioned manually during builder bootstrap.
+  users.users.austin.openssh.authorizedKeys.keys = [
+    # Shared remote-builder client key, provisioned on Monaco, Silver, and
+    # Siberia. This is separate from Austin's normal interactive key.
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFPyjU+CecRY5sWljr6NFDCMCrG+WyFMxeVQQRtFiZ5i nixbuilder-client"
+  ];
 
   environment.systemPackages = with pkgs; [ git vim ];
 
