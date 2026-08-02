@@ -5,6 +5,7 @@
 , autopkgs
 , mcppkgs
 , lib
+, hunk
 , osConfig ? { }
 , hostName ? "unknown"
 , nur ? null
@@ -307,6 +308,7 @@ lib.mkMerge [
       ssh-to-age
       sqlfluff
       sqls
+      superfile
       statix
       stylua
       tesseract5
@@ -357,7 +359,8 @@ lib.mkMerge [
 
       ## defined variables
       texlivePackage
-    ];
+    ] ++ lib.optional (builtins.hasAttr pkgs.stdenv.hostPlatform.system hunk.packages)
+      hunk.packages.${pkgs.stdenv.hostPlatform.system}.hunk;
   }
 
   # Import syncthing configuration

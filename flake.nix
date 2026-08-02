@@ -25,6 +25,11 @@
     # Neovim configuration
     nixvim.url = "github:nix-community/nixvim/nixos-26.05";
 
+    # Hunk review-first terminal diff viewer
+    hunk = {
+      url = "github:modem-dev/hunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Secrets management
     agenix = {
@@ -67,6 +72,7 @@
     , darwin-login-items
     , home-manager
     , nixvim
+    , hunk
     , agenix
     , impermanence
     , nixautopkgs
@@ -101,7 +107,7 @@
             mcppkgs = mcp-servers-nix.packages.${pkgs.stdenv.hostPlatform.system};
           in
           {
-            home-manager.extraSpecialArgs = { inherit unstable autopkgs mcppkgs nur; };
+            home-manager.extraSpecialArgs = { inherit unstable autopkgs hunk mcppkgs nur; };
           })
       ];
 
@@ -178,7 +184,7 @@
                   then roleProfile
                   else usersDir + "/${user}";
               in
-              import userProfile { inherit config pkgs lib osConfig unstable autopkgs mcppkgs hostName; };
+              import userProfile { inherit config pkgs lib osConfig unstable autopkgs hunk mcppkgs hostName; };
           };
 
           # Create attrset of user configs
@@ -248,7 +254,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs mcppkgs;
+                    inherit unstable autopkgs hunk mcppkgs;
                     hostName = name;
                   };
                   home-manager.sharedModules = [

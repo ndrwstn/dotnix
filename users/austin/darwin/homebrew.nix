@@ -1,6 +1,7 @@
 # users/austin/darwin/homebrew.nix
 { config
 , pkgs
+, lib
 , ...
 }: {
   homebrew = {
@@ -30,6 +31,7 @@
       "blender"
       "brave-browser"
       "calibre"
+      "cloudcompare"
       # "chatgpt"
       "carbon-copy-cloner" # $$$
       # "claude" # NOTE 2026-03-13 out of date compared to claude download page
@@ -103,6 +105,9 @@
       # "m1ddc"
       "mas"
       # "ollama" # not being actively used; consider using llama.cpp
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-darwin") [
+      # Hunk's Nix flake does not expose Intel macOS.
+      "hunk"
     ];
     masApps = {
       # NOTE - homebrew.masApps does not remove apps
