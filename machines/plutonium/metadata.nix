@@ -1,7 +1,7 @@
 {
   system = "x86_64-darwin";
   role = "laptop";
-  features = [ "remote-builder" ];
+  features = [ ];
   users = [ "austin" ];
   windowManagers = [ ];
 }
