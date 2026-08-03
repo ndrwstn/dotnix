@@ -7,7 +7,6 @@
 {
   home.packages = with pkgs; [
     blender
-    cloudcompare
     gimp
     inkscape
     krita

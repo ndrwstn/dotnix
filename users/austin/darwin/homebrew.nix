@@ -61,6 +61,7 @@
       "kicad"
       "krita"
       "little-snitch" # $$$
+      "meshlab"
       # "localsend"
       # "maccy"
       "megasync"

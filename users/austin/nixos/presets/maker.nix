@@ -6,9 +6,11 @@
 
 {
   home.packages = with pkgs; [
+    cloudcompare
     freecad
     kicad
     ltspice
+    meshlab
     openscad
     orca-slicer
   ];
