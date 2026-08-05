@@ -308,7 +308,6 @@ lib.mkMerge [
       ssh-to-age
       sqlfluff
       sqls
-      superfile
       statix
       stylua
       tesseract5
@@ -361,6 +360,88 @@ lib.mkMerge [
       texlivePackage
     ] ++ lib.optional (builtins.hasAttr pkgs.stdenv.hostPlatform.system hunk.packages)
       hunk.packages.${pkgs.stdenv.hostPlatform.system}.hunk;
+  }
+
+  # Superfile configured around the Vim editing model.
+  {
+    programs.superfile = {
+      enable = true;
+      firstUseCheck = false;
+
+      settings = {
+        editor = "nvim";
+        dir_editor = "nvim";
+        auto_check_update = false;
+      };
+
+      hotkeys = {
+        # Basic actions
+        confirm = [ "enter" ];
+        quit = [ "ctrl+c" ];
+        cd_quit = [ "Q" ];
+
+        # Navigation
+        list_up = [ "k" ];
+        list_down = [ "j" ];
+        page_up = [ "pgup" ];
+        page_down = [ "pgdown" ];
+
+        # File panels
+        create_new_file_panel = [ "n" ];
+        close_file_panel = [ "q" ];
+        next_file_panel = [ "tab" ];
+        previous_file_panel = [ "shift+tab" ];
+        split_file_panel = [ "N" ];
+        toggle_file_preview_panel = [ "f" ];
+        open_sort_options_menu = [ "o" ];
+        toggle_reverse_sort = [ "R" ];
+
+        # Focus manipulation
+        focus_on_process_bar = [ "ctrl+p" ];
+        focus_on_sidebar = [ "ctrl+s" ];
+        focus_on_metadata = [ "ctrl+d" ];
+
+        # File and directory operations
+        file_panel_item_create = [ "a" ];
+        file_panel_item_rename = [ "r" ];
+        copy_items = [ "y" ];
+        cut_items = [ "x" ];
+        paste_items = [ "p" ];
+        delete_items = [ "d" ];
+        permanently_delete_items = [ "D" ];
+
+        # Archive operations
+        extract_file = [ "ctrl+e" ];
+        compress_file = [ "ctrl+a" ];
+
+        # Editor actions
+        open_file_with_editor = [ "e" ];
+        open_current_directory_with_editor = [ "E" ];
+
+        # Other actions
+        pinned_directory = [ "P" ];
+        toggle_dot_file = [ "." ];
+        change_panel_mode = [ "m" ];
+        open_help_menu = [ "?" ];
+        open_spf_prompt = [ ">" ];
+        open_command_line = [ ":" ];
+        open_zoxide = [ "z" ];
+        copy_path = [ "Y" ];
+        copy_present_working_directory = [ "c" ];
+        toggle_footer = [ "ctrl+f" ];
+
+        # Typing mode
+        confirm_typing = [ "enter" ];
+        cancel_typing = [ "esc" ];
+
+        # Normal and selection modes
+        parent_directory = [ "-" ];
+        search_bar = [ "/" ];
+        file_panel_select_mode_items_select_down = [ "J" ];
+        file_panel_select_mode_items_select_up = [ "K" ];
+        file_panel_select_all_items = [ "A" ];
+      };
+    };
   }
 
   # Import syncthing configuration
