@@ -16,6 +16,10 @@ permissions:
   pull-requests: write
   checks: write
 
+concurrency:
+  group: hydra-status-check-${{ github.event.pull_request.number || github.event.workflow_run.id || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -32,15 +36,17 @@ jobs:
           if [ "${{ github.event_name }}" = "schedule" ] || \
              [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PR_JSON=$(gh pr list --label "staging-pending" --state open \
-              --json number,headRefName,headRefOid)
+              --base master --limit 100 \
+              --json number,headRefName,headRefOid,createdAt)
             PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
             if [ "$PR_COUNT" = "0" ]; then
               echo "No staging PRs found — nothing to check"
               echo "SKIP=true" >> "$GITHUB_ENV"
               exit 0
             fi
-            echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
+            TARGET=$(echo "$PR_JSON" | jq -r 'sort_by(.createdAt) | reverse | .[0]')
+            echo "pr_number=$(echo "$TARGET" | jq -r '.number')" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(echo "$TARGET" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "workflow_run" ]; then
             if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
               echo "Flake Update Staging did not succeed — skipping"
@@ -49,33 +55,26 @@ jobs:
             fi
             # Try label search first (fast path)
             PR_JSON=$(gh pr list --label "staging-pending" --state open \
-              --json number,headRefOid)
+              --base master --limit 100 \
+              --json number,headRefOid,createdAt)
             PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
             if [ "$PR_COUNT" = "0" ]; then
               # Retry once after a brief delay to handle API indexing latency
               echo "Retrying label search after 10s..."
               sleep 10
               PR_JSON=$(gh pr list --label "staging-pending" --state open \
-                --json number,headRefOid)
+                --base master --limit 100 \
+                --json number,headRefOid,createdAt)
               PR_COUNT=$(echo "$PR_JSON" | jq -r 'length')
             fi
             if [ "$PR_COUNT" = "0" ]; then
-              # Fallback: find most recent open staging PR by branch pattern
-              echo "Label search gave up — trying branch pattern fallback"
-              BRANCH_RESULTS=$(gh pr list --head "staging/flake-update-" --state open \
-                --json number,headRefOid,createdAt)
-              BRANCH_COUNT=$(echo "$BRANCH_RESULTS" | jq -r 'length')
-              if [ "$BRANCH_COUNT" = "0" ]; then
-                echo "No staging PR found via branch pattern either — skipping"
-                echo "SKIP=true" >> "$GITHUB_ENV"
-                exit 0
-              fi
-              LATEST=$(echo "$BRANCH_RESULTS" | jq -r 'sort_by(.createdAt) | reverse | .[0]')
-              echo "pr_number=$(echo "$LATEST" | jq -r '.number')" >> "$GITHUB_OUTPUT"
-              echo "head_sha=$(echo "$LATEST" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
+              echo "No labeled staging PR found — skipping"
+              echo "SKIP=true" >> "$GITHUB_ENV"
+              exit 0
             else
-              echo "pr_number=$(echo "$PR_JSON" | jq -r '.[0].number')" >> "$GITHUB_OUTPUT"
-              echo "head_sha=$(echo "$PR_JSON" | jq -r '.[0].headRefOid')" >> "$GITHUB_OUTPUT"
+              TARGET=$(echo "$PR_JSON" | jq -r 'sort_by(.createdAt) | reverse | .[0]')
+              echo "pr_number=$(echo "$TARGET" | jq -r '.number')" >> "$GITHUB_OUTPUT"
+              echo "head_sha=$(echo "$TARGET" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
             fi
           else
             echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
@@ -153,7 +152,6 @@ jobs:
           fi
 
           # Changed files must be within the expected allowlist
-          ALLOWED=0
           for f in $FILES; do
             case "$f" in
               flake.lock|machines/silver/configuration.nix) ;;
@@ -185,7 +183,17 @@ jobs:
       # ── Extract flake.lock from PR head (untrusted data only) ─────────
       - name: Fetch PR flake.lock
         if: env.SKIP != 'true' && steps.target.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          CURRENT_SHA=$(gh pr view "${{ steps.target.outputs.pr_number }}" \
+            --json headRefOid --jq '.headRefOid')
+          if [ "$CURRENT_SHA" != "${{ steps.target.outputs.head_sha }}" ]; then
+            echo "PR head changed while workflow was starting"
+            echo "Expected: ${{ steps.target.outputs.head_sha }}"
+            echo "Actual:   $CURRENT_SHA"
+            exit 1
+          fi
           git fetch origin refs/pull/${{ steps.target.outputs.pr_number }}/head
           git show FETCH_HEAD:flake.lock > /tmp/pr-flake.lock
 
@@ -215,13 +223,29 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUM="${{ steps.target.outputs.pr_number }}"
-          echo "Merging ready PR #$PR_NUM"
-          gh pr merge --squash "$PR_NUM"
+          EXPECTED_SHA="${{ steps.target.outputs.head_sha }}"
+          MERGE_INFO=$(gh pr view "$PR_NUM" --json state,headRefOid,mergeable,labels)
+          STATE=$(echo "$MERGE_INFO" | jq -r '.state')
+          CURRENT_SHA=$(echo "$MERGE_INFO" | jq -r '.headRefOid')
+          MERGEABLE=$(echo "$MERGE_INFO" | jq -r '.mergeable')
+          HAS_LABEL=$(echo "$MERGE_INFO" | jq -r '[.labels[].name] | index("staging-pending") != null')
 
-          # Close remaining staging PRs as superseded
+          if [ "$STATE" != "OPEN" ] || [ "$CURRENT_SHA" != "$EXPECTED_SHA" ] || \
+             [ "$MERGEABLE" = "CONFLICTING" ] || [ "$HAS_LABEL" != "true" ]; then
+            echo "PR changed or is no longer eligible; refusing to merge"
+            echo "$MERGE_INFO"
+            exit 1
+          fi
+
+          echo "Merging ready PR #$PR_NUM"
+          gh pr merge --squash --delete-branch "$PR_NUM"
+
+          # Close every remaining staging PR, including ones that lost their
+          # label during an earlier staging run.
           for TAG in $(gh pr list \
-            --label "staging-pending" --state open \
-            --json number --jq '.[] | .number'); do
+            --base master --state open --limit 100 \
+            --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("staging/flake-update-")) | .number'); do
             if [ "$TAG" != "$PR_NUM" ]; then
               gh pr edit "$TAG" \
                 --remove-label "staging-pending" \

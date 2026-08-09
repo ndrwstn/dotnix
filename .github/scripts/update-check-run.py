@@ -147,7 +147,11 @@ def main():
     existing_id = None
     if existing:
         for run in existing.get("check_runs", []):
-            if run.get("name") == "Hydra Status Check":
+            if (
+                run.get("name") == "Hydra Status Check"
+                and run.get("status") == "in_progress"
+                and run.get("app", {}).get("slug") == "github-actions"
+            ):
                 existing_id = run.get("id")
                 break
 
