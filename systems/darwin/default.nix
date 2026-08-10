@@ -123,6 +123,10 @@ in
 
                 echo "Bootstrapping nixdarwin.gui-environment into $GUI_DOMAIN..." >&2
                 launchctl bootstrap "$GUI_DOMAIN" "$PLIST_PATH" 2>/dev/null || true
+
+                # Finder may still have its previous preferences loaded after
+                # nix-darwin writes system.defaults. Refresh it afterwards.
+                /usr/bin/killall Finder 2>/dev/null || true
       '';
     }
   ];
