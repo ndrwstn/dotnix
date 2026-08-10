@@ -23,9 +23,13 @@
         ];
       };
       finder = {
+        # Keep hidden files visible in Finder and applications using the
+        # global preference domain.
+        AppleShowAllFiles = true;
         ShowPathbar = true;
         ShowStatusBar = true;
       };
+      NSGlobalDomain.AppleShowAllFiles = true;
 
       CustomUserPreferences = {
         "com.apple.finder" = { };
