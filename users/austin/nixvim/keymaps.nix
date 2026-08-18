@@ -176,7 +176,6 @@
     # ========================================================================
     # TOGGLES (UI & Tools)
     # ========================================================================
-    { key = "<leader>Th"; mode = "n"; action = "<cmd>Hardtime toggle<CR>"; options.desc = "Hardtime"; }
     # codewindow.nvim is disabled for NixOS 26.05 compatibility; keep this
     # keymap nearby so it can be restored if codewindow is re-enabled.
     # { key = "<leader>Tm"; mode = "n"; action = "<cmd>lua require('codewindow').toggle_minimap()<CR>"; options.desc = "Minimap"; }
@@ -257,11 +256,6 @@
     { key = "<leader>xT"; mode = "n"; action = "<cmd>Trouble lsp toggle focus=false win.position=right<CR>"; options.desc = "LSP Lists"; }
 
 
-
-    # ========================================================================
-    # HARDTIME - MOTION TRAINING
-    # ========================================================================
-    # Toggled with <leader>Th
 
     # ========================================================================
     # SESSIONS/QUIT
