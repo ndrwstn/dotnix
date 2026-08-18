@@ -582,27 +582,6 @@
     # };
 
     # ============================================================================
-    # TRAINING & MOTION IMPROVEMENT
-    # ============================================================================
-    # Design Decision: hardtime.nvim replaces train.nvim with more aggressive
-    # training that blocks bad habits and suggests better motions
-    hardtime = {
-      enable = true;
-      settings = {
-        enabled = true; # Start enabled by default
-        max_count = 3; # Allow 3 repetitions before blocking
-        hint = true;
-        notification = true;
-        disabled_keys = {
-          "<Up>" = [ "n" "x" ];
-          "<Down>" = [ "n" "x" ];
-          "<Left>" = [ "n" "x" ];
-          "<Right>" = [ "n" "x" ];
-        };
-      };
-    };
-
-    # ============================================================================
     # CODE OVERVIEW
     # ============================================================================
     # Note: codewindow.nvim (minimap) is DISABLED for NixOS 26.05 compat.
