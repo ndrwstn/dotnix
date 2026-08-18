@@ -337,10 +337,10 @@
         };
 
         # Utilities
-        words = { enabled = true; };
+        words = { enabled = false; }; # Disabled: interacts badly with scroll, causes cursor jumps on ESC (#236)
         gitbrowse = { enabled = true; };
         bufdelete = { enabled = true; };
-        scroll = { enabled = true; };
+        scroll = { enabled = false; }; # Disabled: InsertLeave handler causes view/cursor jumping on ESC
         statuscolumn = { enabled = true; };
         indent = { enabled = true; };
         scope = { enabled = true; };
@@ -533,8 +533,7 @@
             events = [ "ModeChanged i:n" "TextChanged" "User SidekickNesDone" ];
           };
           clear = {
-            events = [ "TextChangedI" "InsertEnter" "esc" ];
-            esc = true;
+            events = [ "TextChangedI" "InsertEnter" ];
           };
         };
 
