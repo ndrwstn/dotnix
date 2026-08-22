@@ -3,9 +3,8 @@
 , pkgs
 , ...
 }: {
-  # fix for darwin-25.05 needing 'primaryUser' for transition period
-  # - probably could just move the following settings to my user flake?
-  system.primaryUser = "austin";
+  # NOTE: system.primaryUser is set centrally in ./default.nix; setting it
+  # here as well would duplicate definitions across discovery layers.
 
   system.defaults = {
     finder = {

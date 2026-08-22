@@ -19,9 +19,11 @@ let
     });
 
   # Discover and merge homebrew configurations
+  # Probe both layouts: systems/ keeps modules directly, user trees nest
+  # them under darwin/
   mergedHomebrewConfig = autoDiscovery.discoverAndMergeConfigs {
     directories = [ ./. ] ++ userDirs;
-    filePath = "darwin/homebrew.nix";
+    filePaths = [ "homebrew.nix" "darwin/homebrew.nix" ];
     attributeName = "homebrew";
     importArgs = { inherit config pkgs lib; };
   };
@@ -29,11 +31,10 @@ let
   # Discover and merge system configurations
   mergedSystemDefaults = autoDiscovery.discoverAndMergeConfigs {
     directories = [ ./. ] ++ userDirs;
-    filePath = "darwin/system.nix";
+    filePaths = [ "system.nix" "darwin/system.nix" ];
     attributeName = "system";
     importArgs = { inherit config pkgs lib; };
     warnOnMissingAttr = true;
-    debug = true;
   };
 
   # Collect each Python module's site-packages as a separate PYTHONPATH entry.
