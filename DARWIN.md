@@ -493,15 +493,18 @@ Once installed, nix-darwin manages:
 
 ### Updating Homebrew Packages
 
-Homebrew packages are declared in `systems/darwin/homebrew.nix` and user-specific `users/<username>/darwin/homebrew.nix`. To update:
+Homebrew packages are declared in `systems/darwin/homebrew.nix` (system-wide policy) and user-specific `users/<username>/darwin/homebrew.nix` (per-user packages). Both files are discovered and merged automatically.
 
 ```bash
 # Let nix-darwin manage homebrew (use sudo for system.defaults)
 sudo darwin-rebuild switch --flake ~/.config/nix#<hostname>
-
-# Homebrew updates are handled declaratively
-# No need to run `brew update` or `brew upgrade` manually
 ```
+
+During every switch, nix-darwin runs `brew update` and upgrades outdated formulae, casks, and Mac App Store apps — no need to run `brew update` or `brew upgrade` manually. Casks are upgraded even if they manage their own updates (`greedyCasks = true`). Notes:
+
+- The first switch after adding new packages can take a while (full upgrade pass).
+- Mas apps require being signed into the Mac App Store.
+- Packages removed from the Brewfile are uninstalled on switch (`cleanup = "zap"` in the user layer); app data is preserved.
 
 ## Getting Help
 
