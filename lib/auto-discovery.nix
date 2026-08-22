@@ -10,49 +10,51 @@
   ```nix
   # Discover directories containing a specific file
   validMachines = autoDiscovery.discoverDirectories {
-    basePath = ./machines;
-    excludeNames = [ "common" ];
-    filterPredicate = dir: builtins.pathExists (dir + "/configuration.nix");
+  basePath = ./machines;
+  excludeNames = [ "common" ];
+  filterPredicate = dir: builtins.pathExists (dir + "/configuration.nix");
   };
   
   # Discover and merge configurations from multiple directories
   mergedConfig = autoDiscovery.discoverAndMergeConfigs {
-    directories = [ ./dir1 ./dir2 ];
-    filePath = "config.nix";
-    attributeName = "config";
-    importArgs = { inherit lib; };
+  directories = [ ./dir1 ./dir2 ];
+  filePath = "config.nix";
+  attributeName = "config";
+  importArgs = { inherit lib; };
   };
   ```
 */
 rec {
   # Function to determine system type for a machine
-  extractSystemType = { 
-    # Machine name
-    name,
-    # Base path to machines directory
-    machinesPath ? ./machines,
-    # Default system type if cannot be determined
-    defaultSystemType ? "x86_64-linux",
-    # Whether to use case-insensitive matching
-    caseInsensitive ? true,
-  }:
+  extractSystemType =
+    {
+      # Machine name
+      name
+    , # Base path to machines directory
+      machinesPath ? ./machines
+    , # Default system type if cannot be determined
+      defaultSystemType ? "x86_64-linux"
+    , # Whether to use case-insensitive matching
+      caseInsensitive ? true
+    ,
+    }:
     let
       # Find the actual directory name (case-insensitive if enabled)
-      actualName = 
+      actualName =
         if caseInsensitive
         then findDirectoryCaseInsensitive { name = name; basePath = machinesPath; }
         else name;
-      
+
       # Path to configuration.nix
       configPath = machinesPath + "/${actualName}/configuration.nix";
       hasConfig = builtins.pathExists configPath;
-      
+
       # Path to system.nix (for backward compatibility)
       systemNixPath = machinesPath + "/${actualName}/system.nix";
       hasSystemNix = builtins.pathExists systemNixPath;
-      
+
       # Try to extract system type from configuration.nix custom namespace
-      systemTypeFromCustomNamespace = 
+      systemTypeFromCustomNamespace =
         if hasConfig then
           let
             # Read the file as text to avoid evaluation issues
@@ -60,50 +62,52 @@ rec {
             # Look for _astn.machineSystem pattern
             namespaceMatch = builtins.match ".*_astn[[:space:]]*=[[:space:]]*[{][[:space:]]*machineSystem[[:space:]]*=[[:space:]]*\"([^\"]+)\".*" configText;
             namespaceMatch2 = builtins.match ".*_astn[[:space:]]*[.][[:space:]]*machineSystem[[:space:]]*=[[:space:]]*\"([^\"]+)\".*" configText;
-            
+
             # For backward compatibility, also check for SYSTEM_TYPE comment
             commentMatch = builtins.match ".*#[[:space:]]*SYSTEM_TYPE:[[:space:]]*([a-zA-Z0-9_-]+).*" configText;
           in
-            if namespaceMatch != null then builtins.elemAt namespaceMatch 0
-            else if namespaceMatch2 != null then builtins.elemAt namespaceMatch2 0
-            else if commentMatch != null then builtins.elemAt commentMatch 0
-            else null
+          if namespaceMatch != null then builtins.elemAt namespaceMatch 0
+          else if namespaceMatch2 != null then builtins.elemAt namespaceMatch2 0
+          else if commentMatch != null then builtins.elemAt commentMatch 0
+          else null
         else
           null;
-      
+
       # Fall back to system.nix for backward compatibility
-      systemTypeFromSystemNix = 
+      systemTypeFromSystemNix =
         if hasSystemNix then
           import systemNixPath
         else
           null;
     in
-      # Priority: 1. Custom namespace, 2. system.nix, 3. default
-      if systemTypeFromCustomNamespace != null then systemTypeFromCustomNamespace
-      else if systemTypeFromSystemNix != null then systemTypeFromSystemNix
-      else defaultSystemType;
+    # Priority: 1. Custom namespace, 2. system.nix, 3. default
+    if systemTypeFromCustomNamespace != null then systemTypeFromCustomNamespace
+    else if systemTypeFromSystemNix != null then systemTypeFromSystemNix
+    else defaultSystemType;
 
   # Function to find a directory case-insensitively
-  findDirectoryCaseInsensitive = {
-    # Base path to search in
-    basePath,
-    # Name to find (case-insensitive)
-    name,
-  }:
+  findDirectoryCaseInsensitive =
+    {
+      # Base path to search in
+      basePath
+    , # Name to find (case-insensitive)
+      name
+    ,
+    }:
     let
       # Get all directory names
       allDirs = builtins.attrNames (builtins.readDir basePath);
-      
+
       # Convert name to lowercase for comparison
       lowerName = lib.strings.toLower name;
-      
+
       # Find matching directory (case-insensitive)
-      matchingDirs = builtins.filter 
-        (dir: lib.strings.toLower dir == lowerName) 
+      matchingDirs = builtins.filter
+        (dir: lib.strings.toLower dir == lowerName)
         allDirs;
-      
+
       # Return the first match or the original name if no match
-      result = 
+      result =
         if builtins.length matchingDirs > 0
         then builtins.elemAt matchingDirs 0
         else name;
@@ -111,72 +115,95 @@ rec {
     result;
 
   # Directory-based discovery function
-  discoverDirectories = { 
-    basePath,
-    filterPredicate ? (_: true),
-    excludeNames ? [],
-  }: 
+  discoverDirectories =
+    { basePath
+    , filterPredicate ? (_: true)
+    , excludeNames ? [ ]
+    ,
+    }:
     let
       # Get all directory names
       allDirs = builtins.attrNames (builtins.readDir basePath);
-      
+
       # Apply exclusions and custom filter
-      filteredDirs = builtins.filter 
-        (name: 
-          !(builtins.elem name excludeNames) && 
+      filteredDirs = builtins.filter
+        (name:
+          !(builtins.elem name excludeNames) &&
           (filterPredicate (basePath + "/${name}"))
-        ) 
+        )
         allDirs;
     in
     filteredDirs;
 
   # File-based discovery function
-  discoverAndMergeConfigs = {
-    # Base directories to search in
-    directories,
-    # Relative path to the file within each directory
-    filePath,
-    # Attribute to extract from each file
-    attributeName,
-    # Arguments to pass to the imported module
-    importArgs ? {},
-    # Whether to warn about missing attributes
-    warnOnMissingAttr ? true,
-    # Default value to use if attribute is missing
-    defaultValue ? {},
-    # Debug mode
-    debug ? false,
-  }:
+  discoverAndMergeConfigs =
+    {
+      # Base directories to search in
+      directories
+    , # Relative path to the file within each directory (shorthand for a
+      # single-element 'filePaths' list)
+      filePath ? null
+    , # Relative paths to probe within every directory. Supports trees that
+      # lay out modules differently: systems/ stores OS modules directly
+      # (<dir>/homebrew.nix) while users/<name>/ nests them per-OS
+      # (<dir>/darwin/homebrew.nix)
+      filePaths ? if filePath == null then null else [ filePath ]
+    , # Attribute to extract from each file
+      attributeName
+    , # Arguments to pass to the imported module
+      importArgs ? { }
+    , # Whether to warn about missing attributes
+      warnOnMissingAttr ? true
+    , # Default value to use if attribute is missing
+      defaultValue ? { }
+    , # Debug mode
+      debug ? false
+    ,
+    }:
     let
-      # Function to check if a file exists
-      fileExists = dir: builtins.pathExists (dir + "/${filePath}");
-      
-      # Filter directories to those that have the file
-      dirsWithFile = builtins.filter fileExists directories;
-      
+      # Resolve which relative paths get probed in each directory.
+      probedPaths =
+        if filePaths != null then filePaths
+        else if filePath != null then [ filePath ]
+        else throw "discoverAndMergeConfigs: provide 'filePath' or 'filePaths'";
+
+      # Every candidate file across all directory x path combinations,
+      # deduplicated so overlapping combinations cannot double-import.
+      candidateFiles = lib.unique (
+        lib.concatMap
+          (
+            dir: map (relativePath: dir + "/${relativePath}") probedPaths
+          )
+          directories
+      );
+
+      # Keep only files that exist. Missing files are skipped silently by
+      # design: directories legitimately differ in which optional modules
+      # they carry (warnOnMissingAttr handles found-but-incomplete files).
+      existingFiles = builtins.filter builtins.pathExists candidateFiles;
+
       # Debug output
-      _ = if debug then builtins.trace "Directories with ${filePath}: ${builtins.toJSON dirsWithFile}" null else null;
-      
+      _ = if debug then builtins.trace "Discovered files for [${lib.concatStringsSep ", " probedPaths}]: ${builtins.toJSON (map toString existingFiles)}" null else null;
+
       # Import each file and extract the attribute
-      importedConfigs = map 
-        (dir: 
+      importedConfigs = map
+        (fullPath:
           let
-            fullPath = dir + "/${filePath}";
             imported = import fullPath importArgs;
             hasAttr = builtins.hasAttr attributeName imported;
-            
+
             # Debug output
             _ = if debug then builtins.trace "Importing ${fullPath}, has ${attributeName}: ${builtins.toJSON hasAttr}" null else null;
           in
           if hasAttr
           then imported.${attributeName}
-          else 
-            if warnOnMissingAttr 
-            then lib.warn "File ${dir}/${filePath} doesn't contain a ${attributeName} attribute" defaultValue
+          else
+            if warnOnMissingAttr
+            then lib.warn "File ${toString fullPath} doesn't contain a ${attributeName} attribute" defaultValue
             else defaultValue
-        ) 
-        dirsWithFile;
-      
+        )
+        existingFiles;
+
       # Merge all configurations
       mergedConfig = lib.mkMerge importedConfigs;
     in
