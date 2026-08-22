@@ -9,10 +9,11 @@
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
+      # NOTE: no extraFlags needed - `cleanup = "zap"` already makes the
+      # module pass `--zap --force-cleanup` to `brew bundle`.
       extraEnv = {
         XDG_CONFIG_HOME = "/Users/austin/.config";
       };
-      extraFlags = [ "--force-cleanup" ];
     };
     global = {
       brewfile = true;
