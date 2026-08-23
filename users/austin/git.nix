@@ -52,10 +52,10 @@
         mnemonicPrefix = true;
       };
 
-      # Fetch — keep remote refs clean
+      # Fetch — prune stale remote-tracking branches;
+      # tags are intentionally NOT pruned (lazygit background fetch would delete local tags)
       fetch = {
         prune = true;
-        pruneTags = true;
       };
 
       # Push — eliminate upstream friction
