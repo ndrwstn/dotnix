@@ -345,6 +345,7 @@ lib.mkMerge [
       autopkgs.agent-browser
       autopkgs.gcs
       # autopkgs.marker
+      autopkgs.mekhq
       autopkgs.opencode
       autopkgs.opencode-desktop
       # autopkgs.surya
