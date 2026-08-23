@@ -119,6 +119,42 @@ let
       startDirectory = "${workspaceBase}/03__PROGRAMMING/AVERY-LATEX";
     };
 
+    "megamek.yaml" = {
+      sessionName = "MEGAMEK";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/MEGAMEK";
+      windows = ''
+        - window_name: opencode
+          focus: true
+          panes:
+            - shell_command:
+                - opencode
+
+        - window_name: lazygit
+          layout: tiled
+          panes:
+            - shell_command:
+                - cd APP
+                - lazygit
+
+            - shell_command:
+                - cd DATA
+                - lazygit
+
+            - shell_command:
+                - cd HQ
+                - lazygit
+
+            - shell_command:
+                - cd LAB
+                - lazygit
+
+        - window_name: shell
+          panes:
+            - shell_command:
+                - zsh
+      '';
+    };
+
     "orcaslicer.yaml" = {
       sessionName = "ORCASLICER";
       startDirectory = "${workspaceBase}/90__CONFIG/ORCASLICER";
