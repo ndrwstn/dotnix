@@ -500,7 +500,7 @@ Homebrew packages are declared in `systems/darwin/homebrew.nix` (system-wide pol
 sudo darwin-rebuild switch --flake ~/.config/nix#<hostname>
 ```
 
-During every switch, nix-darwin runs `brew update` and upgrades outdated formulae, casks, and Mac App Store apps — no need to run `brew update` or `brew upgrade` manually. Casks are upgraded even if they manage their own updates (`greedyCasks = true`). Notes:
+During every switch, nix-darwin runs `brew update` and upgrades outdated formulae, regular versioned casks, and Mac App Store apps — no need to run `brew update` or `brew upgrade` manually. Self-updating or unversioned casks are intentionally not upgraded (`greedyCasks = false`), since those applications manage their own updates. To hold a specific installed cask version, use `brew pin --cask <name>`; this is machine-local state and does not prevent the application from updating itself. Notes:
 
 - The first switch after adding new packages can take a while (full upgrade pass).
 - Mas apps require being signed into the Mac App Store.
