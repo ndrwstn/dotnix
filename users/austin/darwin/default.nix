@@ -15,6 +15,7 @@ lib.mkMerge [
   (lib.mkIf pkgs.stdenv.isDarwin
     (lib.mkMerge [
       (import ./group-container-prefs.nix { inherit config lib pkgs; })
+      (import ./java-home.nix { inherit config lib pkgs; })
       (import ./printing-presets.nix { inherit config lib pkgs; })
       (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin")
         (import ./apple-silicon.nix { inherit config lib pkgs autopkgs; }))
