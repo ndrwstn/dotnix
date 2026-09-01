@@ -3,13 +3,13 @@
   homebrew = {
     enable = true;
 
-    # Do not force upgrades for unversioned or self-updating casks. Regular
-    # versioned formulae and casks are still upgraded below.
+    # Do not force upgrades for unversioned or self-updating casks. Package
+    # upgrades are intentionally left for an explicit `brew upgrade`.
     greedyCasks = false;
 
     onActivation = {
       autoUpdate = true; # Run `brew update` before activation
-      upgrade = true; # Run `brew upgrade` for outdated packages
+      upgrade = false; # Report available updates without installing them
       # NOTE: `cleanup` is deliberately left unset here so the user layer
       # decides (users/*/darwin/homebrew.nix uses "zap"); defining it in
       # both layers is an option-definition conflict.
