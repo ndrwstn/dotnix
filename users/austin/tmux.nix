@@ -6,7 +6,7 @@ let
       focus: true
       panes:
         - shell_command:
-            - opencode
+            - opencode2
 
     - window_name: lazygit
       panes:
@@ -55,7 +55,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode
+                - opencode2
 
         - window_name: lazygit
           panes:
@@ -82,6 +82,11 @@ let
     "opencode-app.yaml" = {
       sessionName = "OPENCODE-APP";
       startDirectory = "${workspaceBase}/03__PROGRAMMING/OPENCODE-APP";
+    };
+
+    "gcs.yaml" = {
+      sessionName = "GCS";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/GCS-APP";
     };
 
     "opencode.yaml" = {
@@ -127,7 +132,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode
+                - opencode2
 
         - window_name: lazygit
           layout: tiled
@@ -163,7 +168,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode
+                - opencode2
 
         - window_name: lazygit
           panes:
@@ -188,7 +193,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode
+                - opencode2
 
         - window_name: lazygit
           panes:
