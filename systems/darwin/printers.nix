@@ -9,6 +9,7 @@ let
   printerPort = "631";
   printerSecretPath = "/run/agenix/general";
   printerKey = "brother_mfc_l8900";
+  printerConnectionTimeout = 30;
   printerUnavailableMessage = "Info: Brother printer is unavailable; skipping printer setup.";
 in
 {
@@ -24,7 +25,7 @@ in
       exit 0
     fi
 
-    if ! ${pkgs.nmap}/bin/ncat -z -w 2 "${printerHost}" "${printerPort}"; then
+    if ! ${pkgs.nmap}/bin/ncat -z -w ${toString printerConnectionTimeout} "${printerHost}" "${printerPort}"; then
       echo "${printerUnavailableMessage}"
       exit 0
     fi
