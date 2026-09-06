@@ -3,6 +3,7 @@
 , pkgs
 , unstable
 , autopkgs
+, opencode
 , mcppkgs
 , lib
 , hunk
@@ -346,12 +347,7 @@ lib.mkMerge [
       autopkgs.gcs
       # autopkgs.marker
       autopkgs.mekhq
-      autopkgs.opencode
-      # Prefer the renamed beta package, while remaining compatible with the
-      # currently locked nixautopkgs revision during the transition.
-      (if builtins.hasAttr "opencode2" autopkgs
-      then autopkgs.opencode2
-      else autopkgs.opencode-v2)
+      opencode
       autopkgs.opencode-desktop
       # autopkgs.surya
       ## mcppkgs
