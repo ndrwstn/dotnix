@@ -6,7 +6,7 @@ let
       focus: true
       panes:
         - shell_command:
-            - opencode2
+            - opencode
 
     - window_name: lazygit
       panes:
@@ -55,7 +55,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode2
+                - opencode
 
         - window_name: lazygit
           panes:
@@ -132,7 +132,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode2
+                - opencode
 
         - window_name: lazygit
           layout: tiled
@@ -168,7 +168,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode2
+                - opencode
 
         - window_name: lazygit
           panes:
@@ -193,7 +193,7 @@ let
           focus: true
           panes:
             - shell_command:
-                - opencode2
+                - opencode
 
         - window_name: lazygit
           panes:

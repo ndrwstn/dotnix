@@ -1,5 +1,5 @@
 # Reusable opencode server feature for NixOS guests.
-{ config, lib, pkgs, autopkgs, ... }:
+{ config, lib, pkgs, opencode, ... }:
 
 {
   imports = [ ./secrets.nix ];
@@ -28,7 +28,7 @@
     };
 
     environment.systemPackages = with pkgs; [
-      autopkgs.opencode
+      opencode
       fd
       git
       jq
@@ -75,7 +75,7 @@
           "XDG_DATA_HOME=/var/lib/opencode/.local/share"
           "XDG_STATE_HOME=/var/lib/opencode/.local/state"
         ];
-        ExecStart = "${autopkgs.opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096";
+        ExecStart = "${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096";
         Restart = "on-failure";
         RuntimeMaxSec = "86400";
         StateDirectory = "opencode";
