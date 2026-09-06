@@ -173,6 +173,22 @@
           autopkgs = nixautopkgs.packages.${systemType};
           mcppkgs = mcp-servers-nix.packages.${systemType};
 
+          # Keep the system-facing package name stable while nixautopkgs
+          # transitions its beta package from opencode2 to opencode.  Once the
+          # upstream package is renamed, this falls through to it directly.
+          opencode =
+            if builtins.hasAttr "opencode2" autopkgs
+            then
+              nixpkgs.legacyPackages.${systemType}.symlinkJoin
+                {
+                  name = "opencode";
+                  paths = [ autopkgs.opencode2 ];
+                  postBuild = ''
+                    ln -s opencode2 "$out/bin/opencode"
+                  '';
+                }
+            else autopkgs.opencode;
+
           # Function to build user imports
           buildUserConfig = user: {
             name = user;
@@ -184,7 +200,7 @@
                   then roleProfile
                   else usersDir + "/${user}";
               in
-              import userProfile { inherit config pkgs lib osConfig unstable autopkgs hunk mcppkgs hostName; };
+              import userProfile { inherit config pkgs lib osConfig unstable autopkgs opencode hunk mcppkgs hostName; };
           };
 
           # Create attrset of user configs
@@ -228,7 +244,7 @@
           inherit name;
           value = sysConfig.builder {
             system = systemType;
-            specialArgs = { inherit inputs unstable autopkgs; };
+            specialArgs = { inherit inputs unstable autopkgs opencode; };
             modules =
               let lib = nixpkgs.lib; in
               machineModules
@@ -254,7 +270,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs hunk mcppkgs;
+                    inherit unstable autopkgs opencode hunk mcppkgs;
                     hostName = name;
                   };
                   home-manager.sharedModules = [
