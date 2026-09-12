@@ -20,8 +20,10 @@ in
   # Template file with op:// URIs for op inject
   # These are secure references, not secrets — safe to store in the Nix store
   xdg.configFile."op/${templateFile}".text = ''
-    export BRIGHTDATA_API_TOKEN="{{ op://Private/mf2zkmjt6yw3eaoeemkgq7o4yy/API_KEY }}"
-    export EXA_API_KEY="{{ op://Private/khtjwtdqcxlbj4bs7nuoqo36pa/API_KEY }}"
+    # Search provider credentials are intentionally disabled until the
+    # OpenCode 2 provider defaults are sorted out. Uncomment as needed.
+    # export BRIGHTDATA_API_TOKEN="{{ op://Private/mf2zkmjt6yw3eaoeemkgq7o4yy/API_KEY }}"
+    # export EXA_API_KEY="{{ op://Private/khtjwtdqcxlbj4bs7nuoqo36pa/API_KEY }}"
     # export OBSIDIAN_API_KEY="{{ op://Private/fgykqgqohmb4hflgpfkdfotk5q/API_KEY }}"
   '';
 
@@ -47,8 +49,10 @@ in
         # Propagate to tmux session env so new windows/panes inherit
         if [[ -n "$TMUX" ]] && command -v tmux &>/dev/null; then
           tmux set-environment -s _ASTN_OP_INJECTED 1 2>/dev/null || true
-          [[ -n "$BRIGHTDATA_API_TOKEN" ]] && tmux set-environment -s BRIGHTDATA_API_TOKEN "$BRIGHTDATA_API_TOKEN" 2>/dev/null || true
-          [[ -n "$EXA_API_KEY" ]] && tmux set-environment -s EXA_API_KEY "$EXA_API_KEY" 2>/dev/null || true
+          # Search provider credentials are intentionally disabled. Uncomment
+          # either line when the corresponding provider should be enabled.
+          # [[ -n "$BRIGHTDATA_API_TOKEN" ]] && tmux set-environment -s BRIGHTDATA_API_TOKEN "$BRIGHTDATA_API_TOKEN" 2>/dev/null || true
+          # [[ -n "$EXA_API_KEY" ]] && tmux set-environment -s EXA_API_KEY "$EXA_API_KEY" 2>/dev/null || true
           # Also propagate any OP_SESSION_* tokens so new panes inherit auth
           for _var in $(env | sed -n 's/^\(OP_SESSION_[^=]*\)=.*/\1/p'); do
             tmux set-environment -s "$_var" "''${(P)_var}" 2>/dev/null || true
