@@ -32,8 +32,12 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
 
-      - name: Update nixpkgs lock input
-        run: nix flake lock --update-input nixpkgs
+      - name: Update build inputs
+        # Keep the Broadcom validation in sync with the package overlay used
+        # by the Silver system. In particular, nixautopkgs contains fixes for
+        # sandbox-incompatible GCS tests that otherwise break this unrelated
+        # system build.
+        run: nix flake lock --update-input nixpkgs --update-input nixautopkgs
 
       - name: Detect flake.lock changes
         id: lock
