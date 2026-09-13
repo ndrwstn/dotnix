@@ -1,23 +1,8 @@
-# Reusable opencode server feature for NixOS guests.
+# Reusable OpenCode v2 server feature for NixOS guests.
 { config, lib, pkgs, opencode, ... }:
 
 {
-  imports = [ ./secrets.nix ];
-
-  options.features.opencode.serverSecretFile = lib.mkOption {
-    type = lib.types.nullOr lib.types.path;
-    default = null;
-    description = "Agenix payload containing OPENCODE_SERVER_* assignments.";
-  };
-
   config = lib.mkIf pkgs.stdenv.isLinux {
-    assertions = [
-      {
-        assertion = config.features.opencode.serverSecretFile != null;
-        message = "features.opencode.serverSecretFile must be set for an opencode VM.";
-      }
-    ];
-
     users.groups.projects = { };
     users.users.opencode = {
       description = "opencode server";
@@ -37,7 +22,7 @@
       tmux
     ];
 
-    # opencode is distributed as a dynamically linked runtime by nixautopkgs.
+    # OpenCode is distributed as a dynamically linked runtime by nixautopkgs.
     programs.nix-ld = {
       enable = true;
       libraries = with pkgs; [
@@ -59,25 +44,22 @@
     networking.firewall.allowedTCPPorts = [ 4096 ];
 
     systemd.services.opencode-serve = {
-      description = "opencode HTTP server";
+      description = "OpenCode v2 HTTP server";
       wantedBy = [ "multi-user.target" ];
-      after = [ "agenix.service" "network-online.target" ];
+      after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
-      requires = [ "agenix.service" ];
       serviceConfig = {
         User = "opencode";
         Group = "projects";
         WorkingDirectory = "/projects";
-        EnvironmentFile = "/run/agenix/opencode-server-env";
         Environment = [
           "HOME=/var/lib/opencode"
           "XDG_CONFIG_HOME=/var/lib/opencode/.config"
           "XDG_DATA_HOME=/var/lib/opencode/.local/share"
           "XDG_STATE_HOME=/var/lib/opencode/.local/state"
         ];
-        ExecStart = "${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096";
+        ExecStart = "${opencode}/bin/opencode serve --service --hostname 0.0.0.0 --port 4096";
         Restart = "on-failure";
-        RuntimeMaxSec = "86400";
         StateDirectory = "opencode";
         StateDirectoryMode = "0750";
         ReadWritePaths = [ "/projects" "/var/lib/opencode" ];
