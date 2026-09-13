@@ -24,6 +24,8 @@
   environment.systemPackages = with pkgs; [ git vim ];
 
   nix.settings.max-jobs = 4;
+  # Give VM-based image builds eight vCPUs instead of Nix's default one.
+  nix.settings.cores = 8;
   nix.settings.system-features = [ "kvm" ];
   system.stateVersion = "25.05";
 }
