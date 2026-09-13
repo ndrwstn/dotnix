@@ -47,6 +47,55 @@ let
       startDirectory = "${workspaceBase}/03__PROGRAMMING/USLEGAL";
     };
 
+    "uslegal-templates.yaml" = {
+      sessionName = "USLEGAL-TEMPLATES";
+      startDirectory = "${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES";
+      windows = ''
+        - window_name: opencode
+          focus: true
+          panes:
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES
+              shell_command:
+                - opencode2
+
+        - window_name: lazygit
+          # Three rows: two rows of three panes, followed by a narrow
+          # praecipe pane and a wide opencode pane.
+          layout: 40df,240x60,0,0[240x19,0,0{40x19,0,0,1,40x19,41,0,2,158x19,82,0,3},240x20,0,20{40x20,0,20,4,40x20,41,20,5,158x20,82,20,6},240x19,0,41{23x19,0,41,7,216x19,24,41,8}]
+          panes:
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/appeal
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/complaint
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/discovery-requests
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/discovery-responses
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/letter
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/motion
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/praecipe
+              shell_command:
+                - lazygit
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES/opencode
+              shell_command:
+                - lazygit
+
+        - window_name: zsh
+          panes:
+            - start_directory: ${workspaceBase}/03__PROGRAMMING/USLEGAL-TEMPLATES
+              shell_command:
+                - zsh
+      '';
+    };
+
     "impetuous.yaml" = {
       sessionName = "IMPETUOUS";
       startDirectory = "${workspaceBase}/04__NETWORKING/01__KHC-PROD__IMPETUOUS";
