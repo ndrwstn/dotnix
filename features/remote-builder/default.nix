@@ -31,7 +31,7 @@ in
       protocol = "ssh-ng";
       maxJobs = 4;
       speedFactor = 1;
-      supportedFeatures = [ ];
+      supportedFeatures = [ "kvm" ];
       mandatoryFeatures = [ ];
       hostName = "naphthalene.impetuo.us";
       # Nix expects base64 of the complete OpenSSH public-key file.
