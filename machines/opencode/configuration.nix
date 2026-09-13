@@ -3,12 +3,29 @@
 
 let
   inherit (lib) mkDefault mkForce;
+
+  # The NixOS disk-image builder runs its copy/mkfs phase inside QEMU. Enable
+  # parallel execution for that VM and cap it so it does not consume every
+  # core on the shared remote builder.
+  parallelImageBuildOverlay = final: prev: {
+    vmTools = prev.vmTools // {
+      runInLinuxVM = drv:
+        prev.vmTools.runInLinuxVM (
+          drv.overrideAttrs (_: {
+            enableParallelBuilding = true;
+            env.NIX_BUILD_CORES = "8";
+          })
+        );
+    };
+  };
 in
 {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
     (modulesPath + "/virtualisation/proxmox-image.nix")
   ];
+
+  nixpkgs.overlays = [ parallelImageBuildOverlay ];
 
   # Clones receive their final hostname from Proxmox cloud-init.
   networking.hostName = mkDefault "opencode";
