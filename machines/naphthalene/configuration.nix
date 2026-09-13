@@ -24,5 +24,6 @@
   environment.systemPackages = with pkgs; [ git vim ];
 
   nix.settings.max-jobs = 4;
+  nix.settings.system-features = [ "kvm" ];
   system.stateVersion = "25.05";
 }
