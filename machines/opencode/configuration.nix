@@ -38,7 +38,9 @@ in
   };
 
   proxmox.partitionTableType = "legacy";
-  virtualisation.diskSize = 51200;
+  # Avoid cptofs pathologies from copying into a mostly-empty fixed-size
+  # filesystem. Proxmox can grow the imported disk at deployment time.
+  virtualisation.diskSize = "auto";
 
   # The image-builder disk is labeled `nixos` and is mounted at /nix at
   # runtime. The root itself is a fresh tmpfs on every boot. Two additional
