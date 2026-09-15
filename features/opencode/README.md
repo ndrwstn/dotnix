@@ -6,7 +6,8 @@ cloud-init and do not need individual flake machine entries.
 
 ## Storage model
 
-The image-builder disk is labeled `nixos` and is mounted at `/nix` and `/boot`.
+The image-builder disk is sized from the closure and is labeled `nixos`, then
+mounted at `/nix` and `/boot`.
 Runtime root is a tmpfs, so unpersisted changes disappear on every boot. Before
 making the VM a Proxmox template, attach and format two additional disks:
 
