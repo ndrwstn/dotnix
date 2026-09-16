@@ -34,6 +34,7 @@ in
     bios = "seabios";
     cores = 2;
     memory = 4096;
+    name = "NixOS-OPENCODE-${config.system.nixos.label}";
     net0 = "virtio,bridge=vmbr0,tag=50";
   };
 
@@ -68,14 +69,14 @@ in
   };
 
   fileSystems."/persist" = {
-    device = "/dev/disk/by-label/opencode-persist";
+    device = "/dev/disk/by-label/persist";
     fsType = "ext4";
     neededForBoot = true;
     options = [ "noatime" ];
   };
 
   fileSystems."/projects" = {
-    device = "/dev/disk/by-label/opencode-projects";
+    device = "/dev/disk/by-label/projects";
     fsType = "ext4";
     neededForBoot = true;
     options = [ "noatime" ];

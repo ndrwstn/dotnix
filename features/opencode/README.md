@@ -12,8 +12,8 @@ Runtime root is a tmpfs, so unpersisted changes disappear on every boot. Before
 making the VM a Proxmox template, attach and format two additional disks:
 
 ```bash
-mkfs.ext4 -L opencode-persist /dev/<persist-disk>
-mkfs.ext4 -L opencode-projects /dev/<projects-disk>
+mkfs.ext4 -L persist /dev/<persist-disk>
+mkfs.ext4 -L projects /dev/<projects-disk>
 ```
 
 The disks must be attached to the template so every clone receives its own
