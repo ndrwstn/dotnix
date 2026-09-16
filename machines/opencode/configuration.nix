@@ -38,6 +38,8 @@ in
     net0 = "virtio,bridge=vmbr0,tag=50";
   };
 
+  image.baseName = "NixOS-OPENCODE-${config.system.nixos.label}";
+
   proxmox.partitionTableType = "legacy";
   # Avoid cptofs pathologies from copying into a mostly-empty fixed-size
   # filesystem. Proxmox can grow the imported disk at deployment time.
