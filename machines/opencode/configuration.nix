@@ -8,6 +8,96 @@ let
   # parallel execution for that VM and cap it so it does not consume every
   # core on the shared remote builder.
   parallelImageBuildOverlay = final: prev: {
+    # make-disk-image.nix invokes cptofs inside the image-builder VM.  cptofs
+    # uses LKL to walk the staging tree, which is exposed to that VM through
+    # virtiofs.  On the remote builder this produces thousands of silent
+    # `Invalid argument` readdir failures and can yield a truncated image.
+    # Replace only cptofs with mkfs.ext4's native directory-population mode;
+    # loop devices are not available inside the image-builder VM.
+    lkl = prev.symlinkJoin {
+      name = "lkl-with-safe-cptofs";
+      paths = [ prev.lkl.out ];
+      postBuild = ''
+          rm "$out/bin/cptofs"
+        install -m 755 /dev/stdin "$out/bin/cptofs" <<'EOF'
+          #!${final.runtimeShell}
+          set -euo pipefail
+
+          partition=""
+          image=""
+          sources=()
+
+          while (($#)); do
+            case "$1" in
+              -p)
+                shift
+                ;;
+              -P)
+                partition="$2"
+                shift 2
+                ;;
+              -t)
+                shift 2
+                ;;
+              -i)
+                image="$2"
+                shift 2
+                ;;
+              --)
+                shift
+                sources+=("$@")
+                break
+                ;;
+              *)
+                sources+=("$1")
+                shift
+                ;;
+            esac
+          done
+
+          last=$((''${#sources[@]} - 1))
+          destination="''${sources[$last]}"
+          unset "sources[$last]"
+          test -n "$image"
+          test -n "$destination"
+
+        if [ "$partition" != 1 ]; then
+          echo "safe cptofs only supports partition 1" >&2
+          exit 2
+        fi
+
+        staging=$(mktemp -d)
+        filesystem=$(mktemp "$image.fs.XXXXXX")
+        cleanup() {
+          rm -rf "$staging"
+          rm -f "$filesystem"
+        }
+        trap cleanup EXIT
+
+        for source in "''${sources[@]}"; do
+          cp -a "$source" "$staging/"
+        done
+        # e2fsdroid, used by mkfs.ext4 -d, normalizes the source tree while
+        # populating the filesystem.  cp -a preserved the Nix store's
+        # read-only modes, so make the temporary copy writable first.
+        chmod -R u+w "$staging"
+
+        offset=$((1024 * 1024))
+        uuid=$(blkid -p -o value -s UUID --offset "$offset" "$image")
+        label=$(blkid -p -o value -s LABEL --offset "$offset" "$image")
+        test -n "$uuid"
+        test -n "$label"
+        blocks=$(( ($(stat -c %s "$image") - offset) / 4096 ))
+        truncate -s "$((blocks * 4096))" "$filesystem"
+        mkfs.ext4 -b 4096 -F -L "$label" -U "$uuid" -d "$staging" \
+          "$filesystem" "$blocks"
+        dd if="$filesystem" of="$image" bs=4096 \
+          seek="$((offset / 4096))" conv=notrunc status=none
+        sync
+        EOF
+      '';
+    };
+
     vmTools = prev.vmTools // {
       runInLinuxVM = drv:
         prev.vmTools.runInLinuxVM (
