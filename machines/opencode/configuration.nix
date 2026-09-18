@@ -135,29 +135,40 @@ in
   # filesystem. Proxmox can grow the imported disk at deployment time.
   virtualisation.diskSize = "auto";
 
-  # The image-builder disk is labeled `nixos` and is mounted at /nix at
-  # runtime. The root itself is a fresh tmpfs on every boot. Two additional
-  # labeled disks are attached before converting the VM into a Proxmox template.
+  # The image-builder disk is labeled `nixos`. Its existing /nix and /boot
+  # directories are exposed from one durable mount below. The root itself is a
+  # fresh tmpfs on every boot. Two additional labeled disks are attached before
+  # converting the VM into a Proxmox template.
   fileSystems."/" = mkForce {
     device = "none";
     fsType = "tmpfs";
     options = [ "mode=0755" "size=25%" ];
   };
 
-  fileSystems."/nix" = {
+  fileSystems."/nix-durable" = {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
     neededForBoot = true;
     options = [ "noatime" ];
   };
 
-  # The legacy image keeps /boot on the same durable image disk. Mounting the
-  # disk here makes boot generations available while / is a tmpfs.
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
+  # Bind the directories from the image filesystem rather than mounting the
+  # same filesystem at both paths. These mounts are needed in stage 1 so that
+  # /nix/store is available before stage 2 starts.
+  fileSystems."/nix" = {
+    device = "/nix-durable/nix";
+    fsType = "none";
     neededForBoot = true;
-    options = [ "noatime" ];
+    depends = [ "/nix-durable" ];
+    options = [ "bind" ];
+  };
+
+  fileSystems."/boot" = {
+    device = "/nix-durable/boot";
+    fsType = "none";
+    neededForBoot = true;
+    depends = [ "/nix-durable" ];
+    options = [ "bind" ];
   };
 
   fileSystems."/persist" = {
