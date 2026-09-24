@@ -245,6 +245,7 @@ lib.mkMerge [
       deadnix
       eslint
       eza
+      exiftool
       # ffmpeg_7
       fd
       ffmpegthumbnailer
