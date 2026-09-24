@@ -38,7 +38,7 @@ in
       # ═══════════════════════════════════════════════════════════════
       # One biometric prompt per token lifetime (~30 min). Subsequent calls use the
       # OP_SESSION_<account> token from the environment — no prompt, works across TTYs.
-      if [[ -z "$_ASTN_OP_INJECTED" ]] && command -v op &>/dev/null && [[ -f "${templateDir}/${templateFile}" ]]; then
+      if [[ -z "''${SSH_CONNECTION:-}" ]] && [[ -z "$_ASTN_OP_INJECTED" ]] && command -v op &>/dev/null && [[ -f "${templateDir}/${templateFile}" ]]; then
         # Get a session token (idempotent — only prompts if no valid session exists)
         eval "$(op signin 2>/dev/null)" 2>/dev/null || true
 
