@@ -200,7 +200,9 @@
                   then roleProfile
                   else usersDir + "/${user}";
               in
-              import userProfile { inherit config pkgs lib osConfig unstable autopkgs opencode hunk mcppkgs hostName; };
+              import userProfile {
+                inherit config pkgs lib osConfig unstable autopkgs opencode hunk mcppkgs hostName vicinae;
+              };
           };
 
           # Create attrset of user configs
@@ -270,7 +272,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs opencode hunk mcppkgs;
+                    inherit unstable autopkgs opencode hunk mcppkgs vicinae;
                     hostName = name;
                   };
                   home-manager.sharedModules = [
