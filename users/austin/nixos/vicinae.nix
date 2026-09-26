@@ -4,15 +4,24 @@
 , pkgs
 , lib
 , osConfig ? { }
+, vicinae
 , ...
 }:
 let
   windowManagers = osConfig._astn.machine.windowManagers or [ ];
   hasI3 = builtins.elem "i3" windowManagers;
+  # Numen's C++ parser can exhaust the memory of Silver's remote builder when
+  # Ninja compiles all translation units concurrently. Keep this override
+  # local to the Vicinae dependency rather than reducing parallelism globally.
+  numen = vicinae.inputs.numen.packages.${pkgs.system}.default.overrideAttrs (old: {
+    enableParallelBuilding = false;
+    cmakeFlags = old.cmakeFlags ++ [ "-DCMAKE_BUILD_PARALLEL_LEVEL=1" ];
+  });
 in
 {
   programs.vicinae = {
     enable = true;
+    package = vicinae.packages.${pkgs.system}.default.override { inherit numen; };
     # Vicinae shows "uwsm app --" as a default/placeholder launch prefix, but
     # empty/unset still allows auto-detection of uwsm. Set a non-empty no-op
     # prefix to force direct app launching.

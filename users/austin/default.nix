@@ -10,6 +10,7 @@
 , osConfig ? { }
 , hostName ? "unknown"
 , nur ? null
+, vicinae
 , ...
 }:
 let
@@ -483,6 +484,6 @@ lib.mkMerge [
   (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib autopkgs; }))
 
   # Import NixOS-specific flakes
-  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib osConfig; }))
+  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib osConfig vicinae; }))
 ]
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
