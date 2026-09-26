@@ -511,6 +511,14 @@
     #       Decision: Skipped for now to avoid extraPlugin maintenance burden
     copilot-lua = {
       enable = true;
+      # nixvim's plugin package can come from its own nixpkgs package set,
+      # rather than the system overlay.  Keep the fixed-output hash workaround
+      # attached to the package consumed by this module as well.
+      package = pkgs.vimPlugins.copilot-lua.overrideAttrs (old: {
+        src = old.src.overrideAttrs (_: {
+          outputHash = "sha256-05f76OeWBlFmlUh90tH4XMMKfNI1jnhuIJDqYPPQokA=";
+        });
+      });
     };
 
     # ============================================================================
