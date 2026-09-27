@@ -17,11 +17,18 @@ let
     enableParallelBuilding = false;
     cmakeFlags = old.cmakeFlags ++ [ "-DCMAKE_BUILD_PARALLEL_LEVEL=1" ];
   });
+  vicinaePackage = vicinae.packages.${pkgs.system}.default.override { inherit numen; };
+  # Vicinae itself is also a large C++ build. Serialise it as well: otherwise
+  # the remote builder can be killed by the kernel after Numen succeeds.
+  stableVicinaePackage = vicinaePackage.overrideAttrs (old: {
+    enableParallelBuilding = false;
+    cmakeFlags = old.cmakeFlags ++ [ "-DCMAKE_BUILD_PARALLEL_LEVEL=1" ];
+  });
 in
 {
   programs.vicinae = {
     enable = true;
-    package = vicinae.packages.${pkgs.system}.default.override { inherit numen; };
+    package = stableVicinaePackage;
     # Vicinae shows "uwsm app --" as a default/placeholder launch prefix, but
     # empty/unset still allows auto-detection of uwsm. Set a non-empty no-op
     # prefix to force direct app launching.
