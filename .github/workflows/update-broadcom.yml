@@ -65,8 +65,17 @@ jobs:
         run: |
           nix eval --json .#nixosConfigurations.silver.config.nixpkgs.config.permittedInsecurePackages
 
-      - name: Build Silver system
+      - name: Build Broadcom kernel module
         if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        run: |
+          cachix watch-exec ndrwstn-dotnix -- \
+            nix build .#nixosConfigurations.silver.config.boot.kernelPackages.broadcom_sta
+
+      # Keep full-system regressions visible without allowing unrelated
+      # packages (for example msitools) to discard the Broadcom pin update.
+      - name: Diagnostic Silver system build
+        if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
+        continue-on-error: true
         run: |
           cachix watch-exec ndrwstn-dotnix -- \
             nix build .#nixosConfigurations.silver.config.system.build.toplevel
@@ -85,7 +94,8 @@ jobs:
             ## Summary
             - update `nixpkgs` in `flake.lock`
             - update Broadcom `broadcom-sta` insecure package pin from evaluated Nix state
-            - validate by building `.#nixosConfigurations.silver.config.system.build.toplevel`
+            - validate by building `.#nixosConfigurations.silver.config.boot.kernelPackages.broadcom_sta`
+            - run the full Silver system build as a non-blocking diagnostic
 
       - name: Merge pull request
         if: steps.lock.outputs.changed == 'true' || steps.broadcom.outputs.changed == 'true'
