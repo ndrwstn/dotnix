@@ -75,9 +75,12 @@ in
   # Allow unfree packages on Darwin systems
   nixpkgs.config.allowUnfree = true;
 
-  # Apply pyspacemouse overlay (Darwin-only, contains .dylib paths;
-  # NOT in overlays/default.nix which is used for Linux overlays only)
-  nixpkgs.overlays = [ (import ../../overlays/pyspacemouse.nix) ];
+  # Apply Darwin-only overlays (contains .dylib paths and temporary package
+  # fixes; NOT in overlays/default.nix which is used for Linux overlays only).
+  nixpkgs.overlays = [
+    (import ../../overlays/pyspacemouse.nix)
+    (import ../../overlays/thrift-darwin.nix)
+  ];
 
   # GUI-domain environment (PYTHONPATH + SSH_AUTH_SOCK) is provided via
   # nixdarwin.gui-environment LaunchAgent, bootstrapped into gui/<uid>/.
