@@ -23,10 +23,13 @@
 
   environment.systemPackages = with pkgs; [ git vim ];
 
-  nix.settings.max-jobs = 4;
-  nix.settings.system-features = [ "kvm" ];
-  # The remote-build client uploads locally-built dependencies over SSH. The
-  # builder must trust its SSH user to accept those unsigned store paths.
-  nix.settings.trusted-users = [ "austin" ];
+  nix.settings = {
+    max-jobs = 4;
+    cores = 4;
+    system-features = [ "kvm" ];
+    # The remote-build client uploads locally-built dependencies over SSH. The
+    # builder must trust its SSH user to accept those unsigned store paths.
+    trusted-users = [ "austin" ];
+  };
   system.stateVersion = "25.05";
 }
