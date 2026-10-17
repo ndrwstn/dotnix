@@ -1,4 +1,4 @@
-{ lib, vicinae }:
+{ lib, vicinae, nixpkgsUnstable }:
 
 let
   mkHack =
@@ -15,6 +15,9 @@ let
   thrift = import ../overlays/thrift-darwin.nix { inherit mkHack; };
   msitools = import ../overlays/msitools.nix { inherit mkHack; };
   vicinaeHack = import ../overlays/vicinae.nix { inherit mkHack; inherit vicinae; };
+  solaar = import ../overlays/solaar.nix {
+    inherit lib mkHack nixpkgsUnstable;
+  };
 
   naphthalene = mkHack {
     name = "naphthalene-build-parallelism";
@@ -22,7 +25,7 @@ let
     description = "Naphthalene's build parallelism is capped for the shared remote builder.";
   };
 
-  all = [ thrift.hack msitools.hack vicinaeHack.hack naphthalene ];
+  all = [ thrift.hack msitools.hack vicinaeHack.hack solaar.hack naphthalene ];
 
   warningsFor = hacks: map (hack: hack.warning) hacks;
 in
@@ -30,8 +33,9 @@ in
   inherit all naphthalene;
 
   nixos = {
-    overlays = [ msitools.overlay vicinaeHack.overlay ];
-    warnings = warningsFor [ msitools.hack vicinaeHack.hack ];
+    overlays = [ msitools.overlay vicinaeHack.overlay solaar.overlay ];
+    overlaysWithoutSolaar = [ msitools.overlay vicinaeHack.overlay ];
+    warnings = warningsFor [ msitools.hack vicinaeHack.hack solaar.hack ];
   };
 
   darwin = {
