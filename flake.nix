@@ -85,6 +85,10 @@
     let
       # Import our auto-discovery library
       autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
+      hackFixes = import ./lib/check-hacks-fixes.nix {
+        inherit (nixpkgs) lib;
+        inherit vicinae;
+      };
 
       # System types to support
       supportedSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
@@ -97,7 +101,7 @@
          , ...
          }:
           let
-            nixosOverlays = import ./overlays;
+            nixosOverlays = import ./overlays { inherit hackFixes; };
             unstable = import nixpkgs-unstable {
               system = pkgs.stdenv.hostPlatform.system;
               config.allowUnfree = true;
@@ -167,7 +171,7 @@
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
-            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays);
+            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays { inherit hackFixes; });
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
@@ -201,7 +205,7 @@
                   else usersDir + "/${user}";
               in
               import userProfile {
-                inherit config pkgs lib osConfig unstable autopkgs opencode hunk mcppkgs hostName vicinae;
+                inherit config pkgs lib osConfig unstable autopkgs opencode hunk mcppkgs hostName;
               };
           };
 
@@ -246,7 +250,7 @@
           inherit name;
           value = sysConfig.builder {
             system = systemType;
-            specialArgs = { inherit inputs unstable autopkgs opencode; };
+            specialArgs = { inherit inputs unstable autopkgs opencode hackFixes; };
             modules =
               let lib = nixpkgs.lib; in
               machineModules
@@ -272,7 +276,7 @@
                   home-manager.users = userConfigSet;
                   home-manager.backupFileExtension = "hmbak";
                   home-manager.extraSpecialArgs = {
-                    inherit unstable autopkgs opencode hunk mcppkgs vicinae;
+                    inherit unstable autopkgs opencode hunk mcppkgs;
                     hostName = name;
                   };
                   home-manager.sharedModules = [
@@ -346,7 +350,35 @@
       # Expose our library for other flakes to use
       lib = {
         autoDiscovery = import ./lib/auto-discovery.nix { inherit (nixpkgs) lib; };
+        checkHacksFixes = hackFixes;
       };
+
+      checks = builtins.listToAttrs (map
+        (system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            checks = nixpkgs.lib.concatMapStringsSep "\n"
+              (hack: ''
+                if [[ "$today" > "${hack.reviewAfter}" ]]; then
+                  echo "Expired workaround: ${hack.name} (review after ${hack.reviewAfter})" >&2
+                  failures=$((failures + 1))
+                fi
+              '')
+              hackFixes.all;
+          in
+          {
+            name = system;
+            value.nix-hacks = pkgs.runCommand "check-nix-hacks" { } ''
+              today=$(${pkgs.coreutils}/bin/date -u +%F)
+              failures=0
+              ${checks}
+              if [ "$failures" -ne 0 ]; then
+                exit 1
+              fi
+              touch "$out"
+            '';
+          })
+        supportedSystems);
 
       # System configurations with case-insensitive aliases
       nixosConfigurations = nixosConfigsWithAliases;
