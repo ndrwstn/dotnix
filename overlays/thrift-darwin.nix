@@ -7,16 +7,22 @@
 # arrow-cpp, so the failure blocks the entire Home Manager generation.
 # Remove this overlay once the corresponding nixpkgs fix is available.
 
-final: prev:
+{ mkHack }:
 
-prev.lib.warn
-  "Temporary workaround: Darwin thrift tests are disabled because nixpkgs passes BUILD_TESTING=TRUE despite doCheck = false. Recheck upstream after 2026-12-01."
 {
-  thrift = prev.thrift.overrideAttrs (old: {
-    cmakeFlags =
-      builtins.filter
-        (flag: !prev.lib.hasPrefix "-DBUILD_TESTING" flag)
-        old.cmakeFlags
-      ++ [ "-DBUILD_TESTING:BOOL=FALSE" ];
-  });
+  hack = mkHack {
+    name = "thrift-darwin-tests";
+    reviewAfter = "2026-12-01";
+    description = "Darwin thrift tests are disabled because nixpkgs passes BUILD_TESTING=TRUE despite doCheck = false.";
+  };
+
+  overlay = final: prev: {
+    thrift = prev.thrift.overrideAttrs (old: {
+      cmakeFlags =
+        builtins.filter
+          (flag: !prev.lib.hasPrefix "-DBUILD_TESTING" flag)
+          old.cmakeFlags
+        ++ [ "-DBUILD_TESTING:BOOL=FALSE" ];
+    });
+  };
 }

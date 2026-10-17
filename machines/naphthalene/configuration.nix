@@ -1,5 +1,5 @@
 # Naphthalene is a small Proxmox LXC used as a Nix remote builder.
-{ modulesPath, pkgs, ... }:
+{ modulesPath, pkgs, hackFixes, ... }:
 {
   imports = [
     (modulesPath + "/virtualisation/proxmox-lxc.nix")
@@ -31,5 +31,6 @@
     # builder must trust its SSH user to accept those unsigned store paths.
     trusted-users = [ "austin" ];
   };
+  warnings = [ hackFixes.naphthalene.warning ];
   system.stateVersion = "25.05";
 }
