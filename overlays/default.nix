@@ -1,8 +1,10 @@
-{ hackFixes }:
+{ hackFixes, includeSolaar ? true }:
 
 [
   (import ./1password-cli.nix)
   (import ./ghostty.nix)
   (import ./vim-plugins.nix)
 ]
-++ hackFixes.nixos.overlays
+++ (if includeSolaar
+then hackFixes.nixos.overlays
+else hackFixes.nixos.overlaysWithoutSolaar)
