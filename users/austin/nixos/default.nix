@@ -4,7 +4,6 @@
 , unstable
 , lib
 , osConfig ? { }
-, vicinae
 , ...
 }:
 let
@@ -81,7 +80,7 @@ lib.mkMerge [
     (import ./i3 { inherit config pkgs unstable lib; }))
 
   # Vicinae launcher configuration
-  (import ./vicinae.nix { inherit config pkgs lib osConfig vicinae; })
+  (import ./vicinae.nix { inherit config pkgs lib osConfig; })
 
   # AirPlay receiver configuration for Siberia
   (import ./shairport-sync.nix { inherit config pkgs unstable lib osConfig; })

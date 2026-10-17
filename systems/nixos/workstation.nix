@@ -3,6 +3,7 @@
 { config
 , pkgs
 , lib
+, hackFixes
 , ...
 }:
 let
@@ -18,7 +19,9 @@ in
     ./presets
   ];
 
-  nixpkgs.overlays = import ../../overlays;
+  nixpkgs.overlays = import ../../overlays { inherit hackFixes; };
+
+  warnings = hackFixes.nixos.warnings;
 
   # Allow unfree packages (required for copilot-language-server)
   nixpkgs.config.allowUnfree = true;

@@ -3,6 +3,7 @@
 , pkgs
 , lib
 , inputs
+, hackFixes
 , ...
 }:
 let
@@ -79,8 +80,9 @@ in
   # fixes; NOT in overlays/default.nix which is used for Linux overlays only).
   nixpkgs.overlays = [
     (import ../../overlays/pyspacemouse.nix)
-    (import ../../overlays/thrift-darwin.nix)
-  ];
+  ] ++ hackFixes.darwin.overlays;
+
+  warnings = hackFixes.darwin.warnings;
 
   # GUI-domain environment (PYTHONPATH + SSH_AUTH_SOCK) is provided via
   # nixdarwin.gui-environment LaunchAgent, bootstrapped into gui/<uid>/.
