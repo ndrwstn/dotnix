@@ -155,6 +155,24 @@ let
 
   # Atuin configuration directory
   atuinConfigDir = "${config.home.homeDirectory}/.config/atuin";
+  atuinSocket = "${config.home.homeDirectory}/.local/share/atuin/atuin.sock";
+
+  # An unclean shutdown can leave Atuin's Unix socket behind.  Check for a
+  # live daemon first so a manually started or overlapping daemon is not
+  # disrupted, then remove only a stale socket before starting our daemon.
+  startAtuinDaemon = pkgs.writeShellScript "start-atuin-daemon" ''
+    set -eu
+
+    if [ -S "${atuinSocket}" ]; then
+      if ${pkgs.atuin}/bin/atuin daemon status >/dev/null 2>&1; then
+        exit 0
+      fi
+
+      rm -f "${atuinSocket}"
+    fi
+
+    exec ${pkgs.atuin}/bin/atuin daemon start
+  '';
 
   # Atuin shell integration for zsh - key guaranteed to exist
   atuinZshIntegration = ''
@@ -252,9 +270,7 @@ in
     enable = true;
     config = {
       ProgramArguments = [
-        "${pkgs.atuin}/bin/atuin"
-        "daemon"
-        "start"
+        "${startAtuinDaemon}"
       ];
       EnvironmentVariables = {
         HOME = config.home.homeDirectory;
