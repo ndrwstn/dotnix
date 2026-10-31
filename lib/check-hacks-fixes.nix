@@ -13,6 +13,7 @@ let
     };
 
   thrift = import ../overlays/thrift-darwin.nix { inherit mkHack; };
+  fpdf2 = import ../overlays/fpdf2-darwin.nix { inherit mkHack; };
   msitools = import ../overlays/msitools.nix { inherit mkHack; };
   vicinaeHack = import ../overlays/vicinae.nix { inherit mkHack; inherit vicinae; };
   solaar = import ../overlays/solaar.nix {
@@ -25,7 +26,7 @@ let
     description = "Naphthalene's build parallelism is capped for the shared remote builder.";
   };
 
-  all = [ thrift.hack msitools.hack vicinaeHack.hack solaar.hack naphthalene ];
+  all = [ thrift.hack fpdf2.hack msitools.hack vicinaeHack.hack solaar.hack naphthalene ];
 
   warningsFor = hacks: map (hack: hack.warning) hacks;
 in
@@ -39,8 +40,8 @@ in
   };
 
   darwin = {
-    overlays = [ thrift.overlay ];
-    warnings = warningsFor [ thrift.hack ];
+    overlays = [ thrift.overlay fpdf2.overlay ];
+    warnings = warningsFor [ thrift.hack fpdf2.hack ];
   };
 
   check =
