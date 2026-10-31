@@ -1,9 +1,8 @@
 # Temporary workaround for fpdf2's Darwin test comparison.
 #
-# fpdf2 falls back to byte-for-byte PDF comparisons when qpdf is unavailable
-# in the build sandbox.  The explicit-dimensions test is not byte-identical on
-# aarch64-darwin, so provide qpdf to the test environment and let fpdf2 use its
-# normalized comparison path instead.
+# fpdf2's explicit-dimensions PDF fixture is not identical on aarch64-darwin,
+# even after qpdf normalization: the embedded image stream differs. Disable
+# only that platform-specific fixture test while retaining the other checks.
 # Remove this overlay once nixpkgs or fpdf2 handles this platform difference.
 
 { mkHack }:
@@ -16,7 +15,9 @@ let
     pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
       (pythonFinal: pythonPrev: {
         fpdf2 = pythonPrev.fpdf2.overridePythonAttrs (old: {
-          nativeCheckInputs = (old.nativeCheckInputs or [ ]) ++ [ final.qpdf ];
+          disabledTests = (old.disabledTests or [ ]) ++ [
+            "test_image_with_explicit_dimensions"
+          ];
         });
       })
     ];
@@ -26,7 +27,7 @@ in
   hack = mkHack {
     name = "fpdf2-darwin-tests";
     reviewAfter = "2026-12-01";
-    description = "fpdf2 needs qpdf in its Darwin test environment because byte-for-byte PDF comparisons fail on aarch64-darwin.";
+    description = "fpdf2's explicit-dimensions PDF fixture differs on aarch64-darwin even after qpdf normalization; disable only that fixture test.";
   };
 
   inherit overlay;
