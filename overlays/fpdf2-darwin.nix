@@ -9,25 +9,18 @@
 { mkHack }:
 
 let
-  overlay = final: prev:
-    let
-      overrideFpdf2 = pythonPrev: pythonPrev.fpdf2.overridePythonAttrs (old: {
-        nativeCheckInputs = (old.nativeCheckInputs or [ ]) ++ [ final.qpdf ];
-      });
-    in
-    {
-      # ocrmypdf resolves its dependencies through python3Packages, while the
-      # resulting derivation is named python3.13-fpdf2.  Override both package
-      # set entry points so the fix reaches either dependency path.
-      python3Packages = prev.python3Packages.overrideScope
-        (pythonFinal: pythonPrev: {
-          fpdf2 = overrideFpdf2 pythonPrev;
+  overlay = final: prev: {
+    # Extend Python scopes before python3.pkgs and top-level applications such
+    # as ocrmypdf are constructed.  Replacing python3Packages afterwards does
+    # not rewrite those already-created aliases.
+    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+      (pythonFinal: pythonPrev: {
+        fpdf2 = pythonPrev.fpdf2.overridePythonAttrs (old: {
+          nativeCheckInputs = (old.nativeCheckInputs or [ ]) ++ [ final.qpdf ];
         });
-      python313Packages = prev.python313Packages.overrideScope
-        (pythonFinal: pythonPrev: {
-          fpdf2 = overrideFpdf2 pythonPrev;
-        });
-    };
+      })
+    ];
+  };
 in
 {
   hack = mkHack {
