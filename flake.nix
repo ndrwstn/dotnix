@@ -88,7 +88,6 @@
       hackFixes = import ./lib/check-hacks-fixes.nix {
         inherit (nixpkgs) lib;
         inherit vicinae;
-        nixpkgsUnstable = nixpkgs-unstable;
       };
 
       # System types to support
@@ -102,10 +101,7 @@
          , ...
          }:
           let
-            nixosOverlays = import ./overlays {
-              inherit hackFixes;
-              includeSolaar = false;
-            };
+            nixosOverlays = import ./overlays { inherit hackFixes; };
             unstable = import nixpkgs-unstable {
               system = pkgs.stdenv.hostPlatform.system;
               config.allowUnfree = true;
@@ -175,10 +171,7 @@
           unstable = import nixpkgs-unstable {
             system = systemType;
             config.allowUnfree = true;
-            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays {
-              inherit hackFixes;
-              includeSolaar = false;
-            });
+            overlays = nixpkgs.lib.optionals (osType == "nixos") (import ./overlays { inherit hackFixes; });
           };
 
           autopkgs = nixautopkgs.packages.${systemType};
