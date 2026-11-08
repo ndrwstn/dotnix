@@ -12,8 +12,6 @@ let
       warning = "Temporary workaround (${name}): ${description} Recheck upstream after ${reviewAfter}.";
     };
 
-  thrift = import ../overlays/thrift-darwin.nix { inherit mkHack; };
-  fpdf2 = import ../overlays/fpdf2-darwin.nix { inherit mkHack; };
   msitools = import ../overlays/msitools.nix { inherit mkHack; };
   vicinaeHack = import ../overlays/vicinae.nix { inherit mkHack; inherit vicinae; };
 
@@ -23,7 +21,7 @@ let
     description = "Naphthalene's build parallelism is capped for the shared remote builder.";
   };
 
-  all = [ thrift.hack fpdf2.hack msitools.hack vicinaeHack.hack naphthalene ];
+  all = [ msitools.hack vicinaeHack.hack naphthalene ];
 
   warningsFor = hacks: map (hack: hack.warning) hacks;
 in
@@ -36,8 +34,8 @@ in
   };
 
   darwin = {
-    overlays = [ thrift.overlay fpdf2.overlay ];
-    warnings = warningsFor [ thrift.hack fpdf2.hack ];
+    overlays = [ ];
+    warnings = [ ];
   };
 
   check =
