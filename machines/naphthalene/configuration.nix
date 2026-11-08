@@ -26,11 +26,24 @@
   nix.settings = {
     max-jobs = 4;
     cores = 4;
+    # Avoid SQLite WAL's db.sqlite-shm fsync path on the ZFS-backed LXC.
+    use-sqlite-wal = false;
+    # Start store maintenance before the filesystem is exhausted.
+    min-free = 5 * 1024 * 1024 * 1024;
+    max-free = 10 * 1024 * 1024 * 1024;
+    auto-optimise-store = true;
     system-features = [ "kvm" ];
     # The remote-build client uploads locally-built dependencies over SSH. The
     # builder must trust its SSH user to accept those unsigned store paths.
     trusted-users = [ "austin" ];
   };
+
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 14d";
+  };
+
   warnings = [ hackFixes.naphthalene.warning ];
   system.stateVersion = "25.05";
 }
