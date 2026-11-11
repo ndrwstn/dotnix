@@ -11,6 +11,7 @@
     autopkgs.cadcraft
     autopkgs.constructcraft
     autopkgs.craft-fonts
+    autopkgs.solidcraft
     freecad
     kicad
     ltspice
