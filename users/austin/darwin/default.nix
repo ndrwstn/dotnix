@@ -3,6 +3,7 @@
 , pkgs
 , lib
 , autopkgs
+, osConfig
 , ...
 }:
 let
@@ -17,6 +18,7 @@ lib.mkMerge [
       (import ./group-container-prefs.nix { inherit config lib pkgs; })
       (import ./java-home.nix { inherit config lib pkgs; })
       (import ./printing-presets.nix { inherit config lib pkgs; })
+      (import ./presets.nix { inherit config lib pkgs autopkgs osConfig; })
       (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin")
         (import ./apple-silicon.nix { inherit config lib pkgs autopkgs; }))
 

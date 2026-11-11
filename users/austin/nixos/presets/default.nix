@@ -3,6 +3,7 @@
 { config
 , pkgs
 , unstable
+, autopkgs
 , lib
 , osConfig ? { }
 , ...
@@ -16,16 +17,16 @@ lib.mkMerge [
     (import ./gui.nix { inherit config pkgs unstable lib; }))
 
   (lib.mkIf (presets.graphics.enable or false)
-    (import ./graphics.nix { inherit config pkgs unstable lib; }))
+    (import ./graphics.nix { inherit config pkgs unstable autopkgs lib; }))
 
   (lib.mkIf (presets.maker.enable or false)
-    (import ./maker.nix { inherit config pkgs unstable lib; }))
+    (import ./maker.nix { inherit config pkgs unstable autopkgs lib; }))
 
   (lib.mkIf (presets.recording.enable or false)
-    (import ./recording.nix { inherit config pkgs unstable lib; }))
+    (import ./recording.nix { inherit config pkgs unstable autopkgs lib; }))
 
   (lib.mkIf (presets.office.enable or false)
-    (import ./office.nix { inherit config pkgs unstable lib; }))
+    (import ./office.nix { inherit config pkgs unstable autopkgs lib; }))
 
   (lib.mkIf (presets.radio.enable or false)
     (import ./radio.nix { inherit config pkgs unstable lib; }))

@@ -14,6 +14,13 @@
   # Define hostname
   networking.hostName = "Monaco";
 
+  _astn.presets = {
+    graphics.enable = true;
+    maker.enable = true;
+    recording.enable = true;
+    office.enable = true;
+  };
+
   # System packages
   environment = {
     systemPath = [
