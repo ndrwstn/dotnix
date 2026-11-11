@@ -480,9 +480,9 @@ lib.mkMerge [
   # makes it practical on Apple Silicon. Intel Macs (future NixOS machines)
   # will use remote inference via a k8s OpenVINO cluster; CPU-only whisper
   # is too slow on older Intel hardware to be useful.
-  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib autopkgs; }))
+  (lib.mkIf pkgs.stdenv.isDarwin (import ./darwin { inherit config pkgs lib autopkgs osConfig; }))
 
   # Import NixOS-specific flakes
-  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable lib osConfig; }))
+  (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./nixos { inherit config pkgs unstable autopkgs lib osConfig; }))
 ]
 # vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab

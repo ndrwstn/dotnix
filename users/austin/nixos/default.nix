@@ -2,6 +2,7 @@
 { config
 , pkgs
 , unstable
+, autopkgs
 , lib
 , osConfig ? { }
 , ...
@@ -63,7 +64,7 @@ lib.mkMerge [
   (import ./packages.nix { inherit config pkgs unstable; })
 
   # Optional application presets
-  (import ./presets { inherit config pkgs unstable lib osConfig; })
+  (import ./presets { inherit config pkgs unstable autopkgs lib osConfig; })
 
   # NixOS-only shell theming
   (import ./ohmyposh.nix { inherit config; })
