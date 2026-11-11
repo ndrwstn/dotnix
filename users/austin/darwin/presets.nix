@@ -27,6 +27,7 @@ lib.mkIf isAppleSilicon {
       autopkgs.cadcraft
       autopkgs.constructcraft
       autopkgs.craft-fonts
+      autopkgs.solidcraft
     ])
     (lib.optionals (presets.recording.enable or false) [
       autopkgs.soundcraft
