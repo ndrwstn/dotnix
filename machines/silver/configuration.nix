@@ -1,5 +1,6 @@
 # machines/silver/configuration.nix
 { config
+, autopkgs
 , pkgs
 , ...
 }: {
@@ -45,6 +46,12 @@
 
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+
+  # Allow the Austin user service to access Logitech HID++ devices.  The
+  # package keeps the upstream rule under share/cleverswitch/udev so it can be
+  # reused by non-NixOS users as well.
+  environment.etc."udev/rules.d/42-cleverswitch.rules".source =
+    "${autopkgs.cleverswitch}/share/cleverswitch/udev/42-cleverswitch.rules";
 
   # Enable webcam support
   hardware.facetimehd.enable = true;

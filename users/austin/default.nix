@@ -453,6 +453,9 @@ lib.mkMerge [
   # Import Atuin shell history sync configuration
   (import ./atuin.nix { inherit config pkgs lib hostName; })
 
+  # Synchronize Logitech Easy-Switch devices on Monaco and Silver
+  (import ./cleverswitch.nix { inherit config autopkgs hostName lib pkgs; })
+
   # Import SSH configuration
   (import ./ssh.nix { inherit config pkgs lib hostName; })
 
