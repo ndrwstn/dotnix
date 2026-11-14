@@ -49,9 +49,11 @@
 
   # Allow the Austin user service to access Logitech HID++ devices.  The
   # package keeps the upstream rule under share/cleverswitch/udev so it can be
-  # reused by non-NixOS users as well.
-  environment.etc."udev/rules.d/42-cleverswitch.rules".source =
-    "${autopkgs.cleverswitch}/share/cleverswitch/udev/42-cleverswitch.rules";
+  # reused by non-NixOS users as well.  Route it through services.udev so it
+  # lands in the merged rules.d derivation (environment.etc cannot add files
+  # under the rules.d symlink); the 99-local filename ordering is fine here.
+  services.udev.extraRules =
+    builtins.readFile "${autopkgs.cleverswitch}/share/cleverswitch/udev/42-cleverswitch.rules";
 
   # Enable webcam support
   hardware.facetimehd.enable = true;
