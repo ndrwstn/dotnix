@@ -1,7 +1,7 @@
 {
   system = "x86_64-linux";
   role = "laptop";
-  features = [ ];
+  features = [ "cachix-push" ];
   users = [ "austin" ];
   windowManagers = [ "i3" ];
 }

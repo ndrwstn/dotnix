@@ -1,7 +1,7 @@
 {
   system = "x86_64-linux";
   role = "virtual";
-  features = [ ];
+  features = [ "cachix-push" ];
   users = [ "austin" ];
   windowManagers = [ ];
 }
