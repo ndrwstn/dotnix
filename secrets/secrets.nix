@@ -10,6 +10,7 @@ let
   molybdenum = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF5YYde/IMNhabc3FDTMyxoVbGu8Kc/MdBz4DMWunEBx molybdenum";
   siberia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI siberia";
   svalbard = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsbGccaMJhs8CjjRaLR+fdDowttD22ecETFsgjhT+if svalbard";
+  naphthalene = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw9FcJ7NSULj4LBgNAOKY1mJz/EontZB3oFPWDBI4ea8ZPR+9t6bC8+z1w+cximOKONDmWtP2ou0BDS6n8FO0YkZbp90n9VpWavvzlgCdY72Hxv/JyJaVDokeDxFXnqSwro8SH8LfovSEI+hVLq+83WaTV609H5HgJqaqoC3Q3Di242bTRwGOZqT2VvcGIwiTVsOl88y89RnGccS5jQc7Ai2/8RenY5MXW0RL6jQCsCOZTFUdlVCYPmUeD7y1feasKOr9D1AwVuqu9Pd9Vzt397uMuOiwH5oSVsuXsvhTJgtiC7TX8tsmJvMOCaioT6aKyBjTjhSYmCQpOlxUd6gbl3MENGAknb12rcG3O20KRVFu44O+vYr2UU/A1S+9r38pmHVbPgevmCw7PPgoXSErAWXgUEr3ySxlAYzb6SvshCYjMh1N6DPCsJgKgsBqTGVs+mRk1iwp7NgW6/9seC3/lU8rbtUMul/1wJscvj43CRb7/erMe/PtPXTtVlj3ctxmDNIhGCUyRLxCMA4z2znVd/7Nnmx5dNGcc3IhDQnGb4edoik7IF9rfLI36uD76HTNDWJZkE7dvK4vZeRbtwDeo8fIQUmn9D3IwAlcAFZWi/uFTfBIXV9LSwFSM/7HWnoItudvxHogD7uOKwtRdAKEjFnHu6kW6hFtOlA9lNF4pdQ== naphthalene";
 
   # Key groups for active machines
   allUsers = [ austin ];
@@ -48,5 +49,8 @@ in
   # Shared Naphthalene client key. Only the approved clients and Austin may
   # decrypt this credential; Naphthalene itself does not need it.
   "ssh/key-nixbuilder.age".publicKeys = allUsers ++ [ monaco silver siberia ];
+
+  # Shared Cachix upload token for x86_64-linux machines.
+  "cachix.age".publicKeys = allUsers ++ [ molybdenum siberia silver naphthalene ];
 
 }
