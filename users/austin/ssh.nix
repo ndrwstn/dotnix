@@ -51,7 +51,7 @@ let
     };
 
     naphthalene = {
-      key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmGtvPZaFDfYwfwNCMt8cD1PE9p9Ef3WqifXzwxGVcnwaHR7woaI/Pj8dRy7Y2ZAvJadDkIL9rzf58KwsvQMuRvzOrS+PFwlJlSCt1w2bDYgDWess0hO7IIQ80812QebF3Kg++QUjaGErwnxaYpul3/kfGIYBtki/v2IJCUHassX8Og5pdlj8RJP5SVfslEidEcD0K/Mp/70IcNpyoHv2W4K+q2ere/eUjOHND6Mm+hawNk/USpOPpYdkxjgOz7r3AxCCRPtRYsabWW2HLhIPRYvlqyvbVjdIAq3RawIg6IZTuUF/bu7D1ovcNFh2sZCfQ82U7y/W+BtV2fsrzPHo7T8O9q5Lpyb+bYSKKEZmjp9W3x+XHtOlwunbXbajMBXevLNQzCopYDrLT05BnmjmT8NWwgxapoeCvOb6+cnBArgi0LaWE9g0VKOjnMVl/AmeKEcHK8G418nODlYdQCaCRGHnYwS98YENW0JS2mfRoJEtV0MRAPErwRvSHak3YQiT1Z9zPfBtCqJ8JfrMXV6f8ZVtLf7bK/m+1IF3J1GqDt1N6kwYzvcrZFvLL3tv6BtDTvWcqR2kBiJlDqW3X1+3ZLZLMkgrVm4+YQMwRyBbbm3ufdzaGeF220R81bjPYGhhgf/LHu3UgQ7FyHaf2JikDr2goxOTmLvBM/sj++diolKw== root@Naphthalene";
+      key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmGtvPZaFDfYwfwNCMt8cD1PE9p9Ef3WqifXzwxGVcnwaHR7woaI/Pj8dRy7Y2ZAvJadDkIL9rzf58KwsvQMuRvzOrS+PFwlJlSCt1w2bDYgDWess0hO7IIQ80812QebF3Kg++QUjaGErwnxaYpul3/kfGIYBtki/v2IJCUHassX8Og5pdlj8RJP5SVfslEidEcD0K/Mp/70IcNpyoHv2W4K+q2ere/eUjOHND6Mm+hawNk/USpOPpYdkxjgOz7r3AxCCRPtRYsabWW2HLhIPRYvlqyvbVjdIAq3RawIg6IZTuUF/bu7D1ovcNFh2sZCfQ82U7y/W+BtV2fsrzPHo7T8O9q5Lpyb+bYSKKEZmjp9W3x+XHtOlwunbXbajMBXevLNQzCopYDrLT05BnmjmT8NWwgxapoeCvOb6+cnBArgi0LaWE9g0VKOjnMVl/AmeKEcHK8G418nODlYdQCaCRGHnYwS98YENW0JS2mfRoJEtV0MRAPErwRvSHak3YQiT1Z9zPfBtCqJ8JfrMXV6f8ZVtLf7bK/m+1IF3J1GqDt1N6kwYzvcrZFvLL3tv6BtDTvWcqR2kBiJlDqW3X1+L3ZLMkgrVm4+YQMwRyBbbm3ufdzaGeF220R81bjPYGhhgf/LHu3UgQ7FyHaf2JikDr2goxOTmLvBM/sj++diolKw==";
       hostname = "naphthalene.impetuo.us";
       user = "austin";
       port = 22;
@@ -104,7 +104,7 @@ let
     };
 
     "naphthalene.impetuo.us" = {
-      key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmGtvPZaFDfYwfwNCMt8cD1PE9p9Ef3WqifXzwxGVcnwaHR7woaI/Pj8dRy7Y2ZAvJadDkIL9rzf58KwsvQMuRvzOrS+PFwlJlSCt1w2bDYgDWess0hO7IIQ80812QebF3Kg++QUjaGErwnxaYpul3/kfGIYBtki/v2IJCUHassX8Og5pdlj8RJP5SVfslEidEcD0K/Mp/70IcNpyoHv2W4K+q2ere/eUjOHND6Mm+hawNk/USpOPpYdkxjgOz7r3AxCCRPtRYsabWW2HLhIPRYvlqyvbVjdIAq3RawIg6IZTuUF/bu7D1ovcNFh2sZCfQ82U7y/W+BtV2fsrzPHo7T8O9q5Lpyb+bYSKKEZmjp9W3x+XHtOlwunbXbajMBXevLNQzCopYDrLT05BnmjmT8NWwgxapoeCvOb6+cnBArgi0LaWE9g0VKOjnMVl/AmeKEcHK8G418nODlYdQCaCRGHnYwS98YENW0JS2mfRoJEtV0MRAPErwRvSHak3YQiT1Z9zPfBtCqJ8JfrMXV6f8ZVtLf7bK/m+1IF3J1GqDt1N6kwYzvcrZFvLL3tv6BtDTvWcqR2kBiJlDqW3X1+3ZLZLMkgrVm4+YQMwRyBbbm3ufdzaGeF220R81bjPYGhhgf/LHu3UgQ7FyHaf2JikDr2goxOTmLvBM/sj++diolKw== root@Naphthalene";
+      key = machines.naphthalene.key;
       keyType = "ssh-rsa";
     };
 
