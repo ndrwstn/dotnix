@@ -1,12 +1,11 @@
 { config, lib, pkgs, ... }:
 
 let
-  secretPath = "/run/agenix/cachix.json";
+  secretPath = "/run/agenix/cachix";
 in
 {
   age.secrets.cachix = {
     file = ../../secrets/cachix.age;
-    path = secretPath;
     mode = "0400";
   };
 
