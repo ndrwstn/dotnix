@@ -24,8 +24,18 @@
   environment.systemPackages = with pkgs; [ git vim ];
 
   nix.settings = {
-    max-jobs = 4;
-    cores = 4;
+    # Concurrency budget. Clients reach this builder over the serve protocol
+    # (protocol = "ssh" in features/remote-builder), so these values are used
+    # as-is; under ssh-ng the client's own cores/max-jobs replace them and
+    # neither setting below has any effect on remote builds.
+    #
+    # Compiler threads are
+    #   client maxJobs x max-jobs x cores = 2 x 1 x 3 = 6
+    # which is what this 12 GiB container supports for Rust builds at roughly
+    # 1.5 GiB per rustc. `max-jobs` only bounds dependency fan-out inside a
+    # single build request; fleet concurrency is capped on the clients.
+    max-jobs = 1;
+    cores = 3;
     # Avoid SQLite WAL's db.sqlite-shm fsync path on the ZFS-backed LXC.
     use-sqlite-wal = false;
     # Start store maintenance before the filesystem is exhausted.
@@ -36,6 +46,17 @@
     # The remote-build client uploads locally-built dependencies over SSH. The
     # builder must trust its SSH user to accept those unsigned store paths.
     trusted-users = [ "austin" ];
+  };
+
+  # Remote builds run inside the SSH login session (the client spawns a fresh
+  # nix-store --serve per build), so a memory limit has to live on user.slice.
+  # This is a backstop for the budget above, not the budget itself: it turns a
+  # build that exceeds it into one failed derivation instead of a
+  # container-wide OOM that can take sshd with it. Sized against the 12 GiB
+  # container, leaving ~1.5 GiB for system.slice.
+  systemd.slices.user.sliceConfig = {
+    MemoryHigh = "9G";
+    MemoryMax = "10.5G";
   };
 
   nix.gc = {

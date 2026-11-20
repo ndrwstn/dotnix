@@ -28,8 +28,14 @@ in
     nix.buildMachines = lib.optional (cfg.sshKey != null) ({
       system = "x86_64-linux";
       sshUser = "austin";
-      protocol = "ssh-ng";
-      maxJobs = 4;
+      # The legacy serve protocol leaves `cores` and `max-jobs` to the builder.
+      # ssh-ng transmits the client's own values and overwrites them, which
+      # makes builder-side tuning impossible.
+      protocol = "ssh";
+      # Fleet concurrency for this builder. Two derivations at a time, each
+      # given three cores by the builder, is the memory budget noted in
+      # machines/naphthalene/configuration.nix.
+      maxJobs = 2;
       speedFactor = 1;
       supportedFeatures = [ "kvm" ];
       mandatoryFeatures = [ ];
