@@ -19,6 +19,12 @@
     # Shared remote-builder client key, provisioned on Monaco, Silver, and
     # Siberia. This is separate from Austin's normal interactive key.
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFPyjU+CecRY5sWljr6NFDCMCrG+WyFMxeVQQRtFiZ5i nixbuilder-client"
+
+    # The builder clients' own keys, so a failed build can be inspected on the
+    # builder. The shared key above is restricted to serving builds.
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEi5vWCZakanx3my3yk8XrGItqffYec/XKtLW+kbrlJ2 monaco"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPltIgPNj7bpMDFuKQUmx+ZzwDBHOHFqLFokTTEeoOsb silver"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJYQOiy2ndkowGzWi7Y5uNoEqCum9LV6uCQ/CmNBO/BI siberia"
   ];
 
   environment.systemPackages = with pkgs; [ git vim ];
