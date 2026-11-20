@@ -21,6 +21,7 @@
     taps = [
       "gromgit/brewtils"
       "arimxyer/tap"
+      "anomalyco/tap"
     ];
     casks = [
       "1password"
@@ -96,6 +97,10 @@
       "vlc"
       "zen"
       "zoom"
+    ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "aarch64-darwin") [
+      # Hex: local voice dictation. The cask requires arm64 and macOS 15+, so
+      # Intel Macs (plutonium) and NixOS hosts are unsupported.
+      "anomalyco/tap/hex"
     ];
     brews = [
       "displayplacer"
