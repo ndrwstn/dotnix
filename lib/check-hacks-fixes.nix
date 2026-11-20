@@ -17,8 +17,8 @@ let
 
   naphthalene = mkHack {
     name = "naphthalene-build-parallelism";
-    reviewAfter = "2026-12-01";
-    description = "Naphthalene's build parallelism is capped for the shared remote builder.";
+    reviewAfter = "2027-03-01";
+    description = "Naphthalene's build concurrency and memory ceiling are pinned to its 12 GiB container (cores = 3, client maxJobs = 2, user.slice MemoryHigh/MemoryMax).";
   };
 
   all = [ msitools.hack vicinaeHack.hack naphthalene ];
