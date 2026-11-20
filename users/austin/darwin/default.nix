@@ -30,6 +30,21 @@ lib.mkMerge [
           whisper-cpp
         ];
       }
+
+      # Locally written scripts live in ~/bin; prepend it so they win over the
+      # Nix profile. Darwin-only to avoid adding a non-existent directory to
+      # PATH on the NixOS hosts.
+      {
+        home.sessionPath = [ "$HOME/bin" ];
+      }
+
+      # Hex CLI shim. The `hex` binary lives inside the app bundle and the
+      # Homebrew cask has no `binary` stanza, so it is not linked onto PATH.
+      (lib.mkIf (pkgs.stdenv.hostPlatform.system == "aarch64-darwin") {
+        home.file."bin/hex".source = pkgs.writeShellScript "hex" ''
+          exec /Applications/Hex.app/Contents/MacOS/hex "$@"
+        '';
+      })
     ]))
 
   # Environmental Variables
