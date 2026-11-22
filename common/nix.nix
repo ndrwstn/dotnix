@@ -17,9 +17,6 @@
       "ndrwstn-dotnix.cachix.org-1:FDHQDhPr2ArkrwdCHouf72rOL4ywQsVa0T4i2eG9tGg="
       "vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc="
       "nixvim.cachix.org-1:8xrm/43sWNaE3sqFYil49+3wO5LqCbS4FHGhMCuPNNA="
-      # Retired nixautopkgs key. Still signs cache entries pushed before the
-      # rotation to dVN391; drop once those entries have been re-pushed.
-      "nixautopkgs.cachix.org-1:TPok4jWKgejIHkNmiRff10yczTIho/Oih57hAdySolUjfhTfraqzXznUq+JNV785WLi+0zkkhOWU4uxz/k3RBg=="
     ];
   };
 }
