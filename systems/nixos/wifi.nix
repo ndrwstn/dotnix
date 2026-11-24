@@ -1,6 +1,23 @@
 { pkgs, ... }:
 
 {
+  # The BCM4360 (wl) driver falls back to the world regulatory domain when
+  # the link drops. On the world domain the home AP's 5 GHz channel is
+  # NO_IR, so authentication frames are blocked until a passive scan hears
+  # a beacon; that is the 10s "Authentication ... timed out" reconnect loop.
+  # Pin the country so re-association is allowed immediately.
+  boot.kernelParams = [ "cfg80211.ieee80211_regdom=US" ];
+
+  networking.networkmanager.wifi = {
+    # The legacy wl driver fails the MAC change used for scan randomization
+    # ("do-change-link ... failure 23"), which coincides with scan failures
+    # and link drops. Keep the permanent MAC for scans on this hardware.
+    scanRandMacAddress = false;
+
+    # Broadcom wl powersave is a known source of link drops.
+    powersave = false;
+  };
+
   systemd.services.astn-wifi = {
     description = "Provision configured Wi-Fi NetworkManager profiles";
     after = [ "NetworkManager.service" "agenix.service" ];
