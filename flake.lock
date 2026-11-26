@@ -282,17 +282,40 @@
         "type": "github"
       }
     },
+    "nix-update": {
+      "inputs": {
+        "nixpkgs": [
+          "nixautopkgs",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795354221,
+        "narHash": "sha256-TCOhUWb53V3nrJRD3JuADly1U9fNi0Z79QMcjhbefHg=",
+        "owner": "Mic92",
+        "repo": "nix-update",
+        "rev": "cfd5a600f21407748daa7b38cd5e370d868ce10e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "ref": "v1.17.0",
+        "repo": "nix-update",
+        "type": "github"
+      }
+    },
     "nixautopkgs": {
       "inputs": {
         "flake-parts": "flake-parts_2",
+        "nix-update": "nix-update",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1795579157,
-        "narHash": "sha256-XPr3+VogbzhfwNHMwdXF5/oBnK2CFkq+cNPFhJ4rVM4=",
+        "lastModified": 1795656100,
+        "narHash": "sha256-LSJx1uyFz1EmWQJf/3Ro4oaJasMJnhuIV0+FT18qLPU=",
         "owner": "ndrwstn",
         "repo": "nixautopkgs",
-        "rev": "4ea7a6323c00053f1dfac3665fd9c6ea361869f7",
+        "rev": "05f52f8fc631d12574b99e15a5bad13a7fef9cf0",
         "type": "github"
       },
       "original": {
